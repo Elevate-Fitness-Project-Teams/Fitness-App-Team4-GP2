@@ -1,4 +1,7 @@
 
+using Microsoft.EntityFrameworkCore;
+using Elevate.FitnessApp.Data;
+
 namespace Elevate.FitnessApp
 {
     public class Program
@@ -8,6 +11,8 @@ namespace Elevate.FitnessApp
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -21,6 +26,13 @@ namespace Elevate.FitnessApp
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+
+                // Proactively validate EF Core model structure at startup
+                using (var scope = app.Services.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                    var _ = db.Model; // Force compilation of model metadata
+                }
             }
 
             app.UseHttpsRedirection();
