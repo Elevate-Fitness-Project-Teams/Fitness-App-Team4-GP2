@@ -1,0 +1,15 @@
+namespace Elevate.FitnessApp.Features.Profiles.Entities
+{
+    public class NotificationSetting
+    {
+        public int UserId { get; set; }
+        public bool WorkoutReminders { get; set; } = true;
+        public bool MealReminders { get; set; } = true;
+        public bool AchievementAlerts { get; set; } = true;
+        public bool WeeklyReports { get; set; } = true;
+        public bool EmailNotifications { get; set; } = true;
+        public bool PushNotifications { get; set; } = true;
+        // Navigation property to UserProfile
+        public UserProfile UserProfile { get; set; } = null!;
+    }
+}
