@@ -3,4 +3,4 @@ services:
     image: ${DOCKER_REGISTRY-}authservice
     build:
       context: .
-      dockerfile: Elevate.FitnessApp/Dockerfile
+      dockerfile: AuthService/Dockerfile
