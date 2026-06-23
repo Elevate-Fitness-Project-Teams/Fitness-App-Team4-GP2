@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using AuthService.Infrastructure.Persistence;
+using NotificationService.Infrastructure.Persistence;
 
-namespace AuthService
+namespace NotificationService
 {
     public class Program
     {
@@ -10,7 +10,7 @@ namespace AuthService
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddDbContext<AuthDbContext>(options =>
+            builder.Services.AddDbContext<NotificationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddControllers();
@@ -18,7 +18,7 @@ namespace AuthService
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var app = builder.Build(); 
+            var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -29,7 +29,7 @@ namespace AuthService
                 // Proactively validate EF Core model structure at startup
                 using (var scope = app.Services.CreateScope())
                 {
-                    var db = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+                    var db = scope.ServiceProvider.GetRequiredService<NotificationDbContext>();
                     var _ = db.Model; // Force compilation of model metadata
                 }
             }

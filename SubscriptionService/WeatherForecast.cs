@@ -1,4 +1,4 @@
-namespace Elevate.FitnessApp
+namespace SubscriptionService
 {
     public class WeatherForecast
     {
