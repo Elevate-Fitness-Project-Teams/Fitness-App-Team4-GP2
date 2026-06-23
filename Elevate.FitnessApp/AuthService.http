@@ -1,6 +1,0 @@
-@Elevate.FitnessApp_HostAddress = http://localhost:5031
-
-GET {{Elevate.FitnessApp_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
