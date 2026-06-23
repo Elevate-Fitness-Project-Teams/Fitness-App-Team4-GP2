@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using AuthService.Infrastructure.Persistence;
+using SubscriptionService.Infrastructure.Persistence;
 
-namespace AuthService
+namespace SubscriptionService
 {
     public class Program
     {
@@ -10,7 +10,7 @@ namespace AuthService
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddDbContext<AuthDbContext>(options =>
+            builder.Services.AddDbContext<SubscriptionDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddControllers();
@@ -29,7 +29,7 @@ namespace AuthService
                 // Proactively validate EF Core model structure at startup
                 using (var scope = app.Services.CreateScope())
                 {
-                    var db = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+                    var db = scope.ServiceProvider.GetRequiredService<SubscriptionDbContext>();
                     var _ = db.Model; // Force compilation of model metadata
                 }
             }
