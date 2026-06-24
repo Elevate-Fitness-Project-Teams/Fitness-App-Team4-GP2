@@ -25,7 +25,7 @@ namespace AuthService.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("AuthService.Domain.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");

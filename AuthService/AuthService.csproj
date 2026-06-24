@@ -34,4 +34,9 @@
     <Folder Include="Infrastructure\Persistence\Repositories\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Features\" />
+  </ItemGroup>
+
 </Project>
