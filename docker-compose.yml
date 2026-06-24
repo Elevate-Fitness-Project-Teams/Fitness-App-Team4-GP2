@@ -4,3 +4,51 @@ services:
     build:
       context: .
       dockerfile: AuthService/Dockerfile
+
+  fceservice:
+    image: ${DOCKER_REGISTRY-}fceservice
+    build:
+      context: .
+      dockerfile: FCEService/Dockerfile
+
+  notificationservice:
+    image: ${DOCKER_REGISTRY-}notificationservice
+    build:
+      context: .
+      dockerfile: NotificationService/Dockerfile
+
+  nutritionservice:
+    image: ${DOCKER_REGISTRY-}nutritionservice
+    build:
+      context: .
+      dockerfile: NutritionService/Dockerfile
+
+  profileservice:
+    image: ${DOCKER_REGISTRY-}profileservice
+    build:
+      context: .
+      dockerfile: ProfileService/Dockerfile
+
+  progressservice:
+    image: ${DOCKER_REGISTRY-}progressservice
+    build:
+      context: .
+      dockerfile: ProgressService/Dockerfile
+
+  smartcoachservice:
+    image: ${DOCKER_REGISTRY-}smartcoachservice
+    build:
+      context: .
+      dockerfile: SmartCoachService/Dockerfile
+
+  subscriptionservice:
+    image: ${DOCKER_REGISTRY-}subscriptionservice
+    build:
+      context: .
+      dockerfile: SubscriptionService/Dockerfile
+
+  workoutservice:
+    image: ${DOCKER_REGISTRY-}workoutservice
+    build:
+      context: .
+      dockerfile: WorkoutService/Dockerfile

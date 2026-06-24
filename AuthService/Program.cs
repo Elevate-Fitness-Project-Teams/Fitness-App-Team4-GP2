@@ -1,5 +1,13 @@
-using Microsoft.EntityFrameworkCore;
+using AuthService.BuildingBlocks.Extention;
+using AuthService.Domain.Entities;
 using AuthService.Infrastructure.Persistence;
+using AuthService.Shared.Configurations;
+using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace AuthService
 {
@@ -18,7 +26,53 @@ namespace AuthService
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var app = builder.Build();
+            builder.Services.AddMediatR(typeof(Program).Assembly);
+
+            builder.Services.AddAuthServices();
+            builder.Services.AddValidationConfiguration();
+
+            builder.Services
+                .AddIdentity<ApplicationUser, IdentityRole>(options =>
+                {
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequireUppercase = true;
+                    options.Password.RequireDigit = true;
+
+                    options.Lockout.MaxFailedAccessAttempts = 5;
+                    options.Lockout.DefaultLockoutTimeSpan =
+                        TimeSpan.FromMinutes(15);
+
+                    options.Lockout.AllowedForNewUsers = true;
+
+                    options.User.RequireUniqueEmail = true;
+                })
+                .AddEntityFrameworkStores<AuthDbContext>()
+                .AddDefaultTokenProviders();
+
+            builder.Services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    var jwt = builder.Configuration.GetSection("Jwt");
+                    var key = jwt["Key"]
+                        ?? throw new InvalidOperationException("Jwt:Key is not configured.");
+
+                    options.TokenValidationParameters =
+                    new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwt["Issuer"],
+                        ValidAudience = jwt["Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(key)),
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+
+            var app = builder.Build(); 
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -34,8 +88,11 @@ namespace AuthService
                 }
             }
 
+            app.UseGlobalExceptionMiddleware();
+
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

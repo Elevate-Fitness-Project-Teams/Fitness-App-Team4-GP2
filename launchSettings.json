@@ -4,7 +4,15 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "authservice": "StartDebugging"
+        "authservice": "StartDebugging",
+        "fceservice": "StartDebugging",
+        "notificationservice": "StartDebugging",
+        "nutritionservice": "StartDebugging",
+        "profileservice": "StartDebugging",
+        "progressservice": "StartDebugging",
+        "smartcoachservice": "StartDebugging",
+        "subscriptionservice": "StartDebugging",
+        "workoutservice": "StartDebugging"
       }
     }
   }
