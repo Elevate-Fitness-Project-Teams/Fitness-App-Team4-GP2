@@ -1,3 +1,4 @@
+using AuthService.BuildingBlocks.Exceptions;
 using AuthService.BuildingBlocks.Helpers;
 
 namespace AuthService.BuildingBlocks.Middleware
@@ -35,6 +36,26 @@ namespace AuthService.BuildingBlocks.Middleware
                     ResponseFactory.Failure(
                         ex.Message,
                         400,
+                        ex.Message));
+            }
+            catch (UserLockedOutException ex)
+            {
+                context.Response.StatusCode = 423;
+
+                await context.Response.WriteAsJsonAsync(
+                    ResponseFactory.Failure(
+                        ex.Message,
+                        423,
+                        ex.Message));
+            }
+            catch (UnauthorizedException ex)
+            {
+                context.Response.StatusCode = 401;
+
+                await context.Response.WriteAsJsonAsync(
+                    ResponseFactory.Failure(
+                        ex.Message,
+                        401,
                         ex.Message));
             }
         }

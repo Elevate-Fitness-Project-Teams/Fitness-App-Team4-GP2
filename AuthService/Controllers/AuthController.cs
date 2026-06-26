@@ -1,5 +1,6 @@
 using AuthService.BuildingBlocks.Helpers;
 using AuthService.Features.Auth.Register;
+using AuthService.Features.Login;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,5 +29,19 @@ namespace AuthService.Controllers
                     "User registered successfully.",
                     201));
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginCommand command)
+        {
+            var result = await _mediatR.Send(command);
+
+            return StatusCode(
+                200,
+                ResponseFactory.Success(
+                    result,
+                    "User logged in successfully.",
+                    200));
+        }
+
     }
 }

@@ -1,3 +1,4 @@
+using FCEService.Domain.Enums;
 using System;
 namespace FCEService.Domain.Entities
 {
@@ -9,8 +10,8 @@ namespace FCEService.Domain.Entities
         public double Height { get; set; }
         public int Age { get; set; }
         public string Gender { get; set; } = null!;
-        public string Goal { get; set; } = null!;
-        public string ActivityLevel { get; set; } = null!;
+        public GoalEnum Goal { get; set; } 
+        public ActivityLevelEnum ActivityLevel { get; set; }
         public DateTime RecordedAt { get; set; }
     }
 }
