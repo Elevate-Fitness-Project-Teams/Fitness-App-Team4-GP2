@@ -1,10 +1,9 @@
 using System;
 namespace ProgressService.Domain.Entities
 {
-    public class BodyMeasurement
+    public class BodyMeasurement : BaseEntity
     {
-        public int Id { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; } = null!;
         public double? Neck { get; set; }
         public double? Chest { get; set; }
         public double? Biceps { get; set; }
