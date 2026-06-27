@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProgressService.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace ProgressService.Infrastructure.Persistence.Migrations
+namespace ProgressService.Migrations
 {
     [DbContext(typeof(ProgressDbContext))]
-    partial class ProgressDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260625000233_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,11 +94,11 @@ namespace ProgressService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ProgressService.Domain.Entities.Streak", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CurrentStreak")
                         .ValueGeneratedOnAdd()
@@ -110,7 +113,10 @@ namespace ProgressService.Infrastructure.Persistence.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.HasKey("UserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Streaks");
                 });
@@ -143,11 +149,11 @@ namespace ProgressService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ProgressService.Domain.Entities.UserStatistic", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("TotalCaloriesBurned")
                         .ValueGeneratedOnAdd()
@@ -167,7 +173,10 @@ namespace ProgressService.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("UserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
 
                     b.ToTable("UserStatistics");
                 });

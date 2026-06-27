@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ProgressService.Infrastructure.Persistence.Migrations
+namespace ProgressService.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -50,23 +50,25 @@ namespace ProgressService.Infrastructure.Persistence.Migrations
                 name: "Streaks",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     CurrentStreak = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     LongestStreak = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     LastWorkoutDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Streaks", x => x.UserId);
+                    table.PrimaryKey("PK_Streaks", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "UserStatistics",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
                     TotalWorkouts = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     TotalCaloriesBurned = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     TotalWeightLost = table.Column<double>(type: "float", nullable: false, defaultValue: 0.0),
@@ -74,7 +76,7 @@ namespace ProgressService.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserStatistics", x => x.UserId);
+                    table.PrimaryKey("PK_UserStatistics", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(

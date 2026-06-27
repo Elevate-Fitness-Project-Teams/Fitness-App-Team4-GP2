@@ -1,10 +1,9 @@
 using System;
 namespace ProgressService.Domain.Entities
 {
-    public class WorkoutLog
+    public class WorkoutLog : BaseEntity
     {
-        public int Id { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; } = null!;
         public int WorkoutId { get; set; }
         public string SessionId { get; set; } = null!;
         public int DurationInMinutes { get; set; }
@@ -12,5 +11,8 @@ namespace ProgressService.Domain.Entities
         public int Rating { get; set; }
         public string? Notes { get; set; }
         public DateTime CompletedAt { get; set; }
+
+        public ICollection<WorkoutLogExercise> WorkoutLogExercises { get; set; } = [];
+
     }
 }
