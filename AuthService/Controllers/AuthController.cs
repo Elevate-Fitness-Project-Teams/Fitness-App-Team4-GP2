@@ -1,8 +1,13 @@
 using AuthService.BuildingBlocks.Helpers;
 using AuthService.Features.Auth.Register;
+using AuthService.Features.CompleteProfile;
 using AuthService.Features.Login;
+using AuthService.Shared.Responses;
+using MassTransit.Mediator;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static MassTransit.ValidationResultExtensions;
 
 namespace AuthService.Controllers
 {
@@ -10,9 +15,9 @@ namespace AuthService.Controllers
     [Route("api/v1/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly IMediator _mediatR;
+        private readonly MediatR.IMediator _mediatR;
 
-        public AuthController(IMediator mediatR)
+        public AuthController(MediatR.IMediator mediatR)
         {
             _mediatR = mediatR;
         }
@@ -28,6 +33,21 @@ namespace AuthService.Controllers
                     result,
                     "User registered successfully.",
                     201));
+        }
+
+        [Authorize]
+        [HttpPost("complete-profile")]
+        public async Task<IActionResult> CompleteProfile()
+        {
+            var result = await _mediatR.Send(new CompleteProfileCommand());
+
+            return StatusCode(
+                201,
+                ResponseFactory.Success(
+                    result,
+                    "Profile lifecycle initiated.",
+                    201));
+
         }
 
         [HttpPost("login")]

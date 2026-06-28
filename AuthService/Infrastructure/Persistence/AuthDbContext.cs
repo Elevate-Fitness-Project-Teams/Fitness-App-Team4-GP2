@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using AuthService.Domain.Entities;
+using AuthService.BuildingBlocks.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace AuthService.Infrastructure.Persistence
 {
-    public class AuthDbContext : IdentityDbContext<ApplicationUser>
+    public class AuthDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>, IApplicationDbContext
     {
         public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options)
         {

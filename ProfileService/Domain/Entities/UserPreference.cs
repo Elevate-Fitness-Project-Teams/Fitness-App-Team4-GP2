@@ -2,7 +2,7 @@ namespace ProfileService.Domain.Entities
 {
     public class UserPreference
     {
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public string Language { get; set; } = "en";
         public string Theme { get; set; } = "light";
         public string WeightUnit { get; set; } = "kg";

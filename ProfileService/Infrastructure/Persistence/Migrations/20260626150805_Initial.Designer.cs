@@ -12,7 +12,7 @@ using ProfileService.Infrastructure.Persistence;
 namespace ProfileService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ProfileDbContext))]
-    [Migration("20260623131533_Initial")]
+    [Migration("20260626150805_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -27,8 +27,8 @@ namespace ProfileService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ProfileService.Domain.Entities.NotificationSetting", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("AchievementAlerts")
                         .ValueGeneratedOnAdd()
@@ -67,8 +67,8 @@ namespace ProfileService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ProfileService.Domain.Entities.PrivacySetting", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("AllowDataSharing")
                         .ValueGeneratedOnAdd()
@@ -94,8 +94,8 @@ namespace ProfileService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ProfileService.Domain.Entities.UserPreference", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DistanceUnit")
                         .IsRequired()
@@ -139,11 +139,9 @@ namespace ProfileService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ProfileService.Domain.Entities.UserProfile", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .IsRequired()

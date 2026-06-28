@@ -1,3 +1,4 @@
+using AuthService.BuildingBlocks.Interfaces;
 using AuthService.Infrastructure.Services;
 using AuthService.Infrastructure.Services.Interfaces;
 
@@ -9,6 +10,7 @@ namespace AuthService
         {
             // Register feature handlers, infrastructure services, validators, etc.
             services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<ICurrentUser, CurrentUser>();
 
             return services;
         }

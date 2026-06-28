@@ -21,9 +21,9 @@ namespace AuthService.Infrastructure.Services
         {
             var claims = new List<Claim>
             {
-                new(JwtRegisteredClaimNames.Sub, user.Id),
+                new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new(ClaimTypes.NameIdentifier, user.Id),
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Email, user.Email ?? string.Empty),
                 new(ClaimTypes.Name, user.UserName ?? string.Empty),
                 new("firstName", user.FirstName),
@@ -47,9 +47,9 @@ namespace AuthService.Infrastructure.Services
         {
             var claims = new List<Claim>
             {
-                new(JwtRegisteredClaimNames.Sub, user.Id),
+                new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new(ClaimTypes.NameIdentifier, user.Id),
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Email, user.Email ?? string.Empty),
                 new("purpose", "password_reset")
             };
