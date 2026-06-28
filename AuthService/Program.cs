@@ -1,6 +1,8 @@
 using AuthService.BuildingBlocks.Extention;
+using AuthService.BuildingBlocks.Interfaces;
 using AuthService.Domain.Entities;
 using AuthService.Infrastructure.Persistence;
+using AuthService.Infrastructure.Persistence.Repositories;
 using AuthService.Shared.Configurations;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -28,6 +30,10 @@ namespace AuthService
 
             builder.Services.AddMediatR(typeof(Program).Assembly);
 
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped<ILoginAttemptRepository, LoginAttemptRepository>();
+
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddAuthServices();
             builder.Services.AddValidationConfiguration();
 
