@@ -1,9 +1,11 @@
 using AuthService.BuildingBlocks.Extention;
 using AuthService.BuildingBlocks.Interfaces;
+using AuthService.BuildingBlocks.Interfaces.Events;
 using AuthService.Domain.Entities;
 using AuthService.Infrastructure.Persistence;
 using AuthService.Infrastructure.Persistence.Repositories;
 using AuthService.Shared.Configurations;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -23,10 +25,35 @@ namespace AuthService
             builder.Services.AddDbContext<AuthDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddScoped<IApplicationDbContext>(
+                sp => sp.GetRequiredService<AuthDbContext>());
+
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                var scheme = new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Description = "Enter the JWT access token (without the 'Bearer ' prefix).",
+                    Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                    {
+                        Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                };
+
+                options.AddSecurityDefinition("Bearer", scheme);
+                options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+                {
+                    [scheme] = new List<string>()
+                });
+            });
 
             builder.Services.AddMediatR(typeof(Program).Assembly);
 
@@ -34,11 +61,25 @@ namespace AuthService
             builder.Services.AddScoped<ILoginAttemptRepository, LoginAttemptRepository>();
 
             builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<IEventPublisher, RabbitMqPublisher>();
             builder.Services.AddAuthServices();
             builder.Services.AddValidationConfiguration();
 
             builder.Services
-                .AddIdentity<ApplicationUser, IdentityRole>(options =>
+                .AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(builder.Configuration["RabbitMQ:Host"], h =>
+                    {
+                        h.Username(builder.Configuration["RabbitMQ:Username"]);
+                        h.Password(builder.Configuration["RabbitMQ:Password"]);
+                    });
+                });
+            });
+
+            builder.Services
+                .AddIdentityCore<ApplicationUser>(options =>
                 {
                     options.Password.RequiredLength = 6;
                     options.Password.RequireUppercase = true;
@@ -52,6 +93,7 @@ namespace AuthService
 
                     options.User.RequireUniqueEmail = true;
                 })
+                .AddRoles<IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<AuthDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -84,7 +126,29 @@ namespace AuthService
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(options =>
+                {
+                    // Keep the captured Bearer token across page reloads / app restarts.
+                    options.EnablePersistAuthorization();
+
+                    // Auto-capture the access token from the /login response and apply it
+                    // to the "Bearer" security scheme, so secured endpoints are authorized
+                    // automatically without copy/paste into the Authorize dialog.
+                    options.UseResponseInterceptor(
+                        "(res) => {" +
+                        "  try {" +
+                        "    if (res.ok && res.url && res.url.toLowerCase().indexOf('/auth/login') !== -1) {" +
+                        "      var body = res.obj || (res.text ? JSON.parse(res.text) : null);" +
+                        "      var token = body && body.data && (body.data.token || body.data.accessToken);" +
+                        "      if (token && window.ui) {" +
+                        "        window.ui.preauthorizeApiKey('Bearer', token);" +
+                        "        console.log('[Swagger] Bearer token captured from login.');" +
+                        "      }" +
+                        "    }" +
+                        "  } catch (e) { console.error('[Swagger] token capture failed', e); }" +
+                        "  return res;" +
+                        "}");
+                });
 
                 // Proactively validate EF Core model structure at startup
                 using (var scope = app.Services.CreateScope())
