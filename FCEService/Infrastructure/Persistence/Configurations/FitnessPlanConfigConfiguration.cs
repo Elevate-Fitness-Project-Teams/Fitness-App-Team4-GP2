@@ -3,7 +3,7 @@ using FCEService.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FCEService.Infrastructure.Data.Configurations
+namespace FCEService.Infrastructure.Persistence.Configurations
 {
     public sealed class FitnessPlanConfigConfiguration
         : IEntityTypeConfiguration<FitnessPlanConfig>
@@ -55,7 +55,7 @@ namespace FCEService.Infrastructure.Data.Configurations
                    .HasMaxLength(50)
                    .IsRequired();
 
-            // Navigation
+            
             builder.HasMany(x => x.UserAssignedPlans)
                    .WithOne(x => x.FitnessPlanConfig)
                    .HasForeignKey(x => x.PlanId)

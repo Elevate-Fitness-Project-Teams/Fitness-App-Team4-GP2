@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using FCEService.Infrastructure.Data;
+using FCEService.Infrastructure.Persistence;
 
 namespace FCEService
 {

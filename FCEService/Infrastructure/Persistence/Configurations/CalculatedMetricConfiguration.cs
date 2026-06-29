@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FCEService.Infrastructure.Data.Configurations
+namespace FCEService.Infrastructure.Persistence.Configurations
 {
     public sealed class CalculatedMetricConfiguration
           : IEntityTypeConfiguration<CalculatedMetric>
@@ -36,7 +36,7 @@ namespace FCEService.Infrastructure.Data.Configurations
                    .IsRequired()
                    .HasColumnType("float");
 
-            // PlanStatus enum → string in DB
+           
             builder.Property(x => x.Status)
                    .IsRequired()
                    .HasConversion<string>()
@@ -46,7 +46,7 @@ namespace FCEService.Infrastructure.Data.Configurations
                    .IsRequired()
                    .HasDefaultValueSql("GETUTCDATE()");
 
-            // Nullable — null means never recalculated after first insert
+            //  null > never recalculated after first insert
             builder.Property(x => x.LastUpdatedAt)
                    .IsRequired(false);
         }

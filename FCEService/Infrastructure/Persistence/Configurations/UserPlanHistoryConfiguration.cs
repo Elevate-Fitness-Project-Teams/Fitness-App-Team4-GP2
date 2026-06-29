@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FCEService.Infrastructure.Data.Configurations
+namespace FCEService.Infrastructure.Persistence.Configurations
 {
     public sealed class UserPlanHistoryConfiguration
          : IEntityTypeConfiguration<UserPlanHistory>
@@ -29,11 +29,11 @@ namespace FCEService.Infrastructure.Data.Configurations
             builder.Property(x => x.AssignedAt)
                    .IsRequired();
 
-            // Nullable — null means this history entry is still active (not yet ended)
+            //  null means this history entry is still active (not yet ended)
             builder.Property(x => x.EndedAt)
                    .IsRequired(false);
 
-            // ReasonForChange enum → string in DB (VarChar 255 per docs)
+           
             builder.Property(x => x.ReasonForChange)
                    .IsRequired()
                    .HasMaxLength(255);

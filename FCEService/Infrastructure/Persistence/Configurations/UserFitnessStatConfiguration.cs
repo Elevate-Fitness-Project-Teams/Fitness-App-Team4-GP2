@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FCEService.Infrastructure.Data.Configurations
+namespace FCEService.Infrastructure.Persistence.Configurations
 {
     public sealed class UserFitnessStatConfiguration
         : IEntityTypeConfiguration<UserFitnessStat>

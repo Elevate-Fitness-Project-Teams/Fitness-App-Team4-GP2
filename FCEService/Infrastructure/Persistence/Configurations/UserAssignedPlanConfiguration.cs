@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FCEService.Infrastructure.Data.Configurations
+namespace FCEService.Infrastructure.Persistence.Configurations
 {
     public sealed class UserAssignedPlanConfiguration
          : IEntityTypeConfiguration<UserAssignedPlan>
@@ -19,7 +19,7 @@ namespace FCEService.Infrastructure.Data.Configurations
             builder.HasIndex(x => x.UserId)
                    .HasDatabaseName("IX_UserAssignedPlans_UserId");
 
-            // Composite index: fast lookup of the active plan for a user
+            // fast lookup of the active plan for a user
             builder.HasIndex(x => new { x.UserId, x.IsActive })
                    .HasDatabaseName("IX_UserAssignedPlans_UserId_IsActive");
 
@@ -38,7 +38,7 @@ namespace FCEService.Infrastructure.Data.Configurations
                    .IsRequired()
                    .HasDefaultValue(true);
 
-            // FK → FitnessPlanConfig (restrict: never delete a plan that has assignments)
+          
             builder.HasOne(x => x.FitnessPlanConfig)
                    .WithMany(x => x.UserAssignedPlans)
                    .HasForeignKey(x => x.PlanId)

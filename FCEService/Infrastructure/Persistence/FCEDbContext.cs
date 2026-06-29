@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using FCEService.Domain.Entities;
 
-namespace FCEService.Infrastructure.Data
+namespace FCEService.Infrastructure.Persistence
 {
     public class FCEDbContext : DbContext
     {
