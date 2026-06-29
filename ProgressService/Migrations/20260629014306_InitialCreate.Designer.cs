@@ -12,7 +12,7 @@ using ProgressService.Infrastructure.Persistence;
 namespace ProgressService.Migrations
 {
     [DbContext(typeof(ProgressDbContext))]
-    [Migration("20260625000233_InitialCreate")]
+    [Migration("20260629014306_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -32,6 +32,12 @@ namespace ProgressService.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CriteriaType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CriteriaValue")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -79,8 +85,8 @@ namespace ProgressService.Migrations
                     b.Property<double?>("Thighs")
                         .HasColumnType("float");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<double?>("Waist")
                         .HasColumnType("float");
@@ -90,6 +96,30 @@ namespace ProgressService.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("BodyMeasurements");
+                });
+
+            modelBuilder.Entity("ProgressService.Domain.Entities.SessionReadModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SessionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sessions");
                 });
 
             modelBuilder.Entity("ProgressService.Domain.Entities.Streak", b =>
@@ -113,8 +143,8 @@ namespace ProgressService.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -135,8 +165,8 @@ namespace ProgressService.Migrations
                     b.Property<DateTime>("EarnedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -173,8 +203,8 @@ namespace ProgressService.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -196,8 +226,8 @@ namespace ProgressService.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("Weight")
                         .HasColumnType("float");
@@ -238,8 +268,8 @@ namespace ProgressService.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("WorkoutId")
                         .HasColumnType("int");
@@ -302,12 +332,17 @@ namespace ProgressService.Migrations
             modelBuilder.Entity("ProgressService.Domain.Entities.WorkoutLogExercise", b =>
                 {
                     b.HasOne("ProgressService.Domain.Entities.WorkoutLog", "WorkoutLog")
-                        .WithMany()
+                        .WithMany("WorkoutLogExercises")
                         .HasForeignKey("WorkoutLogId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("WorkoutLog");
+                });
+
+            modelBuilder.Entity("ProgressService.Domain.Entities.WorkoutLog", b =>
+                {
+                    b.Navigation("WorkoutLogExercises");
                 });
 #pragma warning restore 612, 618
         }

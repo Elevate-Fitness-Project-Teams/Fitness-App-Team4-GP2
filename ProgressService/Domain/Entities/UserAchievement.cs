@@ -3,7 +3,7 @@ namespace ProgressService.Domain.Entities
 {
     public class UserAchievement : BaseEntity
     {
-        public string UserId { get; set; } = null!;
+        public Guid UserId { get; set; }
         public int AchievementId { get; set; }
         public DateTime EarnedAt { get; set; }
         // Navigation properties

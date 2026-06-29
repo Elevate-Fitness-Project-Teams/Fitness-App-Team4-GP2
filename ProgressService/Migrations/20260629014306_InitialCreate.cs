@@ -19,7 +19,9 @@ namespace ProgressService.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    IconUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    IconUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    CriteriaType = table.Column<int>(type: "int", nullable: false),
+                    CriteriaValue = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,7 +34,7 @@ namespace ProgressService.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Neck = table.Column<double>(type: "float", nullable: true),
                     Chest = table.Column<double>(type: "float", nullable: true),
                     Biceps = table.Column<double>(type: "float", nullable: true),
@@ -47,12 +49,27 @@ namespace ProgressService.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Sessions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SessionId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sessions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Streaks",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CurrentStreak = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     LongestStreak = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     LastWorkoutDate = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -68,7 +85,7 @@ namespace ProgressService.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TotalWorkouts = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     TotalCaloriesBurned = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     TotalWeightLost = table.Column<double>(type: "float", nullable: false, defaultValue: 0.0),
@@ -85,7 +102,7 @@ namespace ProgressService.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Weight = table.Column<double>(type: "float", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
@@ -101,7 +118,7 @@ namespace ProgressService.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     WorkoutId = table.Column<int>(type: "int", nullable: false),
                     SessionId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     DurationInMinutes = table.Column<int>(type: "int", nullable: false),
@@ -121,7 +138,7 @@ namespace ProgressService.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AchievementId = table.Column<int>(type: "int", nullable: false),
                     EarnedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -201,6 +218,9 @@ namespace ProgressService.Migrations
         {
             migrationBuilder.DropTable(
                 name: "BodyMeasurements");
+
+            migrationBuilder.DropTable(
+                name: "Sessions");
 
             migrationBuilder.DropTable(
                 name: "Streaks");

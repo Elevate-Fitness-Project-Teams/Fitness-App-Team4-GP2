@@ -1,12 +1,13 @@
-﻿using FluentValidation;
+﻿using BuildingBlocks.Contracts.Progress;
+using BuildingBlocks.Shared.Results;
+using FluentValidation;
+using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ProgressService.Domain.Contracts;
 using ProgressService.Domain.Entities;
-using ProgressService.Shared;
-using ProgressService.Shared.Contracts;
-using ProgressService.Shared.Events;
-using System.Security.Cryptography.Xml;
+
+
 
 namespace ProgressService.Features.WorkoutCompletion
 {
@@ -14,26 +15,35 @@ namespace ProgressService.Features.WorkoutCompletion
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<WorkoutCompletionCommand> _validator;
-        private readonly IMessagePublisher _publisher;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public WorkoutCompletionHandler(IUnitOfWork unitOfWork , IValidator<WorkoutCompletionCommand> validator , IMessagePublisher publisher)
+        public WorkoutCompletionHandler(IUnitOfWork unitOfWork , IValidator<WorkoutCompletionCommand> validator , IPublishEndpoint publishEndpoint)
         {
             _unitOfWork = unitOfWork;
             _validator = validator;
-            _publisher = publisher;
+            _publishEndpoint = publishEndpoint;
         }
 
         public async Task<Result<WorkOutCompletionResponse>> Handle(WorkoutCompletionCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
-
             var userId = request.UserId;
+
+            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
-                return Error.Validation("VAL_REQUIRED_FIELD", System.Text.Json.JsonSerializer.Serialize(
-                                                                    validationResult.Errors.Select(e => e.ErrorMessage)));
+                return validationResult.Errors.Select(e => Error.Validation("VAL_REQUIRED_FIELD", e.ErrorMessage)).ToList();
+                //return Error.Validation("VAL_REQUIRED_FIELD", System.Text.Json.JsonSerializer.Serialize(
+                //                                                    validationResult.Errors.Select(e => e.ErrorMessage)));
             }
+
+
+            var session =  await _unitOfWork.GetRepository<SessionReadModel, int>().GetOneAsync(x=>x.SessionId == request.SessionId && x.UserId == userId.ToString());
+
+            if(session is null || session.IsActive == false)
+                return Result<WorkOutCompletionResponse>.Fail(Error.NotFound("RES_SESSION_NOT_FOUND.", "The provided session is invalid."));
+
+
             
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
@@ -76,15 +86,21 @@ namespace ProgressService.Features.WorkoutCompletion
 
                 foreach (var achievement in unlockedAchievements)
                 {
-                    await _publisher.PublishAsync(
-                        new AchievementEarnedEvent
-                        {
-                            UserId = userId,
-                            AchievementId = achievement.Id,
-                            AchievementName = achievement.Name,
-                            EarnedAt = DateTime.UtcNow
-                        });
+                    await _publishEndpoint.Publish(new AchievementEarnedEvent
+                    {
+                        UserId = userId.ToString(),
+                        AchievementId = achievement.Id,
+                        AchievementName = achievement.Name,
+                        EarnedAt = DateTime.UtcNow
+                    });
                 }
+
+                await _publishEndpoint.Publish(
+                   new SessionStartedEvent
+                   {
+                       SessionId = request.SessionId,
+                       UserId = userId.ToString()
+                   });
 
                 return new WorkOutCompletionResponse
                 {
@@ -102,7 +118,7 @@ namespace ProgressService.Features.WorkoutCompletion
 
         }
 
-        private async Task<(bool StreakUpdated, int CurrentStreak)> UpdateUserStreak(string userId)
+        private async Task<(bool StreakUpdated, int CurrentStreak)> UpdateUserStreak(Guid userId)
         {
             var streak = await _unitOfWork.GetRepository<Streak, int>().GetOneAsync(x => x.UserId == userId);
             var streakUpdated = false;
@@ -171,7 +187,7 @@ namespace ProgressService.Features.WorkoutCompletion
         }
 
 
-        private async Task<List<Achievement>> EvaluateAchievements(string userId , Dictionary<CriteriaType , int> metrics)
+        private async Task<List<Achievement>> EvaluateAchievements(Guid userId , Dictionary<CriteriaType , int> metrics)
         {
             var userAchievementsRepo = _unitOfWork.GetRepository<UserAchievement, int>();
             var achievements = await _unitOfWork.GetRepository<Achievement, int>().GetAll().ToListAsync();

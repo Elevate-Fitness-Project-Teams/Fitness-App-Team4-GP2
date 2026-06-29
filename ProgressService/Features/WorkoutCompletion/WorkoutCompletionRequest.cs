@@ -1,12 +1,8 @@
-﻿using BuildingBlocks.Shared.Results;
-using MediatR;
-
-namespace ProgressService.Features.WorkoutCompletion
+﻿namespace ProgressService.Features.WorkoutCompletion
 {
-    public class WorkoutCompletionCommand : IRequest<Result<WorkOutCompletionResponse>>
+    public class WorkoutCompletionRequest
     {
         public int WorkoutId { get; set; }
-        public Guid UserId { get; set; }
         public string SessionId { get; set; } = null!;
         public int DurationInMinutes { get; set; }
         public int CaloriesBurned { get; set; }

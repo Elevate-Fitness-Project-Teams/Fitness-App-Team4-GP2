@@ -1,15 +1,13 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
+﻿using BuildingBlocks.Shared.Controllers;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ProgressService.Features.WorkoutCompletion;
-using ProgressService.Shared;
 using System.Security.Claims;
-using System.Threading;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+
 
 namespace ProgressService.Controllers
 {
-    public class ProgressController : ApiBaseController
+    public class ProgressController : ApiControllerBase
     {
         private readonly IMediator _mediator;
 
@@ -20,19 +18,31 @@ namespace ProgressService.Controllers
 
         //[Authorize]
         [HttpPost("workouts")]
-        public async Task<ActionResult<WorkOutCompletionResponse>> LogWorkoutCompletionAsync(WorkoutCompletionCommand command)
+        public async Task<IActionResult> LogWorkoutCompletionAsync(WorkoutCompletionRequest request)
         {
-            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            //if (string.IsNullOrWhiteSpace(userId))
+            //if (!Guid.TryParse(userIdClaim, out var userId))
             //{
             //    return Unauthorized();
             //}
-            command.UserId = "user-1";
+            var userId = new Guid("00000000-0000-0000-0000-000000000001"); 
+
+            var command = new WorkoutCompletionCommand
+            {
+                UserId = userId,
+                WorkoutId = request.WorkoutId,
+                SessionId = request.SessionId,
+                DurationInMinutes = request.DurationInMinutes,
+                CaloriesBurned = request.CaloriesBurned,
+                Rating = request.Rating,
+                Notes = request.Notes,
+                ExercisesCompleted = request.ExercisesCompleted
+            };
 
             var result = await _mediator.Send(command);
 
-            return HandleResult(result);
+            return FromResult(result , "Workout Is Logged Successfully" , StatusCodes.Status201Created);
         }
 
     }

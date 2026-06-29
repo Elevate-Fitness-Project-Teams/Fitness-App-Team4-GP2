@@ -361,3 +361,22 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/BuildingBlocks.Contracts/Progress/SessionCompletedEvent.cs
+/BuildingBlocks.Contracts/Progress
+/BuildingBlocks.Contracts/Progress/AchievementEarnedEvent.cs
+/BuildingBlocks.Contracts/Progress/SessionStartedEvent.cs
+/ProgressService
+/ProgressService/Controllers
+/ProgressService/Controllers/ApiBaseController1.cs
+/ProgressService/Domain/Entities
+/ProgressService/Domain/Entities/SessionReadModel.cs
+/ProgressService/Features/WorkoutCompletion
+/ProgressService/Features/WorkoutCompletion/WorkoutCompletionRequest.cs
+/ProgressService/Infrastructure/Persistence/MessageBroker
+/ProgressService/Infrastructure/Persistence/MessageBroker/MessagePubliser.cs
+/ProgressService/Infrastructure/Persistence/MessageBroker/SessionStartedConsumer.cs
+/ProgressService/Migrations
+/ProgressService/Migrations/20260629014306_InitialCreate.cs
+/ProgressService/Migrations/20260629014306_InitialCreate.Designer.cs
+/WorkoutService/Infrastructure/MessageBroker
+/WorkoutService/Infrastructure/MessageBroker/SessionCompletedConsumner.cs
