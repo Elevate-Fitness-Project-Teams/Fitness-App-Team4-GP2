@@ -50,6 +50,8 @@ namespace ProgressService
 
             builder.Services.AddMassTransit(x =>
             {
+                x.AddConsumers(typeof(Program).Assembly);
+
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host("localhost", "/", h =>

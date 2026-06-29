@@ -1,6 +1,8 @@
 ﻿using BuildingBlocks.Shared.Controllers;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProgressService.Features.LogWeightEntry;
 using ProgressService.Features.WorkoutCompletion;
 using System.Security.Claims;
 
@@ -16,17 +18,17 @@ namespace ProgressService.Controllers
             _mediator = mediator;
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost("workouts")]
         public async Task<IActionResult> LogWorkoutCompletionAsync(WorkoutCompletionRequest request)
         {
-            //var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            //if (!Guid.TryParse(userIdClaim, out var userId))
-            //{
-            //    return Unauthorized();
-            //}
-            var userId = new Guid("00000000-0000-0000-0000-000000000001"); 
+            if (!Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+            //var userId = new Guid("00000000-0000-0000-0000-000000000001"); 
 
             var command = new WorkoutCompletionCommand
             {
@@ -43,6 +45,31 @@ namespace ProgressService.Controllers
             var result = await _mediator.Send(command);
 
             return FromResult(result , "Workout Is Logged Successfully" , StatusCodes.Status201Created);
+        }
+
+        //[Authorize]
+        [HttpPost("weight")]
+        public async Task<IActionResult> LogWeightAsync(LogWeightEntryRequest request)
+        {
+            //var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            //if (!Guid.TryParse(userIdClaim, out var userId))
+            //{
+            //    return Unauthorized();
+            //}
+            var userId = new Guid("00000000-0000-0000-0000-000000000001");
+            var command = new LogWeightEntryCommand
+            (
+                request.Weight,
+                request.Date,
+                request.Notes,
+                userId
+            );
+
+
+            var result = await _mediator.Send(command);
+
+            return FromResult(result , "Weight Is Logged Successfully" , StatusCodes.Status201Created);
         }
 
     }
