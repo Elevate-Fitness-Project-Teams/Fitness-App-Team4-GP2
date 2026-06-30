@@ -1,5 +1,8 @@
-﻿namespace FCEService.Domain.Enums
+﻿using System.Text.Json.Serialization;
+
+namespace FCEService.Domain.Enums
 {
+    [JsonConverter(typeof(JsonStringEnumMemberConverter))]
     public enum Gender
     {
         None =0,
