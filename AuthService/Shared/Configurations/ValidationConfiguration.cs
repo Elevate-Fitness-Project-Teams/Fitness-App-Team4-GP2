@@ -1,4 +1,4 @@
-﻿using AuthService.Shared.Responses;
+﻿using BuildingBlocks.Shared.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.Shared.Configurations;

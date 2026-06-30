@@ -2,10 +2,11 @@
 
 namespace AuthService.BuildingBlocks.Interfaces
 {
-    public interface IOtpRepository
+    public interface IOtpRepository : IGenericRepository<OtpCode>
     {
         Task<OtpCode?> GetLatestOtpAsync(string email);
-
-        Task AddAsync(OtpCode otp);
+        string Generate();
+        string Hash(string otp);
+        bool Verify(string otp, string hash);
     }
 }

@@ -45,7 +45,9 @@ namespace AuthService.Infrastructure.Persistence
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.Email);
                 entity.Property(e => e.Email).HasMaxLength(255).IsRequired();
-                entity.Property(e => e.Code).HasMaxLength(6).IsRequired();
+                // Stores a BCrypt hash of the code (~60 chars), not the 6-digit plaintext.
+                entity.Property(e => e.Code).HasMaxLength(255).IsRequired();
+                entity.Property(e => e.CreatedAt).IsRequired();
                 entity.Property(e => e.ExpiresAt).IsRequired();
                 entity.Property(e => e.IsUsed).IsRequired();
             });
