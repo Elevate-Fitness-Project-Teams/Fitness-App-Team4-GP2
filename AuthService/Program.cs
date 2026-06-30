@@ -62,6 +62,7 @@ namespace AuthService
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<ILoginAttemptRepository, LoginAttemptRepository>();
             builder.Services.AddScoped<IOtpRepository, OtpRepository>();
+            builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
             // Email: log to console in Development (no SMTP needed), send via SMTP otherwise.
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
