@@ -1,3 +1,5 @@
+using WorkoutService.Domain.Enums;
+
 namespace WorkoutService.Domain.Entities
 {
     public class WorkoutPlan
@@ -7,6 +9,6 @@ namespace WorkoutService.Domain.Entities
         public string Description { get; set; } = null!;
         public string Goal { get; set; } = null!;
         public string Status { get; set; } = null!;
-        public string Difficulty { get; set; } = null!;
+        public WorkOutPlanDifficulty Difficulty { get; set; } 
     }
 }

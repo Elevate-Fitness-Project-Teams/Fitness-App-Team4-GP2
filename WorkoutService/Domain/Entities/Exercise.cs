@@ -9,5 +9,8 @@ namespace WorkoutService.Domain.Entities
         public string Difficulty { get; set; } = null!;
         public string Description { get; set; } = null!;
         public string? VideoUrl { get; set; }
+
+        public ICollection<WorkoutExercise> WorkoutExercises { get; set; } = new List<WorkoutExercise>();
+
     }
 }

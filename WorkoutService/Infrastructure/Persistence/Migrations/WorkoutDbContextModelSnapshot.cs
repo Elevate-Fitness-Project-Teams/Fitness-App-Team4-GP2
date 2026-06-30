@@ -72,15 +72,13 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WorkoutId"));
 
-                    b.Property<string>("Category")
-                        .IsRequired()
+                    b.Property<int>("Category")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("int");
 
-                    b.Property<string>("Difficulty")
-                        .IsRequired()
+                    b.Property<int>("Difficulty")
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("int");
 
                     b.Property<int>("DurationInMinutes")
                         .HasColumnType("int");
@@ -115,6 +113,9 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                     b.Property<int>("ExerciseId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ExerciseId1")
+                        .HasColumnType("int");
+
                     b.Property<int>("OrderIndex")
                         .HasColumnType("int");
 
@@ -130,11 +131,18 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                     b.Property<int>("WorkoutId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("WorkoutId1")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ExerciseId");
 
+                    b.HasIndex("ExerciseId1");
+
                     b.HasIndex("WorkoutId");
+
+                    b.HasIndex("WorkoutId1");
 
                     b.ToTable("WorkoutExercises");
                 });
@@ -150,10 +158,9 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("Difficulty")
-                        .IsRequired()
+                    b.Property<int>("Difficulty")
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Goal")
                         .IsRequired()
@@ -184,13 +191,12 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("StartedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
+                    b.Property<int>("Status")
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("UserId")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("WorkoutId")
                         .HasColumnType("int");
@@ -223,11 +229,19 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("WorkoutService.Domain.Entities.Exercise", null)
+                        .WithMany("WorkoutExercises")
+                        .HasForeignKey("ExerciseId1");
+
                     b.HasOne("WorkoutService.Domain.Entities.Workout", "Workout")
                         .WithMany()
                         .HasForeignKey("WorkoutId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("WorkoutService.Domain.Entities.Workout", null)
+                        .WithMany("WorkoutExercises")
+                        .HasForeignKey("WorkoutId1");
 
                     b.Navigation("Exercise");
 
@@ -243,6 +257,16 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Workout");
+                });
+
+            modelBuilder.Entity("WorkoutService.Domain.Entities.Exercise", b =>
+                {
+                    b.Navigation("WorkoutExercises");
+                });
+
+            modelBuilder.Entity("WorkoutService.Domain.Entities.Workout", b =>
+                {
+                    b.Navigation("WorkoutExercises");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,4 +1,7 @@
+using BuildingBlocks.Shared.Middleware;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 using WorkoutService.Infrastructure.Persistence;
 
 namespace WorkoutService
@@ -13,10 +16,17 @@ namespace WorkoutService
             builder.Services.AddDbContext<WorkoutDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddWorkoutServices(); 
+            builder.Services.AddMediatR(typeof(Program).Assembly);
 
             var app = builder.Build();
 
@@ -34,6 +44,7 @@ namespace WorkoutService
                 }
             }
 
+            app.UseGlobalExceptionMiddleware();
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
