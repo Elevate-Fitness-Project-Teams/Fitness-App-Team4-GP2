@@ -3,7 +3,7 @@ namespace SmartCoachService.Domain.Entities
 {
     public class RecommendationCache
     {
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
         public string UserContextJson { get; set; } = null!;
         public string HomeFeedDataJson { get; set; } = null!;
         public DateTime CachedAt { get; set; }

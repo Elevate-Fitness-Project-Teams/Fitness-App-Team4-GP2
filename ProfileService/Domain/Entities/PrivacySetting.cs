@@ -2,7 +2,7 @@ namespace ProfileService.Domain.Entities
 {
     public class PrivacySetting
     {
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
         public string ProfileVisibility { get; set; } = "private";
         public bool ShowProgressToFriends { get; set; } = false;
         public bool AllowDataSharing { get; set; } = false;

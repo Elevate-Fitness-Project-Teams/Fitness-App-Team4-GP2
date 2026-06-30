@@ -37,7 +37,7 @@ namespace ProgressService.Infrastructure.Persistence
                 entity.Property(e => e.WeightUsed).HasDefaultValue(0);
 
                 entity.HasOne(e => e.WorkoutLog)
-                    .WithMany(w => w.WorkoutLogExercises)
+                    .WithMany()
                     .HasForeignKey(e => e.WorkoutLogId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
@@ -76,12 +76,14 @@ namespace ProgressService.Infrastructure.Persistence
 
             modelBuilder.Entity<Streak>(entity =>
             {
+                entity.HasKey(e => e.UserId);
                 entity.Property(e => e.CurrentStreak).HasDefaultValue(0).IsRequired();
                 entity.Property(e => e.LongestStreak).HasDefaultValue(0).IsRequired();
             });
 
             modelBuilder.Entity<UserStatistic>(entity =>
             {
+                entity.HasKey(e => e.UserId);
                 entity.Property(e => e.TotalWorkouts).HasDefaultValue(0).IsRequired();
                 entity.Property(e => e.TotalCaloriesBurned).HasDefaultValue(0).IsRequired();
                 entity.Property(e => e.TotalWeightLost).HasDefaultValue(0).IsRequired();

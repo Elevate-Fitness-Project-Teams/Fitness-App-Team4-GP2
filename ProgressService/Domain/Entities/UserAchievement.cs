@@ -1,9 +1,10 @@
 using System;
 namespace ProgressService.Domain.Entities
 {
-    public class UserAchievement : BaseEntity
+    public class UserAchievement
     {
-        public string UserId { get; set; } = null!;
+        public int Id { get; set; }
+        public int UserId { get; set; }
         public int AchievementId { get; set; }
         public DateTime EarnedAt { get; set; }
         // Navigation properties

@@ -1,17 +1,16 @@
-using FCEService.Domain.Enums;
 using System;
 namespace FCEService.Domain.Entities
 {
     public class UserFitnessStat
     {
         public int Id { get; set; }
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
         public double Weight { get; set; }
         public double Height { get; set; }
         public int Age { get; set; }
-        public Gender Gender { get; set; }
-        public FitnessGoal Goal { get; set; } 
-        public ActivityLevel ActivityLevel { get; set; }
-        public DateTime RecordedAt { get; set; } = DateTime.UtcNow;
+        public string Gender { get; set; } = null!;
+        public string Goal { get; set; } = null!;
+        public string ActivityLevel { get; set; } = null!;
+        public DateTime RecordedAt { get; set; }
     }
 }
