@@ -1,14 +1,14 @@
-using AuthService.BuildingBlocks.Exceptions;
 using AuthService.BuildingBlocks.Interfaces;
 using AuthService.Domain.Entities;
 using AuthService.Features.Login.Dtos;
 using AuthService.Infrastructure.Services.Interfaces;
+using BuildingBlocks.Shared.Results;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace AuthService.Features.Login
 {
-    public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
+    public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginResponse>>
     {
         private readonly UserManager<ApplicationUser> _user;
         private readonly IJwtService _jwtService;
@@ -29,7 +29,7 @@ namespace AuthService.Features.Login
             _httpContext = httpContext;
             _refreshRepository = refreshRepository;
         }
-        public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
+        public async Task<Result<LoginResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             var ipAddress = _httpContext.HttpContext?.Connection.RemoteIpAddress?.ToString();
 
@@ -45,11 +45,11 @@ namespace AuthService.Features.Login
                 });
                 await _attemptRepository.SaveChangesAsync();
 
-                throw new UnauthorizedException("AUTH_INVALID_CREDENTIALS");
+                return Error.InvalidCredentials("AUTH_INVALID_CREDENTIALS", "Invalid email or password.");
             }
 
             if (await _user.IsLockedOutAsync(user))
-                throw new UserLockedOutException("AUTH_ACCOUNT_LOCKED");
+                return Error.Locked("AUTH_ACCOUNT_LOCKED", "Account is locked due to too many failed attempts. Try again later.");
 
 
             var validPass = await _user.CheckPasswordAsync(user, request.password);
@@ -66,8 +66,9 @@ namespace AuthService.Features.Login
                 await _attemptRepository.SaveChangesAsync();
 
                 if (await _user.IsLockedOutAsync(user))
-                    throw new UserLockedOutException("AUTH_ACCOUNT_LOCKED");
-                else throw new UnauthorizedException("AUTH_INVALID_CREDENTIALS");
+                    return Error.Locked("AUTH_ACCOUNT_LOCKED", "Account is locked due to too many failed attempts. Try again later.");
+
+                return Error.InvalidCredentials("AUTH_INVALID_CREDENTIALS", "Invalid email or password.");
             }
 
             await _user.ResetAccessFailedCountAsync(user);

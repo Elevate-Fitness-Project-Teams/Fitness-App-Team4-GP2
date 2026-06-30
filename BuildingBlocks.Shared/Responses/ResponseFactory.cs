@@ -20,7 +20,8 @@ namespace BuildingBlocks.Shared.Responses
         {
             IsSuccess = false,
             Message = message,
-            Errors = errors.ToList(),
+            Errors = errors.GroupBy(e => e)
+                .ToDictionary(g => g.Key, g => g.ToList()),
             StatusCode = statusCode,
             Timestamp = DateTime.UtcNow
         };

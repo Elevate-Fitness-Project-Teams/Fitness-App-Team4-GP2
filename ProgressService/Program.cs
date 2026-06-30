@@ -1,11 +1,11 @@
 using FluentValidation;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ProgressService.Domain.Contracts;
 using ProgressService.Infrastructure.Persistence;
 using ProgressService.Infrastructure.Persistence.Repositories;
-using ProgressService.Shared.Contracts;
 using System.Text;
 
 namespace ProgressService
@@ -22,7 +22,6 @@ namespace ProgressService
 
             builder.Services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddSingleton<IMessagePublisher, RabbitMQService>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
@@ -49,6 +48,21 @@ namespace ProgressService
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
             builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
+            builder.Services.AddMassTransit(x =>
+            {
+                x.AddConsumers(typeof(Program).Assembly);
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("localhost", "/", h =>
+                    {
+                        h.Username("guest");
+                        h.Password("guest");
+                    });
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
 
             var app = builder.Build();
 

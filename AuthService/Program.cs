@@ -1,9 +1,11 @@
-using AuthService.BuildingBlocks.Extention;
+using BuildingBlocks.Shared.Middleware;
 using AuthService.BuildingBlocks.Interfaces;
 using AuthService.BuildingBlocks.Interfaces.Events;
 using AuthService.Domain.Entities;
 using AuthService.Infrastructure.Persistence;
 using AuthService.Infrastructure.Persistence.Repositories;
+using AuthService.Infrastructure.Services;
+using AuthService.Infrastructure.Services.Interfaces;
 using AuthService.Shared.Configurations;
 using MassTransit;
 using MediatR;
@@ -59,6 +61,15 @@ namespace AuthService
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<ILoginAttemptRepository, LoginAttemptRepository>();
+            builder.Services.AddScoped<IOtpRepository, OtpRepository>();
+            builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
+            // Email: log to console in Development (no SMTP needed), send via SMTP otherwise.
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
+            if (builder.Environment.IsDevelopment())
+                builder.Services.AddScoped<IEmailService, DevEmailService>();
+            else
+                builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IEventPublisher, RabbitMqPublisher>();

@@ -47,5 +47,7 @@ namespace BuildingBlocks.Shared.Results
 
         public static implicit operator Result<TValue>(TValue value) => OK(value);
         public static implicit operator Result<TValue>(Error error) => Fail(error);
+        public static implicit operator Result<TValue>(List<Error> errors) => Fail(errors);
+
     }
 }

@@ -1,23 +1,23 @@
-using AuthService.BuildingBlocks.Helpers;
 using AuthService.Features.Auth.Register;
 using AuthService.Features.CompleteProfile;
+using AuthService.Features.ForgotPassword;
 using AuthService.Features.Login;
-using AuthService.Shared.Responses;
-using MassTransit.Mediator;
+using AuthService.Features.Logout;
+using AuthService.Features.RefreshToken;
+using AuthService.Features.ResetPassword;
+using AuthService.Features.VerifyOtp;
+using BuildingBlocks.Shared.Controllers;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static MassTransit.ValidationResultExtensions;
 
 namespace AuthService.Controllers
 {
-    [ApiController]
-    [Route("api/v1/[controller]")]
-    public class AuthController : ControllerBase
+    public class AuthController : ApiControllerBase
     {
-        private readonly MediatR.IMediator _mediatR;
+        private readonly IMediator _mediatR;
 
-        public AuthController(MediatR.IMediator mediatR)
+        public AuthController(IMediator mediatR)
         {
             _mediatR = mediatR;
         }
@@ -26,13 +26,7 @@ namespace AuthService.Controllers
         public async Task<IActionResult> Register(RegisterCommand command)
         {
             var result = await _mediatR.Send(command);
-
-            return StatusCode(
-                201,
-                ResponseFactory.Success(
-                    result,
-                    "User registered successfully.",
-                    201));
+            return FromResult(result, "User registered successfully.", 201);
         }
 
         [Authorize]
@@ -40,28 +34,59 @@ namespace AuthService.Controllers
         public async Task<IActionResult> CompleteProfile()
         {
             var result = await _mediatR.Send(new CompleteProfileCommand());
-
-            return StatusCode(
-                201,
-                ResponseFactory.Success(
-                    result,
-                    "Profile lifecycle initiated.",
-                    201));
-
+            return FromResult(result, "Profile lifecycle initiated.", 200);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginCommand command)
         {
             var result = await _mediatR.Send(command);
-
-            return StatusCode(
-                200,
-                ResponseFactory.Success(
-                    result,
-                    "User logged in successfully.",
-                    200));
+            return FromResult(result, "User logged in successfully.", 200);
         }
 
+        [HttpPost("forgot-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordCommand command)
+        {
+            var result = await _mediatR.Send(command);
+
+            return FromResult(result, "OTP sent successfully.", 200);
+        }
+
+        [HttpPost("verify-otp")]
+        [AllowAnonymous]
+        public async Task<IActionResult> VerifyOtp(VerifyOtpCommand command)
+        {
+            var result = await _mediatR.Send(command);
+
+            return FromResult(result, "OTP verified successfully.", 200);
+        }
+
+        [HttpPost("reset-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(ResetPasswordCommand command)
+        {
+            var result = await _mediatR.Send(command);
+
+            return FromResult(result, "Password changed successfully.", 200);
+        }
+
+        [HttpPost("refresh-token")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RefreshToken(RefreshTokenCommand command)
+        {
+            var result = await _mediatR.Send(command);
+
+            return FromResult(result, "Token is refreshed successfully.", 200);
+        }
+
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            var result = await _mediatR.Send(new LogoutCommand());
+
+            return FromResult(result, "Logged out successfully.", 200);
+        }
     }
 }

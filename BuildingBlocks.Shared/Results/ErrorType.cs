@@ -12,6 +12,7 @@ namespace BuildingBlocks.Shared.Results
         Forbidden = 4,
         InvalidCredentials = 5,
         Conflict = 6,
-        Locked = 7
+        Locked = 7,
+        TooManyRequestsException =8
     }
 }
