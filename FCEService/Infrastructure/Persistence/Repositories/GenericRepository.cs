@@ -42,30 +42,46 @@ namespace FCEService.Infrastructure.Persistence.Repositories
         public void Update(T entity) => dbSet.Update(entity);
 
 
+        //public void SaveInclude(T entity, params string[] includedProperties)
+        //{
+
+        //    var localEntity = dbSet.Local.FirstOrDefault((e) => e == entity);   
+
+        //    EntityEntry<T> entry;
+
+        //    if (localEntity == null)
+        //    {
+        //        dbSet.Attach(entity);
+        //        entry = _dbContext.Entry(entity);
+        //    }
+        //    else
+        //    {
+        //        entry = _dbContext.Entry(localEntity);
+        //        entry.CurrentValues.SetValues(entity);
+        //    }
+
+        //    foreach (var property in entry.Properties)
+        //    {
+        //        if (property.Metadata.IsPrimaryKey())
+        //            continue;
+
+        //        property.IsModified = includedProperties.Contains(property.Metadata.Name);
+        //    }
+        //}
+
         public void SaveInclude(T entity, params string[] includedProperties)
         {
+            var entry = _dbContext.Entry(entity);
 
-            var localEntity = dbSet.Local.FirstOrDefault((e) => e == entity);   
-
-            EntityEntry<T> entry;
-
-            if (localEntity == null)
+         
+            if (entry.State == EntityState.Detached)
             {
                 dbSet.Attach(entity);
-                entry = _dbContext.Entry(entity);
-            }
-            else
-            {
-                entry = _dbContext.Entry(localEntity);
-                entry.CurrentValues.SetValues(entity);
             }
 
-            foreach (var property in entry.Properties)
+            foreach (var propertyName in includedProperties)
             {
-                if (property.Metadata.IsPrimaryKey())
-                    continue;
-
-                property.IsModified = includedProperties.Contains(property.Metadata.Name);
+                entry.Property(propertyName).IsModified = true;
             }
         }
 
