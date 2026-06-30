@@ -3,7 +3,7 @@ namespace ProgressService.Domain.Entities
 {
     public class WorkoutLog : BaseEntity
     {
-        public string UserId { get; set; } = null!;
+        public Guid UserId { get; set; } 
         public int WorkoutId { get; set; }
         public string SessionId { get; set; } = null!;
         public int DurationInMinutes { get; set; }

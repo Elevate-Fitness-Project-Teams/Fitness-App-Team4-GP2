@@ -22,7 +22,7 @@ namespace BuildingBlocks.Shared.Responses
                     IsSuccess = true,
                     Message = successMessage,
                     Data = result.Value,
-                    Errors = new List<string>(),
+                    Errors = new Dictionary<string, List<string>>(),
                     StatusCode = successStatusCode,
                     Timestamp = DateTime.UtcNow
                 };
@@ -36,7 +36,8 @@ namespace BuildingBlocks.Shared.Responses
                 IsSuccess = false,
                 Message = primary.Description,
                 Data = default,
-                Errors = result.Errors.Select(e => e.Code).ToList(),
+                Errors = result.Errors.GroupBy(e => e.Code)
+                    .ToDictionary(g => g.Key, g => g.Select(e => e.Description).ToList()),
                 StatusCode = primary.ToStatusCode(),
                 Timestamp = DateTime.UtcNow
             };

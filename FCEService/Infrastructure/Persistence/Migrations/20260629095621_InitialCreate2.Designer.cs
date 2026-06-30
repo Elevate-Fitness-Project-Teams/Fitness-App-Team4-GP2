@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FCEService.Infrastructure.Persistence.Migrations
+namespace FCEService.Migrations
 {
     [DbContext(typeof(FCEDbContext))]
-    [Migration("20260623131601_Initial")]
-    partial class Initial
+    [Migration("20260629095621_InitialCreate2")]
+    partial class InitialCreate2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,10 +37,15 @@ namespace FCEService.Infrastructure.Persistence.Migrations
                         .HasColumnType("float");
 
                     b.Property<DateTime>("CalculatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<double>("CalorieTarget")
                         .HasColumnType("float");
+
+                    b.Property<DateTime?>("LastUpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -50,15 +55,16 @@ namespace FCEService.Infrastructure.Persistence.Migrations
                     b.Property<double>("Tdee")
                         .HasColumnType("float");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("UIX_CalculatedMetrics_UserId");
 
-                    b.ToTable("CalculatedMetrics");
+                    b.ToTable("CalculatedMetrics", (string)null);
                 });
 
             modelBuilder.Entity("FCEService.Domain.Entities.FitnessPlanConfig", b =>
@@ -74,8 +80,8 @@ namespace FCEService.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("EstimatedDuration")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Goal")
                         .IsRequired()
@@ -95,8 +101,8 @@ namespace FCEService.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("ProgramType")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -108,7 +114,7 @@ namespace FCEService.Infrastructure.Persistence.Migrations
 
                     b.HasKey("PlanId");
 
-                    b.ToTable("FitnessPlanConfigs");
+                    b.ToTable("FitnessPlanConfigs", (string)null);
                 });
 
             modelBuilder.Entity("FCEService.Domain.Entities.UserAssignedPlan", b =>
@@ -120,26 +126,34 @@ namespace FCEService.Infrastructure.Persistence.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("AssignedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("PlanId")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PlanId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_UserAssignedPlans_UserId");
 
-                    b.ToTable("UserAssignedPlans");
+                    b.HasIndex("UserId", "IsActive")
+                        .HasDatabaseName("IX_UserAssignedPlans_UserId_IsActive");
+
+                    b.ToTable("UserAssignedPlans", (string)null);
                 });
 
             modelBuilder.Entity("FCEService.Domain.Entities.UserFitnessStat", b =>
@@ -172,19 +186,22 @@ namespace FCEService.Infrastructure.Persistence.Migrations
                         .HasColumnType("float");
 
                     b.Property<DateTime>("RecordedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<double>("Weight")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_UserFitnessStats_UserId");
 
-                    b.ToTable("UserFitnessStats");
+                    b.ToTable("UserFitnessStats", (string)null);
                 });
 
             modelBuilder.Entity("FCEService.Domain.Entities.UserPlanHistory", b =>
@@ -211,25 +228,31 @@ namespace FCEService.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_UserPlanHistories_UserId");
 
-                    b.ToTable("UserPlanHistories");
+                    b.ToTable("UserPlanHistories", (string)null);
                 });
 
             modelBuilder.Entity("FCEService.Domain.Entities.UserAssignedPlan", b =>
                 {
                     b.HasOne("FCEService.Domain.Entities.FitnessPlanConfig", "FitnessPlanConfig")
-                        .WithMany()
+                        .WithMany("UserAssignedPlans")
                         .HasForeignKey("PlanId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("FitnessPlanConfig");
+                });
+
+            modelBuilder.Entity("FCEService.Domain.Entities.FitnessPlanConfig", b =>
+                {
+                    b.Navigation("UserAssignedPlans");
                 });
 #pragma warning restore 612, 618
         }
