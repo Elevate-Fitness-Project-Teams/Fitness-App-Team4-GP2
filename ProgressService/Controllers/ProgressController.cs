@@ -4,12 +4,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProgressService.Features.LogWeightEntry;
 using ProgressService.Features.ViewProgressDashboard;
+using ProgressService.Features.ViewProgressStats;
+using ProgressService.Features.ViewUserAchievements;
+using ProgressService.Features.ViewWeightHistory;
 using ProgressService.Features.WorkoutCompletion;
 using System.Security.Claims;
 
 
 namespace ProgressService.Controllers
 {
+    [Authorize]
+
     public class ProgressController : ApiControllerBase
     {
         private readonly IMediator _mediator;
@@ -27,7 +32,6 @@ namespace ProgressService.Controllers
             return Guid.Parse(userIdClaim!);
         }
 
-        [Authorize]
         [HttpPost("workouts")]
         public async Task<IActionResult> LogWorkoutCompletionAsync(WorkoutCompletionRequest request)
         {
@@ -51,7 +55,6 @@ namespace ProgressService.Controllers
             return FromResult(result, "Workout Is Logged Successfully", StatusCodes.Status201Created);
         }
 
-        [Authorize]
         [HttpPost("weight")]
         public async Task<IActionResult> LogWeightAsync(LogWeightEntryRequest request)
         {
@@ -71,7 +74,6 @@ namespace ProgressService.Controllers
         }
 
 
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> ViewProgressDashboardAsync([FromQuery] ViewProgressDashboardRequest request)
         {
@@ -82,7 +84,6 @@ namespace ProgressService.Controllers
             return FromResult(result, "Progress dashboard retrieved successfully", StatusCodes.Status200OK);
         }
 
-        [Authorize]
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUserProgress([FromRoute] Guid userId, [FromQuery] ViewProgressDashboardRequest request)
         {
@@ -91,6 +92,30 @@ namespace ProgressService.Controllers
             var result = await _mediator.Send(query);
             return FromResult(result, $"Progress of UserID {userId} retrieved successfully", StatusCodes.Status200OK);
         }
+
+        [HttpGet("weight-history/{userId}")]
+        public async Task<IActionResult> GetWeightHistory([FromRoute] Guid userId)
+        {
+            var query = new ViewWeightHistoryQuery(userId);
+            var result = await _mediator.Send(query);
+            return FromResult(result, $"Weight history of UserID {userId} retrieved successfully", StatusCodes.Status200OK);
+        }
+        [HttpGet("achievements")]
+        public async Task<IActionResult> GetAchievements([FromQuery] Guid userId)
+        {
+            var query = new ViewUserAchievementsQuery(userId);
+            var result = await _mediator.Send(query);
+            return FromResult(result, $"Achievements of UserID {userId} retrieved successfully", StatusCodes.Status200OK);
+        }
+
+        [HttpGet("stats/{userId}")]
+        public async Task<IActionResult> GetProgressStats([FromRoute] Guid userId)
+        {
+            var query = new ViewProgressStatsQuery(userId);
+            var result = await _mediator.Send(query);
+            return FromResult(result, $"Progress stats of UserID {userId} retrieved successfully", StatusCodes.Status200OK);
+        }
+
     }
 
 }
