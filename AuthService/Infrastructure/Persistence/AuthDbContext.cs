@@ -1,15 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using AuthService.Domain.Entities;
+using AuthService.BuildingBlocks.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace AuthService.Infrastructure.Persistence
 {
-    public class AuthDbContext : DbContext
+    public class AuthDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>, IApplicationDbContext
     {
         public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options)
         {
         }
 
-        public DbSet<User> Users { get; set; } = null!;
         public DbSet<OtpCode> OtpCodes { get; set; } = null!;
         public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
         public DbSet<LoginAttempt> LoginAttempts { get; set; } = null!;
@@ -18,15 +20,24 @@ namespace AuthService.Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<ApplicationUser>(entity =>
             {
                 entity.HasKey(e => e.Id);
+                entity.Property(x => x.FirstName).HasMaxLength(50);
+                entity.Property(x => x.LastName).HasMaxLength(50);
                 entity.HasIndex(e => e.Email).IsUnique();
                 entity.Property(e => e.Email).HasMaxLength(255).IsRequired();
                 entity.Property(e => e.PasswordHash).HasMaxLength(512).IsRequired();
-                entity.Property(e => e.IsLockedOut).IsRequired();
-                entity.Property(e => e.LockedUntil).IsRequired(false);
                 entity.Property(e => e.CreatedAt).IsRequired();
+
+                // Drop unused Identity columns the business does not need.
+                // Kept: NormalizedUserName, NormalizedEmail, SecurityStamp,
+                // LockoutEnabled — required by UserManager/SignInManager.
+                entity.Ignore(e => e.UserName);
+                entity.Ignore(e => e.EmailConfirmed);
+                entity.Ignore(e => e.ConcurrencyStamp);
+                entity.Ignore(e => e.PhoneNumberConfirmed);
+                entity.Ignore(e => e.TwoFactorEnabled);
             });
 
             modelBuilder.Entity<OtpCode>(entity =>

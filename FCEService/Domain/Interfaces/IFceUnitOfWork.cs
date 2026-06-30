@@ -1,0 +1,19 @@
+﻿using FCEService.Domain.Entities;
+
+namespace FCEService.Domain.Interfaces
+{
+    public interface IFceUnitOfWork
+    {
+
+
+        Task<int> SaveChangesAsync(CancellationToken ct = default);
+       
+        Task ExecuteInTransactionAsync(
+            Func<CancellationToken, Task> action,
+            CancellationToken ct = default);
+
+        Task CreateSavepointAsync(string name, CancellationToken ct = default);
+
+        Task RollbackToSavepointAsync(string name, CancellationToken ct = default);
+    }
+}
