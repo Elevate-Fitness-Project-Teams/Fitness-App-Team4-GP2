@@ -1,5 +1,6 @@
 ﻿using BuildingBlocks.Shared.Responses;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace AuthService.Shared.Configurations;
 
@@ -18,14 +19,15 @@ public static class ValidationConfiguration
                     .Select(e => e.ErrorMessage)
                     .ToList();
 
-                var response = new ApiResponse<object>
+                var response = new ApiResponse<object>  
                 {
                     IsSuccess = false,
                     Message = "Validation failed.",
                     Data = null,
-                    Errors = errors,
                     StatusCode = StatusCodes.Status400BadRequest,
-                    Timestamp = DateTime.UtcNow
+                    Timestamp = DateTime.UtcNow,
+                    Errors = new Dictionary<string, List<string>> { { "ValidationErrors", errors } }
+
                 };
 
                 return new BadRequestObjectResult(response);
