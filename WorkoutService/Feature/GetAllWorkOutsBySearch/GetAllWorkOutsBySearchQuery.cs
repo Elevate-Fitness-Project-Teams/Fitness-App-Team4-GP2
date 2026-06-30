@@ -5,11 +5,11 @@ using WorkoutService.Feature.GetAllWorkOuts.Dtos;
 
 namespace WorkoutService.Feature.GetAllWorkOuts
 {
-    public record GetAllWorkOutsQuery(int Page,
+    public record GetAllWorkOutsBySearchQuery(int Page,
         int PageSize,string? Search, 
         WorkOutCategory? Category, 
         WorkOutDiffeculty? Difficulty,
-        int? Duration, 
-        CancellationToken CancellationToken) :IRequest<HandlerResponse<List<WorkOutDto>>>;
+        int? Duration
+        ) :IRequest<HandlerResponse<List<WorkOutDto>>>;
 
 }

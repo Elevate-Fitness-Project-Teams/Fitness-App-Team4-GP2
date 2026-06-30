@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Query;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 
 namespace WorkoutService.Infrastructure.Persistence.Repositries
@@ -11,5 +12,6 @@ namespace WorkoutService.Infrastructure.Persistence.Repositries
         void Update(T entity);
         void Delete(T entity);
         Task SaveChangesAsync();
+        DbSet<T> GetTable();
     }
 }

@@ -11,5 +11,7 @@ namespace WorkoutService.Domain.Entities
         public int DurationInMinutes { get; set; }
         public WorkOutDiffeculty Difficulty { get; set; } 
         public WorkoutPlan WorkoutPlan { get; set; } = null!;
+        public ICollection<WorkoutExercise> WorkoutExercises { get; set; } = new List<WorkoutExercise>();
+
     }
 }

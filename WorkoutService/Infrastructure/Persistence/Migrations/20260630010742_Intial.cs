@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WorkoutService.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Intial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,7 +38,7 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Goal = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Difficulty = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
+                    Difficulty = table.Column<int>(type: "int", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -53,9 +53,9 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PlanId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Category = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Category = table.Column<int>(type: "int", maxLength: 50, nullable: false),
                     DurationInMinutes = table.Column<int>(type: "int", nullable: false),
-                    Difficulty = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
+                    Difficulty = table.Column<int>(type: "int", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -79,7 +79,9 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                     SetsDefault = table.Column<int>(type: "int", nullable: false),
                     RepsDefault = table.Column<int>(type: "int", nullable: false),
                     RestTimeInSeconds = table.Column<int>(type: "int", nullable: false),
-                    OrderIndex = table.Column<int>(type: "int", nullable: false)
+                    OrderIndex = table.Column<int>(type: "int", nullable: false),
+                    ExerciseId1 = table.Column<int>(type: "int", nullable: true),
+                    WorkoutId1 = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -91,11 +93,21 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                         principalColumn: "ExerciseId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
+                        name: "FK_WorkoutExercises_Exercises_ExerciseId1",
+                        column: x => x.ExerciseId1,
+                        principalTable: "Exercises",
+                        principalColumn: "ExerciseId");
+                    table.ForeignKey(
                         name: "FK_WorkoutExercises_Workouts_WorkoutId",
                         column: x => x.WorkoutId,
                         principalTable: "Workouts",
                         principalColumn: "WorkoutId",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_WorkoutExercises_Workouts_WorkoutId1",
+                        column: x => x.WorkoutId1,
+                        principalTable: "Workouts",
+                        principalColumn: "WorkoutId");
                 });
 
             migrationBuilder.CreateTable(
@@ -103,10 +115,10 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     SessionId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     WorkoutId = table.Column<int>(type: "int", nullable: false),
                     StartedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false)
+                    Status = table.Column<int>(type: "int", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -125,9 +137,19 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                 column: "ExerciseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_WorkoutExercises_ExerciseId1",
+                table: "WorkoutExercises",
+                column: "ExerciseId1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_WorkoutExercises_WorkoutId",
                 table: "WorkoutExercises",
                 column: "WorkoutId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkoutExercises_WorkoutId1",
+                table: "WorkoutExercises",
+                column: "WorkoutId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Workouts_Category",

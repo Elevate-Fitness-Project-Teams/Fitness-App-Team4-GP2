@@ -34,15 +34,17 @@ namespace WorkoutService.Infrastructure.Persistence
             {
                 entity.HasKey(e => e.WorkoutId);
                 entity.HasIndex(e => e.Category);
-                entity.Property(e => e.PlanId).HasMaxLength(50).IsRequired();
+                entity.Property(e => e.PlanId).IsRequired();
                 entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
-                entity.Property(e => e.Category).HasMaxLength(50).IsRequired();
-                entity.Property(e => e.Difficulty).HasMaxLength(20).IsRequired();
+                entity.Property(e => e.Category).IsRequired();
+                entity.Property(e => e.Difficulty).IsRequired();
 
                 entity.HasOne(e => e.WorkoutPlan)
                     .WithMany()
                     .HasForeignKey(e => e.PlanId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                
             });
 
             modelBuilder.Entity<Exercise>(entity =>
@@ -61,12 +63,12 @@ namespace WorkoutService.Infrastructure.Persistence
                 entity.HasKey(e => e.Id);
 
                 entity.HasOne(e => e.Workout)
-                    .WithMany()
+                    .WithMany(w => w.WorkoutExercises)
                     .HasForeignKey(e => e.WorkoutId)
                     .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.Exercise)
-                    .WithMany()
+                    .WithMany(w=>w.WorkoutExercises)
                     .HasForeignKey(e => e.ExerciseId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
