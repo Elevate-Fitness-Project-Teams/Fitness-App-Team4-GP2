@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace FCEService.Infrastructure.Persistence.Migrations
+namespace FCEService.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,12 +17,13 @@ namespace FCEService.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Bmr = table.Column<double>(type: "float", nullable: false),
                     Tdee = table.Column<double>(type: "float", nullable: false),
                     CalorieTarget = table.Column<double>(type: "float", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    CalculatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CalculatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    LastUpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -40,9 +41,9 @@ namespace FCEService.Infrastructure.Persistence.Migrations
                     Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     MinCalorie = table.Column<double>(type: "float", nullable: false),
                     MaxCalorie = table.Column<double>(type: "float", nullable: false),
-                    EstimatedDuration = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    EstimatedDuration = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     WorkoutsPerWeek = table.Column<int>(type: "int", nullable: false),
-                    ProgramType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    ProgramType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -55,14 +56,14 @@ namespace FCEService.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Weight = table.Column<double>(type: "float", nullable: false),
                     Height = table.Column<double>(type: "float", nullable: false),
                     Age = table.Column<int>(type: "int", nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Goal = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     ActivityLevel = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    RecordedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    RecordedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
                 },
                 constraints: table =>
                 {
@@ -75,7 +76,7 @@ namespace FCEService.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PlanId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     AssignedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -92,10 +93,10 @@ namespace FCEService.Infrastructure.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PlanId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    AssignedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                    AssignedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -109,7 +110,7 @@ namespace FCEService.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CalculatedMetrics_UserId",
+                name: "UIX_CalculatedMetrics_UserId",
                 table: "CalculatedMetrics",
                 column: "UserId",
                 unique: true);
@@ -123,6 +124,11 @@ namespace FCEService.Infrastructure.Persistence.Migrations
                 name: "IX_UserAssignedPlans_UserId",
                 table: "UserAssignedPlans",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAssignedPlans_UserId_IsActive",
+                table: "UserAssignedPlans",
+                columns: new[] { "UserId", "IsActive" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserFitnessStats_UserId",
