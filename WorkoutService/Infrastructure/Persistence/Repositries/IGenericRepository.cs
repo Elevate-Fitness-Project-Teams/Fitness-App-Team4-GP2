@@ -13,5 +13,7 @@ namespace WorkoutService.Infrastructure.Persistence.Repositries
         void Delete(T entity);
         Task SaveChangesAsync();
         DbSet<T> GetTable();
+        bool IsExists(Expression<Func<T, bool>> expression);
+
     }
 }

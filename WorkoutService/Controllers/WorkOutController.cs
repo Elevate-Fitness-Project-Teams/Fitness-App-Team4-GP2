@@ -2,8 +2,11 @@
 using BuildingBlocks.Shared.Responses;
 using BuildingBlocks.Shared.Results.Pagination;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Numerics;
+using System.Security.Claims;
 using WorkoutService.BuildingBlock.HandlersResponse;
 using WorkoutService.Domain.Enums;
 using WorkoutService.Feature.Browse_Exercise_Library;
@@ -22,10 +25,12 @@ using WorkoutService.Feature.GetWorkOutsByCategoryName;
 using WorkoutService.Feature.GetWorkOutsByCategoryName.Dtos__ViewModels;
 using WorkoutService.Feature.GetWorkOutsByPlanId;
 using WorkoutService.Feature.GetWorkOutsByPlanId.Dtos__ViewModels;
+using WorkoutService.Feature.StartWorkOutSession;
+using WorkoutService.Feature.StartWorkOutSession.Dtos__ViewModels;
 
 namespace WorkoutService.Controllers
 {
-
+    [Authorize]
     public class WorkOutController : ApiControllerBase
     {
         private readonly IMediator mediator;
@@ -299,6 +304,48 @@ namespace WorkoutService.Controllers
                 200));
         }
 
+        [HttpPost("StartWorkOutSession")]
+        public async Task<IActionResult> StartWorkOutSession([FromQuery] int WorkoutId, [FromQuery] WorkOutDiffeculty Difficulty,
+            [FromQuery] int PlannedDuration, CancellationToken cancellationToken)
+        {
+            //var userId=HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = "User-Id-Test-123654987";
+
+            var result = await mediator.Send(new StartWorkOutSessionCommand(WorkoutId,userId,Difficulty,PlannedDuration), cancellationToken);
+            if (!result.IsSuccess)
+            {
+                var _errorCode = result.ErrorCode;
+                if (_errorCode == HandlerErrorCodesEnum.WorkOutIdIsInvalid)
+                    return NotFound(ResponseFactory.Failure("No WorkOut Found with the Specific ID", 404));
+                return BadRequest();
+            }
+
+            var startWorkOutSessionResultViewModel = new StartWorkOutSessionResultViewModel
+            {
+                SessionId = result.Data.SessionId,
+                Status = result.Data.Status.ToString(),
+                ExercisesInSession = result.Data.ExercisesInSession.Select(e => new WorkoutExerciseInSessionViewModel
+                {
+                    Id = e.Id,
+                    ExerciseId = e.ExerciseId,
+                    Name = e.Name,
+                    TargetMuscles = e.TargetMuscles,
+                    Equipment = e.Equipment,
+                    Difficulty = e.Difficulty,
+                    Description = e.Description,
+                    VideoUrl = e.VideoUrl,
+                    SetsDefault = e.SetsDefault,
+                    RepsDefault = e.RepsDefault,
+                    RestTimeInSeconds = e.RestTimeInSeconds,
+                    OrderIndex = e.OrderIndex
+                }).ToList()
+            };
+
+            return Ok(ResponseFactory.Success(
+                startWorkOutSessionResultViewModel,
+                "WorkOut Session Started Successfully",
+                200));
+        }
 
     }
 }

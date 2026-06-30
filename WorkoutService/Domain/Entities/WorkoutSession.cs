@@ -4,8 +4,8 @@ namespace WorkoutService.Domain.Entities
 {
     public class WorkoutSession
     {
-        public string SessionId { get; set; } = null!;
-        public Guid UserId { get; set; }
+        public string SessionId { get; set; } = Guid.NewGuid().ToString();
+        public string UserId { get; set; } = null!;
         public int WorkoutId { get; set; }
         public DateTime StartedAt { get; set; }
         public WorkOutSessionStatus Status { get; set; }

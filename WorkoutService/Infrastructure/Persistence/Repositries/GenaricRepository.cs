@@ -53,5 +53,10 @@ namespace WorkoutService.Infrastructure.Persistence.Repositries
         {
             return _dbSet;
         }
+
+        public bool IsExists(Expression<Func<T, bool>> expression)
+        {
+            return _dbSet.Any(expression);
+        }
     }
 }
