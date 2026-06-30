@@ -2,6 +2,8 @@ using AuthService.Features.Auth.Register;
 using AuthService.Features.CompleteProfile;
 using AuthService.Features.ForgotPassword;
 using AuthService.Features.Login;
+using AuthService.Features.Logout;
+using AuthService.Features.RefreshToken;
 using AuthService.Features.ResetPassword;
 using AuthService.Features.VerifyOtp;
 using BuildingBlocks.Shared.Controllers;
@@ -67,6 +69,24 @@ namespace AuthService.Controllers
             var result = await _mediatR.Send(command);
 
             return FromResult(result, "Password changed successfully.", 200);
+        }
+
+        [HttpPost("refresh-token")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RefreshToken(RefreshTokenCommand command)
+        {
+            var result = await _mediatR.Send(command);
+
+            return FromResult(result, "Token is refreshed successfully.", 200);
+        }
+
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            var result = await _mediatR.Send(new LogoutCommand());
+
+            return FromResult(result, "Logged out successfully.", 200);
         }
     }
 }
