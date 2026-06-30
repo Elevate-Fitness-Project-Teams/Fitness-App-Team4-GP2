@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProgressService.Features.LogWeightEntry;
+using ProgressService.Features.ViewProgressDashboard;
 using ProgressService.Features.WorkoutCompletion;
 using System.Security.Claims;
 
@@ -18,16 +19,19 @@ namespace ProgressService.Controllers
             _mediator = mediator;
         }
 
+
+        protected Guid GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            return Guid.Parse(userIdClaim!);
+        }
+
         [Authorize]
         [HttpPost("workouts")]
         public async Task<IActionResult> LogWorkoutCompletionAsync(WorkoutCompletionRequest request)
         {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (!Guid.TryParse(userIdClaim, out var userId))
-            {
-                return Unauthorized();
-            }
+            var userId = GetCurrentUserId();
             //var userId = new Guid("00000000-0000-0000-0000-000000000001"); 
 
             var command = new WorkoutCompletionCommand
@@ -44,20 +48,14 @@ namespace ProgressService.Controllers
 
             var result = await _mediator.Send(command);
 
-            return FromResult(result , "Workout Is Logged Successfully" , StatusCodes.Status201Created);
+            return FromResult(result, "Workout Is Logged Successfully", StatusCodes.Status201Created);
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost("weight")]
         public async Task<IActionResult> LogWeightAsync(LogWeightEntryRequest request)
         {
-            //var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            //if (!Guid.TryParse(userIdClaim, out var userId))
-            //{
-            //    return Unauthorized();
-            //}
-            var userId = new Guid("00000000-0000-0000-0000-000000000001");
+            var userId = GetCurrentUserId();
             var command = new LogWeightEntryCommand
             (
                 request.Weight,
@@ -69,9 +67,20 @@ namespace ProgressService.Controllers
 
             var result = await _mediator.Send(command);
 
-            return FromResult(result , "Weight Is Logged Successfully" , StatusCodes.Status201Created);
+            return FromResult(result, "Weight Is Logged Successfully", StatusCodes.Status201Created);
         }
 
+
+        //[Authorize]
+        [HttpGet]
+        public async Task<IActionResult> ViewProgressDashboardAsync([FromQuery] ViewProgressDashboardRequest request)
+        {
+            //var userId = GetCurrentUserId();
+            var userId = new Guid("00000000-0000-0000-0000-000000000002");
+            var query = new ViewProgressDashboardQuery(userId, request.Period, request.StartDate, request.EndDate);
+            var result = await _mediator.Send(query);
+            return FromResult(result, "Progress dashboard retrieved successfully", StatusCodes.Status200OK);
+        }
     }
 }
 

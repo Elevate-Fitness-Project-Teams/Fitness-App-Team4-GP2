@@ -41,7 +41,7 @@ namespace ProgressService.Features.WorkoutCompletion
             var session =  await _unitOfWork.GetRepository<SessionReadModel, int>().GetOneAsync(x=>x.SessionId == request.SessionId && x.UserId == userId.ToString());
 
             if(session is null || session.IsActive == false)
-                return Result<WorkOutCompletionResponse>.Fail(Error.NotFound("RES_SESSION_NOT_FOUND.", "The provided session is invalid."));
+                return Error.NotFound("RES_SESSION_NOT_FOUND.", "The provided session is invalid.");
 
 
             
