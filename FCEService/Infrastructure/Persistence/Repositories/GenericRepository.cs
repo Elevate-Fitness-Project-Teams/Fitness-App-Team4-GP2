@@ -17,20 +17,20 @@ namespace FCEService.Infrastructure.Persistence.Repositories
         public async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken ct = default)
             => await dbSet.AsNoTracking().ToListAsync(ct);
 
-        // TRACKED — caller intends to mutate + call Update()
+       
         public Task<T?> FirstOrDefaultAsync(
             Expression<Func<T, bool>> predicate,
             CancellationToken ct = default)
             => dbSet.FirstOrDefaultAsync(predicate, ct);
 
-        // TRACKED + ordered — covers "latest by date" / "first matching X" patterns
+        
         public Task<T?> FirstOrderedAsync(
             Expression<Func<T, bool>> predicate,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy,
             CancellationToken ct = default)
             => orderBy(dbSet.Where(predicate)).FirstOrDefaultAsync(ct);
 
-        // Read-only — for pure display/listing scenarios
+      
         public async Task<IReadOnlyList<T>> WhereAsync(
             Expression<Func<T, bool>> predicate,
             CancellationToken ct = default)

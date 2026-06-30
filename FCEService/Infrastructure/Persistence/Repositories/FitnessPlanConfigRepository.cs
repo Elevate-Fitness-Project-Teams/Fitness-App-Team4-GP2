@@ -2,7 +2,7 @@
 using FCEService.Domain.Enums;
 using FCEService.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
-
+using BuildingBlocks.Shared.Results.Pagination;
 namespace FCEService.Infrastructure.Persistence.Repositories
 {
     public sealed class FitnessPlanConfigRepository(FCEDbContext db)

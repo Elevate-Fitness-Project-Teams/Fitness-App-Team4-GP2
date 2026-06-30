@@ -25,6 +25,8 @@ namespace FCEService.Domain.Interfaces
    
         void SaveInclude(T entity, params string[] updatedProperties);
 
-     
+        void Update(T entity);
+
+
     }
 }

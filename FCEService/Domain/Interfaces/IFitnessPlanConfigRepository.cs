@@ -1,4 +1,5 @@
-﻿using FCEService.Domain.Entities;
+﻿using BuildingBlocks.Shared.Results.Pagination;
+using FCEService.Domain.Entities;
 using FCEService.Domain.Enums;
 
 namespace FCEService.Domain.Interfaces
@@ -11,11 +12,10 @@ namespace FCEService.Domain.Interfaces
             CancellationToken ct = default);
       
 
-        Task<IReadOnlyList<FitnessPlanConfig>> GetPagedAsync(
+        Task<PaginatedResult<FitnessPlanConfig>> GetPagedAsync(
         FitnessGoal? goalFilter,
         PlanStatus? statusFilter,
-        int page,
-        int pageSize,
+        PaginationRequest pagination,
         CancellationToken ct = default);
     }
 }
