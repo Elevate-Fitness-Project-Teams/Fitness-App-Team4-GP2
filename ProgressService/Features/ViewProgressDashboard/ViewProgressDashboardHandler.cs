@@ -17,11 +17,16 @@ namespace ProgressService.Features.ViewProgressDashboard
         }
         public async Task<Result<ViewProgressDashboardResponse>> Handle(ViewProgressDashboardQuery request, CancellationToken cancellationToken)
         {
+            var userId = request.UserId;
+            var user = await _unitOfWork.GetRepository<UserReadModel, int>().GetOneAsync(x => x.UserId == userId);
+
+            if (user is null)
+                return Error.NotFound("UserNotFound", "VAL_USER_NOT_FOUND");
+
             if (request.StartDate.HasValue && request.EndDate.HasValue && request.StartDate > request.EndDate)
                 return Error.Validation("InvalidDateRange", "VAL_INVALID_DATE");
 
-            var userId = request.UserId;
-
+            
             var endDate = request.EndDate ?? DateTime.UtcNow;
             var startDate = request.StartDate;
             if(startDate is null)
@@ -54,12 +59,14 @@ namespace ProgressService.Features.ViewProgressDashboard
 
 
                 )).ToListAsync();
+
             var currentWeek =  endDate.AddDays(-7);
             var previousWeek = currentWeek.AddDays(-7);
 
             var currentWeekWorkouts = WorkoutHistory.Count(x=>x.CompletedAt >= currentWeek);
             var previousWeekWorkouts = WorkoutHistory.Count(x=>x.CompletedAt >= previousWeek && x.CompletedAt < currentWeek);
-            var PercentageChange = previousWeekWorkouts == 0 ? 100 : ((double)(currentWeekWorkouts - previousWeekWorkouts) / previousWeekWorkouts) * 100;
+            var PercentageChange = previousWeekWorkouts == 0 && currentWeekWorkouts != 0 ? 100  : previousWeekWorkouts == 0 && currentWeekWorkouts == 0 ? 0 
+                :((double)(currentWeekWorkouts - previousWeekWorkouts) / previousWeekWorkouts) * 100;
 
             var Comparison = new WeekComparisonsDto(currentWeekWorkouts, previousWeekWorkouts, PercentageChange);
 

@@ -71,16 +71,27 @@ namespace ProgressService.Controllers
         }
 
 
-        //[Authorize]
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> ViewProgressDashboardAsync([FromQuery] ViewProgressDashboardRequest request)
         {
-            //var userId = GetCurrentUserId();
-            var userId = new Guid("00000000-0000-0000-0000-000000000002");
+            var userId = GetCurrentUserId();
+            //var userId = new Guid("00000000-0000-0000-0000-000000000002");
             var query = new ViewProgressDashboardQuery(userId, request.Period, request.StartDate, request.EndDate);
             var result = await _mediator.Send(query);
             return FromResult(result, "Progress dashboard retrieved successfully", StatusCodes.Status200OK);
         }
+
+        [Authorize]
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetUserProgress([FromRoute] Guid userId, [FromQuery] ViewProgressDashboardRequest request)
+        {
+            var query = new ViewProgressDashboardQuery(userId, request.Period, request.StartDate, request.EndDate);
+
+            var result = await _mediator.Send(query);
+            return FromResult(result, $"Progress of UserID {userId} retrieved successfully", StatusCodes.Status200OK);
+        }
     }
+
 }
 
