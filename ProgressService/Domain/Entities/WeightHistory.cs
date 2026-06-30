@@ -1,9 +1,10 @@
 using System;
 namespace ProgressService.Domain.Entities
 {
-    public class WeightHistory : BaseEntity
+    public class WeightHistory
     {
-        public string UserId { get; set; } = null!;
+        public int Id { get; set; }
+        public int UserId { get; set; }
         public double Weight { get; set; }
         public DateTime Date { get; set; }
         public string? Notes { get; set; }

@@ -16,42 +16,4 @@
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="AuthService\AuthService.csproj">
-      <Project>{C931BF15-1809-4766-B208-44104A6F797C}</Project>
-      <Name>AuthService</Name>
-    </ProjectReference>
-    <ProjectReference Include="FCEService\FCEService.csproj">
-      <Project>{FC4B6F36-AE65-4603-806A-58A3A0BA801F}</Project>
-      <Name>FCEService</Name>
-    </ProjectReference>
-    <ProjectReference Include="NotificationService\NotificationService.csproj">
-      <Project>{F276D0A7-915A-4721-A8F0-153577CADED3}</Project>
-      <Name>NotificationService</Name>
-    </ProjectReference>
-    <ProjectReference Include="NutritionService\NutritionService.csproj">
-      <Project>{7257798C-241E-422F-A9AC-F2B20206746F}</Project>
-      <Name>NutritionService</Name>
-    </ProjectReference>
-    <ProjectReference Include="ProfileService\ProfileService.csproj">
-      <Project>{C870D40C-3A17-47DB-871D-B66F0FACBB5D}</Project>
-      <Name>ProfileService</Name>
-    </ProjectReference>
-    <ProjectReference Include="ProgressService\ProgressService.csproj">
-      <Project>{9EC7656F-078F-4456-8431-205EADFABBF1}</Project>
-      <Name>ProgressService</Name>
-    </ProjectReference>
-    <ProjectReference Include="SmartCoachService\SmartCoachService.csproj">
-      <Project>{DD1B6E44-6888-42F7-A762-58CAE2155D58}</Project>
-      <Name>SmartCoachService</Name>
-    </ProjectReference>
-    <ProjectReference Include="SubscriptionService\SubscriptionService.csproj">
-      <Project>{CCF5270C-63BC-47CF-B42F-DD418DEA8B28}</Project>
-      <Name>SubscriptionService</Name>
-    </ProjectReference>
-    <ProjectReference Include="WorkoutService\WorkoutService.csproj">
-      <Project>{BAE3CB77-2A3E-4AD6-BA18-6C62CECB79B8}</Project>
-      <Name>WorkoutService</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

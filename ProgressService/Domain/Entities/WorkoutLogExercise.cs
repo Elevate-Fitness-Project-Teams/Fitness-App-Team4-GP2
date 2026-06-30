@@ -1,7 +1,8 @@
 namespace ProgressService.Domain.Entities
 {
-    public class WorkoutLogExercise : BaseEntity
+    public class WorkoutLogExercise
     {
+        public int Id { get; set; }
         public int WorkoutLogId { get; set; }
         public int ExerciseId { get; set; }
         public int SetsCompleted { get; set; }
