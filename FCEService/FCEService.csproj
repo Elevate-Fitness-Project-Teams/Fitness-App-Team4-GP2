@@ -27,4 +27,8 @@
     <ProjectReference Include="..\BuildingBlocks.Shared\BuildingBlocks.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\SaveFitnessStats\" />
+  </ItemGroup>
+
 </Project>
