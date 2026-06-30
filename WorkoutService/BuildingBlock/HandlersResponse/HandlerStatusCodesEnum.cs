@@ -16,5 +16,9 @@
         NotFoundAnyExercise=406,
         NotFoundExerciesWithSpecificID=407,
         NotFoundPlanWithSpecificID=408,
+
+
+        // Start WorkOut Session
+        WorkOutIdIsInvalid=409,
     }
 }

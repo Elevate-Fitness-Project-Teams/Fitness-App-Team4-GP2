@@ -11,9 +11,14 @@
   <ItemGroup>
 	  <PackageReference Include="MediatR" Version="10.0.1" />
 	  <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.28" />
+	  <PackageReference Include="MassTransit" Version="8.4.1" />
+	  <PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.4.1" />
+	  <PackageReference Include="MassTransit.RabbitMQ" Version="8.4.1" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+
+		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
@@ -27,6 +32,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BuildingBlocks.Shared\BuildingBlocks.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BuildingBlocks.Contracts">
+      <HintPath>..\BuildingBlocks.Contracts\obj\Debug\net8.0\ref\BuildingBlocks.Contracts.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
