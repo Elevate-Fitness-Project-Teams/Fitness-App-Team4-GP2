@@ -40,6 +40,8 @@ namespace BuildingBlocks.Shared.Results
 
         public static Error Locked(string code = "General.Locked", string description = "The resource is locked.")
             => new(code, description, ErrorType.Locked);
+        public static Error TooManyRequestsException(string code = "General.TooManyRequests", string description = "Otp resend too soon")
+            => new(code, description, ErrorType.TooManyRequestsException);
 
         /// <summary>Maps this error's <see cref="ErrorType"/> to the HTTP status code used in the response envelope.</summary>
         public int ToStatusCode() => Type switch
@@ -51,6 +53,7 @@ namespace BuildingBlocks.Shared.Results
             ErrorType.NotFound => 404,
             ErrorType.Conflict => 409,
             ErrorType.Locked => 423,
+            ErrorType.TooManyRequestsException => 429,
             ErrorType.Failure => 500,
             _ => 500
         };

@@ -10,7 +10,7 @@ namespace BuildingBlocks.Shared.Responses
         public bool IsSuccess { get; set; }
         public string Message { get; set; } = string.Empty;
         public T? Data { get; set; }
-        public List<string> Errors { get; set; } = new();
+        public Dictionary<string, List<string>> Errors { get; set; } = new();
         public int StatusCode { get; set; }
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     }

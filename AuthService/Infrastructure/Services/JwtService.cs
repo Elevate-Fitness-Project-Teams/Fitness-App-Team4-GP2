@@ -51,11 +51,49 @@ namespace AuthService.Infrastructure.Services
                 new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Email, user.Email ?? string.Empty),
-                new("purpose", "password_reset")
+                new("purpose", "password_reset"),
+                // Binds the token to the user's current security stamp. A successful reset
+                // rotates the stamp, so the token can only be consumed once.
+                new("stamp", user.SecurityStamp ?? string.Empty)
             };
 
             var minutes = _configuration.GetValue<int?>("Jwt:ResetTokenMinutes") ?? 15;
             return GenerateToken(claims, minutes);
+        }
+
+        public ClaimsPrincipal? ValidateResetToken(string token)
+        {
+            var key = _configuration["Jwt:Key"];
+            if (string.IsNullOrEmpty(key))
+                return null;
+
+            var parameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = _configuration["Jwt:Issuer"],
+                ValidAudience = _configuration["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                ClockSkew = TimeSpan.Zero
+            };
+
+            try
+            {
+                var principal = new JwtSecurityTokenHandler()
+                    .ValidateToken(token, parameters, out _);
+
+                // Reject access tokens or anything not explicitly issued for password reset.
+                if (principal.FindFirst("purpose")?.Value != "password_reset")
+                    return null;
+
+                return principal;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private string GenerateToken(IEnumerable<Claim> claims, int expiryMinutes)

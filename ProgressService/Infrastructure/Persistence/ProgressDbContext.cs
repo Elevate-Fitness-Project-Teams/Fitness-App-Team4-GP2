@@ -17,6 +17,9 @@ namespace ProgressService.Infrastructure.Persistence
         public DbSet<UserAchievement> UserAchievements { get; set; } = null!;
         public DbSet<Streak> Streaks { get; set; } = null!;
         public DbSet<UserStatistic> UserStatistics { get; set; } = null!;
+        public DbSet<SessionReadModel> Sessions { get; set; } = null!;
+        public DbSet<UserReadModel> Users { get; set; } = null!;
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

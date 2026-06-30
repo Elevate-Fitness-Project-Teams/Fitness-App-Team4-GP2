@@ -1,11 +1,11 @@
 using AuthService.Features.Register.Dtos;
-using AuthService.Shared.Responses;
+using BuildingBlocks.Shared.Results;
 using MediatR;
 using System.ComponentModel.DataAnnotations;
 
 namespace AuthService.Features.Auth.Register;
 
-public class RegisterCommand : IRequest<RegisterResponse>
+public class RegisterCommand : IRequest<Result<RegisterResponse>>
 {
     [Required]
     [StringLength(50, MinimumLength = 2)]

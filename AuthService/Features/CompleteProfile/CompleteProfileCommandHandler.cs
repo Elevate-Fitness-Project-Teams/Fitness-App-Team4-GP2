@@ -1,42 +1,43 @@
-﻿using AuthService.BuildingBlocks.Exceptions;
-using BuildingBlocks.Contracts.Auth;
+﻿using BuildingBlocks.Contracts.Auth;
 using AuthService.BuildingBlocks.Interfaces;
 using AuthService.BuildingBlocks.Interfaces.Events;
 using AuthService.Features.CompleteProfile;
+using BuildingBlocks.Shared.Results;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using AuthService.Domain.Entities;
 
 public sealed class CompleteProfileCommandHandler
-    : IRequestHandler<CompleteProfileCommand, bool>
+    : IRequestHandler<CompleteProfileCommand, Result<bool>>
 {
     private readonly ICurrentUser _currentUser;
-    private readonly IApplicationDbContext _context;
+    private readonly IGenericRepository<ApplicationUser> _userRepository;
     private readonly IEventPublisher _publisher;
 
-    public CompleteProfileCommandHandler(ICurrentUser currentUser, IApplicationDbContext context,
+    public CompleteProfileCommandHandler(ICurrentUser currentUser, IGenericRepository<ApplicationUser> userRepository,
         IEventPublisher publisher)
     {
         _currentUser = currentUser;
-        _context = context;
+        _userRepository = userRepository;
         _publisher = publisher;
     }
 
-    public async Task<bool> Handle(CompleteProfileCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(CompleteProfileCommand request, CancellationToken cancellationToken)
     {
         if (!Guid.TryParse(_currentUser.UserId, out var userId))
-            throw new UnauthorizedException("AUTH_TOKEN_INVALID.");
+            return Error.Unauthorized("AUTH_TOKEN_INVALID", "Authentication token is missing or invalid.");
 
-        var user = await _context.Users.FindAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId);
 
         if (user is null)
-            throw new UnauthorizedException("AUTH_TOKEN_INVALID.");
+            return Error.Unauthorized("AUTH_TOKEN_INVALID", "Authentication token is missing or invalid.");
 
         if (!user.RequiresProfileCompletion)
             return false;
 
         user.RequiresProfileCompletion = false;
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await _userRepository.SaveChangesAsync();
 
         await _publisher.PublishAsync(
             new UserProfileCompletedEvent
