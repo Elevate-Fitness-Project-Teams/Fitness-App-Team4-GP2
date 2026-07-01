@@ -1,6 +1,7 @@
 ﻿using BuildingBlocks.Shared.Controllers;
 using FCEService.Features.CalculateMetrics;
 using FCEService.Features.GetFitnessMetrics;
+using FCEService.Features.GetFitnessStats;
 using FCEService.Features.SaveFitnessStats;
 using FCEService.Features.Shared;
 using FluentValidation;
@@ -43,8 +44,18 @@ namespace FCEService.Controllers
             var result = await _sender.Send(new GetFitnessMetricsQuery(userId),ct);
             return FromResult(result, "Fitness metrics retrieved successfully", 200);
         }
-     
 
+        
+        [HttpGet("stats/{userId:guid}")]
+        public async Task<IActionResult> GetStats(
+            [FromRoute] Guid userId,
+            CancellationToken ct)
+        {
+            var result = await _sender.Send(new GetFitnessStatsQuery(userId), ct);
+            return FromResult(result, "Stats retrieved successfully.", 200);
+        }
     }
 
 }
+
+
