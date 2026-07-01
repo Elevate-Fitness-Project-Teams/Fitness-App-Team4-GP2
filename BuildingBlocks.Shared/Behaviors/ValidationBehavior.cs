@@ -42,7 +42,7 @@ namespace BuildingBlocks.Shared.Behaviors
             if (failures.Count != 0)
             {
                 var errors = failures.Select(f => Error.Validation(
-                    code: f.PropertyName,
+                    code: f.ErrorCode,
                     description: f.ErrorMessage)).ToList();
 
                 return CreateValidationResult<TResponse>(errors);
