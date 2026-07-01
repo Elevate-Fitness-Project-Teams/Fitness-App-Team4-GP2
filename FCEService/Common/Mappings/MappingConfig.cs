@@ -1,4 +1,5 @@
 ﻿using FCEService.Domain.Entities;
+using FCEService.Features.CalculateMetrics;
 using FCEService.Features.SaveFitnessStats;
 using Mapster;
 
@@ -14,11 +15,11 @@ namespace FCEService.Common.Mappings
                   .Map(dest => dest.Goal, src => src.Goal.ToString())
                   .Map(dest => dest.ActivityLevel, src => src.ActivityLevel.ToString());
 
-            // ── CalculatedMetric → CalculateAndSaveMetricsResponse ─────
-          //  config.NewConfig<CalculatedMetric, CalculateAndSaveMetricsResponse>()
-            //      .Map(dest => dest.Status, src => src.Status.ToString());
+         
+            config.NewConfig<CalculatedMetric, CalculateMetricsResponse>()
+                  .Map(dest => dest.Status, src => src.Status.ToString());
 
-            // Add every new Feature's mapping here — one place to find them all.
+           
         }
     }
 }

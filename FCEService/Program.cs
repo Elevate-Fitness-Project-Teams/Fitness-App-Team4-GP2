@@ -1,4 +1,5 @@
 using FCEService.Domain.Interfaces;
+using FCEService.Domain.Services;
 using FCEService.Infrastructure.Persistence;
 using FCEService.Infrastructure.Persistence.Repositories;
 using FluentValidation;
@@ -25,7 +26,6 @@ namespace FCEService
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            // Add services to the container.
             builder.Services.AddDbContext<FCEDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -44,7 +44,8 @@ namespace FCEService
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             builder.Services.AddScoped<IFitnessPlanConfigRepository, FitnessPlanConfigRepository>();
-          
+            builder.Services.AddScoped<IMetabolicCalculatorService, MetabolicCalculatorService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
