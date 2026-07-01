@@ -7,7 +7,7 @@ using MediatR;
 namespace FCEService.Features.SaveFitnessStats
 {
  
-       public sealed record SaveFitnessStatsCommand(
+       public sealed record SubmitFitnessStatsCommand(
        Guid UserId,
        double Weight,
        double Height,

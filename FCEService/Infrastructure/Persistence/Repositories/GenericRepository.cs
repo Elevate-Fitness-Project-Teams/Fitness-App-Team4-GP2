@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FCEService.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Linq.Expressions;
 using System.Security.Cryptography;
 
 namespace FCEService.Infrastructure.Persistence.Repositories
 {
-    public class GenericRepository<T>(FCEDbContext dbContext) where T : class
+    public class GenericRepository<T>(FCEDbContext dbContext) : IGenericRepository<T> where T : class
     {
         protected readonly FCEDbContext _dbContext = dbContext;
         protected readonly DbSet<T> dbSet = dbContext.Set<T>();

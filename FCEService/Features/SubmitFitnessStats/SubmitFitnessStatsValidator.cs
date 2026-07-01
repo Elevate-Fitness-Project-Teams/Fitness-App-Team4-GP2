@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace FCEService.Features.SaveFitnessStats
 {
-    public sealed class SubmitFitnessStatsValidator : AbstractValidator<SaveFitnessStatsCommand>
+    public sealed class SubmitFitnessStatsValidator : AbstractValidator<SubmitFitnessStatsCommand>
     {
     
 

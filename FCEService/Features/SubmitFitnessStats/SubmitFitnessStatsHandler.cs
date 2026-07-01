@@ -8,10 +8,10 @@ namespace FCEService.Features.SaveFitnessStats
 {
    
         public sealed class SaveFitnessStatsHandler(IFceUnitOfWork uow, IGenericRepository<UserFitnessStat> FitnessStatRepo)
-        : IRequestHandler<SaveFitnessStatsCommand, Result<SubmitFitnessStatsResponse>>
+        : IRequestHandler<SubmitFitnessStatsCommand, Result<SubmitFitnessStatsResponse>>
         {
             public async Task<Result<SubmitFitnessStatsResponse>> Handle(
-                SaveFitnessStatsCommand command,
+                SubmitFitnessStatsCommand command,
                 CancellationToken ct)
             {
 

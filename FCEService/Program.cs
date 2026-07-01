@@ -1,6 +1,10 @@
-using Microsoft.EntityFrameworkCore;
+using FCEService.Domain.Interfaces;
 using FCEService.Infrastructure.Persistence;
-
+using FCEService.Infrastructure.Persistence.Repositories;
+using FluentValidation;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 namespace FCEService
 {
     public class Program
@@ -9,15 +13,32 @@ namespace FCEService
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddDbContext<FCEDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            // Add services to the container.
+            builder.Services.AddDbContext<FCEDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        
+            builder.Services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+                cfg.AddOpenBehavior(typeof(BuildingBlocks.Shared.Behaviors.ValidationBehavior<,>));
+            });
+            
+            builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+            builder.Services.AddScoped<IFceUnitOfWork,FceUnitofWork>();
+
+
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+            builder.Services.AddScoped<IFitnessPlanConfigRepository, FitnessPlanConfigRepository>();
+          
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -26,11 +47,11 @@ namespace FCEService
                 app.UseSwagger();
                 app.UseSwaggerUI();
 
-                // Proactively validate EF Core model structure at startup
+             
                 using (var scope = app.Services.CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<FCEDbContext>();
-                    var _ = db.Model; // Force compilation of model metadata
+                    var _ = db.Model; 
                 }
             }
 
