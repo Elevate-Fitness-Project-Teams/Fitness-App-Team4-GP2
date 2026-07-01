@@ -1,16 +1,26 @@
 ﻿using FCEService.Domain.Entities;
 using FCEService.Domain.Interfaces;
 using FCEService.Infrastructure.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace FCEService.Infrastructure.Persistence
 {
     public class FceUnitofWork(FCEDbContext db) : IFceUnitOfWork
     {
+        private readonly Dictionary<Type, object> _repositories = new();
 
         //private IDbContextTransaction? _transaction;
 
-
+        public IGenericRepository<T> GetRepository<T>() where T : class
+        {
+            var EntityType = typeof(T);
+            if (_repositories.TryGetValue(EntityType, out var repository))
+                return (IGenericRepository<T>)repository;
+            var NewRepo = new GenericRepository<T>(db);
+            _repositories[EntityType] = NewRepo;
+            return NewRepo;
+        }
         public Task<int> SaveChangesAsync(CancellationToken ct = default)
             => db.SaveChangesAsync(ct);
     }
