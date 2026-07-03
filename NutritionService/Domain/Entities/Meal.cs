@@ -4,7 +4,7 @@ namespace NutritionService.Domain.Entities
     {
         public int MealId { get; set; }
         public string Name { get; set; } = null!;
-        public string Type { get; set; } = null!;
+        public MealType Type { get; set; } = MealType.Dinner;
         public double Calories { get; set; }
         public double Protein { get; set; }
         public double Carbs { get; set; }

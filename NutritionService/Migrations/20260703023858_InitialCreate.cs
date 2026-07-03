@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace NutritionService.Infrastructure.Persistence.Migrations
+namespace NutritionService.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,7 +33,7 @@ namespace NutritionService.Infrastructure.Persistence.Migrations
                     MealId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Type = table.Column<int>(type: "int", maxLength: 20, nullable: false),
                     Calories = table.Column<double>(type: "float", nullable: false),
                     Protein = table.Column<double>(type: "float", nullable: false),
                     Carbs = table.Column<double>(type: "float", nullable: false),

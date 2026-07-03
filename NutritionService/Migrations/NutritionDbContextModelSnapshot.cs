@@ -7,7 +7,7 @@ using NutritionService.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace NutritionService.Infrastructure.Persistence.Migrations
+namespace NutritionService.Migrations
 {
     [DbContext(typeof(NutritionDbContext))]
     partial class NutritionDbContextModelSnapshot : ModelSnapshot
@@ -64,10 +64,9 @@ namespace NutritionService.Infrastructure.Persistence.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
+                    b.Property<int>("Type")
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("int");
 
                     b.Property<string>("VariationsJson")
                         .HasColumnType("nvarchar(max)");
