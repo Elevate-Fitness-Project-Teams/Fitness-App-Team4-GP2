@@ -36,6 +36,7 @@ namespace NutritionService.Features.GetMealRecommendations
             var totalCount = await query.CountAsync();
             var pagination = request.Pagination;
             var items = await query
+                .OrderBy(m => m.MealId)
                 .Skip(pagination.Skip)
                 .Take(pagination.PageSize)
                 .Select(m => new MealRecommendationDto

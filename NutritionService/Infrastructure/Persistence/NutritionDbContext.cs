@@ -43,7 +43,7 @@ namespace NutritionService.Infrastructure.Persistence
                 entity.Property(e => e.MealTime).HasMaxLength(20).IsRequired();
 
                 entity.HasOne(e => e.MealPlan)
-                    .WithMany()
+                    .WithMany(e => e.MealPlanItems)
                     .HasForeignKey(e => e.MealPlanId)
                     .OnDelete(DeleteBehavior.Cascade);
 
