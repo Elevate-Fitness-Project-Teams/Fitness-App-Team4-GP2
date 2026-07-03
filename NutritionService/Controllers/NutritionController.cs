@@ -3,13 +3,15 @@ using BuildingBlocks.Shared.Results.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NutritionService.Features.BrowseMealPlans;
 using NutritionService.Features.GetMealDetails;
+using NutritionService.Features.GetMealPlansByCalorie;
 using NutritionService.Features.GetMealRecommendations;
 using System.Security.Claims;
 
 namespace NutritionService.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class NutritionController : ApiControllerBase
     {
         private readonly IMediator _mediator;
@@ -79,5 +81,37 @@ namespace NutritionService.Controllers
             return FromResult(result, "Meal Details Retrieved Successfully", StatusCodes.Status200OK);
 
         }
+
+        [HttpGet("meal-plans")]
+        public async Task<IActionResult> BrowseMealPlans([FromQuery] int Page = 1, [FromQuery] int PageSize = 10)
+        {
+            var query = new BrowseMealPlansQuery
+            (
+                new PaginationRequest
+                {
+                    Page = Page,
+                    PageSize = PageSize
+                }
+            );
+            var result = await _mediator.Send(query);
+            return FromResult(result, "Meal Plans Retrieved Successfully", StatusCodes.Status200OK);
+        }
+
+        [HttpGet("meal-plans/by-calories")]
+        public async Task<IActionResult> GetMealPlansByCalories([FromQuery] GetPlsnsByCalorieRequest request) 
+        {
+            var query = new GetMealPlansByCalorieQuery
+            (
+                request.Calorie,
+                new PaginationRequest
+                {
+                    Page = request.Page,
+                    PageSize = request.PageSize
+                }
+            );
+            var result = await _mediator.Send(query);
+            return FromResult(result, "Meal Plans Retrieved Successfully", StatusCodes.Status200OK);
+        }
+
     }
 }

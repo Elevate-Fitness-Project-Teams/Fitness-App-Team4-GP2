@@ -7,5 +7,6 @@ namespace NutritionService.Domain.Entities
         public string Description { get; set; } = null!;
         public double TargetCalorieRangeMin { get; set; }
         public double TargetCalorieRangeMax { get; set; }
+        public ICollection<MealPlanItem> MealPlanItems { get; set; } = default!;
     }
 }
