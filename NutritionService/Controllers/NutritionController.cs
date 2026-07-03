@@ -3,6 +3,7 @@ using BuildingBlocks.Shared.Results.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NutritionService.Features.GetMealDetails;
 using NutritionService.Features.GetMealRecommendations;
 using System.Security.Claims;
 
@@ -51,7 +52,7 @@ namespace NutritionService.Controllers
         [HttpGet("recommendations/{userId}")]
         public async Task<IActionResult> GetMealRecommendationsByUserId([FromRoute] Guid userId, [FromQuery] GetMealRecommendationsRequest request)
         {
-            
+
             var query = new GetMealRecommendationsQuery
             (
                 userId,
@@ -70,5 +71,13 @@ namespace NutritionService.Controllers
 
         }
 
+        [HttpGet("meals/{Id}")]
+        public async Task<IActionResult> GetMealDetails([FromRoute] int Id)
+        {
+            var query = new GetMealDetailsQuery(Id);
+            var result = await _mediator.Send(query);
+            return FromResult(result, "Meal Details Retrieved Successfully", StatusCodes.Status200OK);
+
+        }
     }
 }
