@@ -25,7 +25,7 @@ namespace NutritionService.Features.GetMealRecommendations
             var userId = request.UserId;
             var FceMetrics = await _fceClient.GetMetricsAsync(userId , cancellationToken);
             if(FceMetrics is null)
-                return Error.NotFound("NotFound" , "FCE_METRICS_NOT_CALCULATED");
+                return Error.Validation("ValidationError" , "FCE_METRICS_NOT_CALCULATED");
 
 
             var query = _genericRepository.GetAll(m => m.Type == request.MealType 
