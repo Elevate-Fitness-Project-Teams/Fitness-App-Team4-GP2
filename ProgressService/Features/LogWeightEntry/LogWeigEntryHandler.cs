@@ -63,6 +63,21 @@ namespace ProgressService.Features.LogWeightEntry
                        RecordedAt = request.Date,
                    });
 
+            // Publish the full current stats so ProfileService's cached snapshot stays correct
+            // (the event carries complete state, not a delta).
+            var streak = await _unitOfWork.GetRepository<Streak, int>().GetOneAsync(x => x.UserId == userId);
+
+            await _publishEndpoint.Publish(new UserStatisticsUpdatedEvent
+            {
+                UserId = userId,
+                TotalWorkouts = userStatistic.TotalWorkouts,
+                CurrentStreak = streak?.CurrentStreak ?? 0,
+                LongestStreak = streak?.LongestStreak ?? 0,
+                TotalCaloriesBurned = userStatistic.TotalCaloriesBurned,
+                TotalWeightLost = userStatistic.TotalWeightLost,
+                UpdatedAt = DateTime.UtcNow
+            });
+
             return new LogWeightEntryResponse
             {
                 DifferenceFromPrevious = differenceFromPrevious,

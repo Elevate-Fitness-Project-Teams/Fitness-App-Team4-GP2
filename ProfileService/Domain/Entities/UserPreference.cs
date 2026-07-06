@@ -8,6 +8,7 @@ namespace ProfileService.Domain.Entities
         public string WeightUnit { get; set; } = "kg";
         public string HeightUnit { get; set; } = "cm";
         public string DistanceUnit { get; set; } = "km";
+
         // Navigation property to UserProfile
         public UserProfile UserProfile { get; set; } = null!;
     }

@@ -3,6 +3,7 @@ using FCEService.Domain.Services;
 using FCEService.Infrastructure.Persistence;
 using FCEService.Infrastructure.Persistence.Repositories;
 using FluentValidation;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,20 @@ namespace FCEService
 
             builder.Services.AddScoped<IFitnessPlanConfigRepository, FitnessPlanConfigRepository>();
             builder.Services.AddScoped<IMetabolicCalculatorService, MetabolicCalculatorService>();
+
+            builder.Services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(builder.Configuration["RabbitMQ:Host"], h =>
+                    {
+                        h.Username(builder.Configuration["RabbitMQ:Username"]);
+                        h.Password(builder.Configuration["RabbitMQ:Password"]);
+                    });
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
 
             var app = builder.Build();
 

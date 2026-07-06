@@ -68,7 +68,7 @@ namespace ProgressService.Features.WorkoutCompletion
 
                 _unitOfWork.GetRepository<WorkoutLog, int>().Add(log);
 
-                var (streakUpdated, CurrentStreak) = await UpdateUserStreak(userId);
+                var (streakUpdated, CurrentStreak, LongestStreak) = await UpdateUserStreak(userId);
                 var userStatistics = await UpdateUserStatistics(request);
                 var metrics = new Dictionary<CriteriaType, int>
             {
@@ -102,6 +102,18 @@ namespace ProgressService.Features.WorkoutCompletion
                        UserId = userId.ToString()
                    });
 
+                // Refresh ProfileService's cached statistics snapshot.
+                await _publishEndpoint.Publish(new UserStatisticsUpdatedEvent
+                {
+                    UserId = userId,
+                    TotalWorkouts = userStatistics.TotalWorkouts,
+                    CurrentStreak = CurrentStreak,
+                    LongestStreak = LongestStreak,
+                    TotalCaloriesBurned = userStatistics.TotalCaloriesBurned,
+                    TotalWeightLost = userStatistics.TotalWeightLost,
+                    UpdatedAt = DateTime.UtcNow
+                });
+
                 return new WorkOutCompletionResponse
                 {
                     LogId = log.Id,
@@ -118,13 +130,13 @@ namespace ProgressService.Features.WorkoutCompletion
 
         }
 
-        private async Task<(bool StreakUpdated, int CurrentStreak)> UpdateUserStreak(Guid userId)
+        private async Task<(bool StreakUpdated, int CurrentStreak, int LongestStreak)> UpdateUserStreak(Guid userId)
         {
             var streak = await _unitOfWork.GetRepository<Streak, int>().GetOneAsync(x => x.UserId == userId);
             var streakUpdated = false;
             if (streak is not null)
             {
-                 
+
                 var today = DateTime.UtcNow.Date;
                 if (streak.LastWorkoutDate == today.AddDays(-1))
                 {
@@ -143,7 +155,7 @@ namespace ProgressService.Features.WorkoutCompletion
                 if (streak.LongestStreak < streak.CurrentStreak)
                     streak.LongestStreak = streak.CurrentStreak;
 
-                return(streakUpdated, streak.CurrentStreak);
+                return(streakUpdated, streak.CurrentStreak, streak.LongestStreak);
             }
             streak = new Streak
             {
@@ -156,7 +168,7 @@ namespace ProgressService.Features.WorkoutCompletion
 
             _unitOfWork.GetRepository<Streak, int>().Add(streak);
 
-            return (true,1);
+            return (true, 1, 1);
 
         }
 

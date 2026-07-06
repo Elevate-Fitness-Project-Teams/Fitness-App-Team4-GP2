@@ -57,7 +57,7 @@ namespace AuthService
                 });
             });
 
-            builder.Services.AddMediatR(typeof(Program).Assembly);
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<ILoginAttemptRepository, LoginAttemptRepository>();
