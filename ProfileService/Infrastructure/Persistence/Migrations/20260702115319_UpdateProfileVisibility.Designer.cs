@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProfileService.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using ProfileService.Infrastructure.Persistence;
 namespace ProfileService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ProfileDbContext))]
-    partial class ProfileDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260702115319_UpdateProfileVisibility")]
+    partial class UpdateProfileVisibility
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -173,44 +176,6 @@ namespace ProfileService.Infrastructure.Persistence.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("UserProfiles");
-                });
-
-            modelBuilder.Entity("ProfileService.Domain.Entities.UserStatisticsSnapshot", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("CurrentStreak")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("FitnessUpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double?>("Height")
-                        .HasColumnType("float");
-
-                    b.Property<int>("LongestStreak")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("StatsUpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TotalCaloriesBurned")
-                        .HasColumnType("int");
-
-                    b.Property<double>("TotalWeightLost")
-                        .HasColumnType("float");
-
-                    b.Property<int>("TotalWorkouts")
-                        .HasColumnType("int");
-
-                    b.Property<double?>("Weight")
-                        .HasColumnType("float");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("UserStatisticsSnapshots");
                 });
 
             modelBuilder.Entity("ProfileService.Domain.Entities.NotificationSetting", b =>

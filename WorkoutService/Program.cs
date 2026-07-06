@@ -53,7 +53,7 @@ namespace WorkoutService
 
 
             builder.Services.AddWorkoutServices(); 
-            builder.Services.AddMediatR(typeof(Program).Assembly);
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 
             builder.Services
@@ -85,10 +85,10 @@ namespace WorkoutService
                 x.AddConsumer<SessionCompletedConsumer>();
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host("localhost", "/", h =>
+                    cfg.Host(builder.Configuration["RabbitMQ:Host"] ?? "localhost", "/", h =>
                     {
-                        h.Username("guest");
-                        h.Password("guest");
+                        h.Username(builder.Configuration["RabbitMQ:Username"] ?? "guest");
+                        h.Password(builder.Configuration["RabbitMQ:Password"] ?? "guest");
                     });
                     cfg.ConfigureEndpoints(context);
                 });

@@ -1,7 +1,14 @@
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using ProfileService.BuildingBlocks.Interfaces;
 using ProfileService.Infrastructure.Persistence;
 using ProfileService.Infrastructure.Persistence.Consumers;
+using ProfileService.Infrastructure.Persistence.Repositories;
+using ProfileService.Infrastructure.Services;
+using System.Text;
 
 namespace ProfileService
 {
@@ -15,9 +22,65 @@ namespace ProfileService
             builder.Services.AddDbContext<ProfileDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+
+            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+            builder.Services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    var jwt = builder.Configuration.GetSection("Jwt");
+                    var key = jwt["Key"]
+                        ?? throw new InvalidOperationException("Jwt:Key is not configured.");
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwt["Issuer"],
+                        ValidAudience = jwt["Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter: Bearer {your JWT token}"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+                        });
+
             builder.Services.AddMassTransit(x =>
             {
                 x.AddConsumer<UserProfileCompletedConsumer>();
+                x.AddConsumer<UserStatisticsUpdatedConsumer>();
+                x.AddConsumer<UserFitnessUpdatedConsumer>();
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
@@ -30,6 +93,8 @@ namespace ProfileService
                     cfg.ConfigureEndpoints(context);
                 });
             });
+
+            builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -54,6 +119,7 @@ namespace ProfileService
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

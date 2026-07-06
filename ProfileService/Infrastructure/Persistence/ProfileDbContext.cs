@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ProfileService.Domain.Entities;
+using ProfileService.Domain.Enums;
 
 namespace ProfileService.Infrastructure.Persistence
 {
@@ -13,6 +14,7 @@ namespace ProfileService.Infrastructure.Persistence
         public DbSet<UserPreference> UserPreferences { get; set; } = null!;
         public DbSet<NotificationSetting> NotificationSettings { get; set; } = null!;
         public DbSet<PrivacySetting> PrivacySettings { get; set; } = null!;
+        public DbSet<UserStatisticsSnapshot> UserStatisticsSnapshots { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -61,10 +63,20 @@ namespace ProfileService.Infrastructure.Persistence
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
+            modelBuilder.Entity<UserStatisticsSnapshot>(entity =>
+            {
+                entity.HasKey(e => e.UserId);
+            });
+
             modelBuilder.Entity<PrivacySetting>(entity =>
             {
                 entity.HasKey(e => e.UserId);
-                entity.Property(e => e.ProfileVisibility).HasMaxLength(20).HasDefaultValue("private").IsRequired();
+
+                entity.Property(e => e.ProfileVisibility).HasConversion<string>()
+                            .HasDefaultValue(ProfileVisibilityEnum.Private)
+                            .HasMaxLength(20)
+                            .IsRequired();
+
                 entity.Property(e => e.ShowProgressToFriends).HasDefaultValue(false).IsRequired();
                 entity.Property(e => e.AllowDataSharing).HasDefaultValue(false).IsRequired();
 

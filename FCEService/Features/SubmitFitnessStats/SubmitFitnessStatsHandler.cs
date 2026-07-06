@@ -1,13 +1,15 @@
-﻿using BuildingBlocks.Shared.Results;
+﻿using BuildingBlocks.Contracts.Fce;
+using BuildingBlocks.Shared.Results;
 using FCEService.Domain.Entities;
 using FCEService.Domain.Interfaces;
 using Mapster;
+using MassTransit;
 using MediatR;
 
 namespace FCEService.Features.SaveFitnessStats
 {
-   
-        public sealed class SaveFitnessStatsHandler(IFceUnitOfWork uow, IGenericRepository<UserFitnessStat> FitnessStatRepo)
+
+        public sealed class SaveFitnessStatsHandler(IFceUnitOfWork uow, IGenericRepository<UserFitnessStat> FitnessStatRepo, IPublishEndpoint publishEndpoint)
         : IRequestHandler<SubmitFitnessStatsCommand, Result<SubmitFitnessStatsResponse>>
         {
             public async Task<Result<SubmitFitnessStatsResponse>> Handle(
@@ -29,6 +31,15 @@ namespace FCEService.Features.SaveFitnessStats
 
                 await FitnessStatRepo.AddAsync(stat, ct);
                 await uow.SaveChangesAsync(ct);
+
+                // Refresh the fitness portion of ProfileService's cached snapshot.
+                await publishEndpoint.Publish(new UserFitnessUpdatedEvent
+                {
+                    UserId = stat.UserId,
+                    Weight = stat.Weight,
+                    Height = stat.Height,
+                    UpdatedAt = stat.RecordedAt
+                }, ct);
 
                 return Result<SubmitFitnessStatsResponse>.OK(stat.Adapt<SubmitFitnessStatsResponse>());
             }
