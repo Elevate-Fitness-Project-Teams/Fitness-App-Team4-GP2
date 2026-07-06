@@ -9,11 +9,11 @@ using SubscriptionService.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace SubscriptionService.Infrastructure.Persistence.Migrations
+namespace SubscriptionService.Migrations
 {
     [DbContext(typeof(SubscriptionDbContext))]
-    [Migration("20260623131939_Initial")]
-    partial class Initial
+    [Migration("20260706192619_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,8 +56,8 @@ namespace SubscriptionService.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -97,8 +97,8 @@ namespace SubscriptionService.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 

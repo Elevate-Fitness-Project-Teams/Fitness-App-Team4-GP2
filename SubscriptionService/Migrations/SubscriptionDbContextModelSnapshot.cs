@@ -8,7 +8,7 @@ using SubscriptionService.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace SubscriptionService.Infrastructure.Persistence.Migrations
+namespace SubscriptionService.Migrations
 {
     [DbContext(typeof(SubscriptionDbContext))]
     partial class SubscriptionDbContextModelSnapshot : ModelSnapshot
@@ -53,8 +53,8 @@ namespace SubscriptionService.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -94,8 +94,8 @@ namespace SubscriptionService.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
