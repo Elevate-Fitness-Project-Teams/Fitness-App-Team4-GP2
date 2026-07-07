@@ -10,5 +10,6 @@ namespace SubscriptionService.Domain.Entities
         public DateTime StartsAt { get; set; }
         public DateTime ExpiresAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public bool AutoRenew { get; set; } = false;
     }
 }
