@@ -20,7 +20,7 @@ namespace SubscriptionService.Infrastructure.Persistence
             {
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.UserId).IsUnique();
-                entity.Property(e => e.Tier).HasMaxLength(20).HasDefaultValue("Free").IsRequired();
+                entity.Property(e => e.Tier).IsRequired();
                 entity.Property(e => e.Status).HasMaxLength(20).HasDefaultValue("Active").IsRequired();
             });
 

@@ -7,7 +7,7 @@ namespace SubscriptionService.Domain.Entities
         public string ReferenceId { get; set; } = null!;
         public decimal Amount { get; set; }
         public string Currency { get; set; } = "EGP";
-        public string PaymentStatus { get; set; } = null!;
+        public string PaymentStatus { get; set; } = "Success";
         public DateTime Timestamp { get; set; }
     }
 }

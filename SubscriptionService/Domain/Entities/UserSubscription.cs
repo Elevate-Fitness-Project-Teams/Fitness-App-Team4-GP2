@@ -5,7 +5,7 @@ namespace SubscriptionService.Domain.Entities
     {
         public int Id { get; set; }
         public Guid UserId { get; set; }
-        public string Tier { get; set; } = "Free";
+        public SubscriptionTier Tier { get; set; } = SubscriptionTier.Free;
         public string Status { get; set; } = "Active";
         public DateTime StartsAt { get; set; }
         public DateTime ExpiresAt { get; set; }
