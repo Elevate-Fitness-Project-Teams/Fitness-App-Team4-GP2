@@ -1,9 +1,12 @@
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SubscriptionService.Domain.Contracts;
 using SubscriptionService.Domain.Contracts.Repositories;
 using SubscriptionService.Infrastructure.Persistence;
 using SubscriptionService.Infrastructure.Persistence.Repositories;
+using SubscriptionService.Infrastructure.Services;
 using System.Text;
 
 namespace SubscriptionService
@@ -36,10 +39,27 @@ namespace SubscriptionService
                         };
                     });
 
-             builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddScoped<IBillingService, BillingService>();
+
 
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
+            builder.Services.AddMassTransit(x =>
+            {
+                x.AddConsumers(typeof(Program).Assembly);
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("localhost", "/", h =>
+                    {
+                        h.Username("guest");
+                        h.Password("guest");
+                    });
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
