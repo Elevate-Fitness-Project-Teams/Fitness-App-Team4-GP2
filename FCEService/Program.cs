@@ -1,3 +1,4 @@
+using BuildingBlocks.Shared.Middleware;
 using BuildingBlocks.Shared.Responses;
 using FCEService.Domain.Interfaces;
 using FCEService.Domain.Services;
@@ -108,6 +109,7 @@ namespace FCEService
                 }
             }
 
+            app.UseGlobalExceptionMiddleware();
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
