@@ -1,8 +1,12 @@
+using BuildingBlocks.Shared.Middleware;
+using BuildingBlocks.Shared.Responses;
 using FCEService.Domain.Interfaces;
 using FCEService.Domain.Services;
 using FCEService.Infrastructure.Persistence;
 using FCEService.Infrastructure.Persistence.Repositories;
 using FluentValidation;
+using Mapster;
+using MapsterMapper;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +24,31 @@ namespace FCEService
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-            builder.Services.Configure<ApiBehaviorOptions>(options =>
+           
+        
+           builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
-                options.SuppressModelStateInvalidFilter = true;
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var errors = context.ModelState
+                        .Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+
+                    var response = new ApiResponse<object>
+                    {
+                        IsSuccess = false,
+                        Message = "Validation failed.",
+                        Data = null,
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Timestamp = DateTime.UtcNow,
+                        Errors = new Dictionary<string, List<string>> { { "ValidationErrors", errors } }
+
+                    };
+
+                    return new BadRequestObjectResult(response);
+                };
             });
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -36,7 +62,13 @@ namespace FCEService
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
                 cfg.AddOpenBehavior(typeof(BuildingBlocks.Shared.Behaviors.ValidationBehavior<,>));
             });
-            
+
+            var config = TypeAdapterConfig.GlobalSettings;
+            config.Scan(Assembly.GetExecutingAssembly());
+            builder.Services.AddSingleton(config).AddScoped<IMapper, ServiceMapper>();
+
+
+
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             builder.Services.AddScoped<IFceUnitOfWork,FceUnitofWork>();
@@ -77,6 +109,7 @@ namespace FCEService
                 }
             }
 
+            app.UseGlobalExceptionMiddleware();
             app.UseHttpsRedirection();
 
             app.UseAuthorization();

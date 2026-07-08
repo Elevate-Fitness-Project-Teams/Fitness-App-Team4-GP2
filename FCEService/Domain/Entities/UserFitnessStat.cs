@@ -2,9 +2,9 @@ using FCEService.Domain.Enums;
 using System;
 namespace FCEService.Domain.Entities
 {
-    public class UserFitnessStat
+    public class UserFitnessStat : BaseEntity
     {
-        public int Id { get; set; }
+      
         public Guid UserId { get; set; }
         public double Weight { get; set; }
         public double Height { get; set; }
