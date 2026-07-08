@@ -7,6 +7,7 @@ using ProfileService.Features.UpdateProfile;
 using ProfileService.Features.UpdateProfile.Dtos;
 using ProfileService.Features.UploadProfilePicture;
 using ProfileService.Features.ViewProfile;
+using ProfileService.Features.ViewSettings;
 
 namespace ProfileService.Controllers
 {
@@ -59,6 +60,15 @@ namespace ProfileService.Controllers
             var result = await _mediator.Send(command);
 
             return FromResult(result, "Password changed successfully.", StatusCodes.Status200OK);
+        }
+
+        [Authorize]
+        [HttpGet("/api/v1/settings")]
+        public async Task<IActionResult> GetSettings()
+        {
+            var result = await _mediator.Send(new ViewSettingsQuery());
+
+            return FromResult(result, "Settings retrieved successfully.", 200);
         }
     }
 }
