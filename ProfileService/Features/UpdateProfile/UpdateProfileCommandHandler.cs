@@ -29,16 +29,19 @@ namespace ProfileService.Features.UpdateProfile
             if (profile is null)
                 return Error.NotFound("RES_NOT_FOUND.");
 
-            if (!string.Equals(profile.Email, request.Dto.Email,
-                StringComparison.OrdinalIgnoreCase))
-            {
-                // Change the email in AuthService first (it owns the unique constraint).
-                // On failure, surface its actual error (e.g. AUTH_EMAIL_EXISTS -> 409) and stop.
-                var emailResult = await _authClient.UpdateEmailAsync(request.Dto.Email, cancellationToken);
+            // Sync the owning user table (AuthService) with all editable fields in one call.
+            // AuthService enforces email uniqueness and publishes the email-changed event.
+            // On failure, surface its actual error (e.g. AUTH_EMAIL_EXISTS -> 409) and stop
+            // without touching the local copy.
+            var syncResult = await _authClient.UpdateUserInfoAsync(
+                request.Dto.FirstName,
+                request.Dto.LastName,
+                request.Dto.PhoneNumber,
+                request.Dto.Email,
+                cancellationToken);
 
-                if (!emailResult.IsSuccess)
-                    return Result<UpdateProfileResponse>.Fail(emailResult.Errors);
-            }
+            if (!syncResult.IsSuccess)
+                return Result<UpdateProfileResponse>.Fail(syncResult.Errors);
 
             profile.FirstName = request.Dto.FirstName;
             profile.LastName = request.Dto.LastName;
