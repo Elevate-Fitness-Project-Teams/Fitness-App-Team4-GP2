@@ -12,7 +12,7 @@
         "progressservice": "StartDebugging",
         "smartcoachservice": "StartDebugging",
         "subscriptionservice": "StartDebugging",
-        "workoutservice": "StartDebugging"
+        //"workoutservice": "StartDebugging"
       }
     }
   }

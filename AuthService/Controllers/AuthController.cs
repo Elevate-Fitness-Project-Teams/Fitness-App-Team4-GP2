@@ -3,14 +3,14 @@ using AuthService.Features.CompleteProfile;
 using AuthService.Features.ForgotPassword;
 using AuthService.Features.Login;
 using AuthService.Features.Logout;
+using AuthService.Features.Profile.ChangePassword;
+using AuthService.Features.Profile.ChangePassword.Dtos;
+using AuthService.Features.Profile.UpdateUserInfo;
+using AuthService.Features.Profile.UpdateUserInfo.Dtos;
 using AuthService.Features.RefreshToken;
 using AuthService.Features.ResetPassword;
-using AuthService.Features.UpdateEmail;
-using AuthService.Features.UpdateEmail.Dtos;
 using AuthService.Features.VerifyOtp;
 using BuildingBlocks.Shared.Controllers;
-using MassTransit.Mediator;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -94,12 +94,23 @@ namespace AuthService.Controllers
 
         //For Profile Service
         [Authorize]
-        [HttpPut("update-email")]
-        public async Task<IActionResult> UpdateEmail([FromBody] UpdateEmailRequest request)
+        [HttpPut("update-user-info")]
+        public async Task<IActionResult> UpdateUserInfo([FromBody] UpdateUserInfoRequest request)
         {
-            var result = await _mediatR.Send(new UpdateEmailCommand(request.NewEmail));
+            var result = await _mediatR.Send(new UpdateUserInfoCommand(request.FirstName, request.LastName, request.PhoneNumber, request.Email));
 
-            return FromResult(result, "Email updated successfully.", 200);
+            return FromResult(result, "User info updated successfully.", 200);
         }
+
+        //For Profile Service
+        [Authorize]
+        [HttpPut("change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
+        {
+            var result = await _mediatR.Send(new ChangePasswordCommand(request.CurrentPassword, request.NewPassword, request.ConfirmPassword));
+
+            return FromResult(result, "Password changes successfully", 200);
+        }
+
     }
 }
