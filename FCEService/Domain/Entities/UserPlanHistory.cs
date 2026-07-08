@@ -1,9 +1,9 @@
 using System;
 namespace FCEService.Domain.Entities
 {
-    public class UserPlanHistory
+    public class UserPlanHistory : BaseEntity
     {
-        public int Id { get; set; }
+        
         public Guid UserId { get; set; }
         public string PlanId { get; set; } = null!;
         public DateTime AssignedAt { get; set; }
