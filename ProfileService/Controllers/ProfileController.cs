@@ -2,11 +2,11 @@ using BuildingBlocks.Shared.Controllers;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProfileService.Features.ChangePassword;
 using ProfileService.Features.UpdateProfile;
 using ProfileService.Features.UpdateProfile.Dtos;
 using ProfileService.Features.UploadProfilePicture;
 using ProfileService.Features.ViewProfile;
-using System.Security.Claims;
 
 namespace ProfileService.Controllers
 {
@@ -39,12 +39,26 @@ namespace ProfileService.Controllers
 
         [Authorize]
         [HttpPost("picture")]
-        public async Task<IActionResult> UploadPicture([FromForm] IFormFile profilePicture)
+        [Consumes("multipart/form-data")]
+        // Allow bodies beyond Kestrel's 30MB default so oversized files reach our own
+        // validation and get the spec'd 400 VAL_FILE_TOO_LARGE instead of a connection reset.
+        [RequestSizeLimit(50 * 1024 * 1024)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 50 * 1024 * 1024)]
+        public async Task<IActionResult> UploadPicture(IFormFile profilePicture)
         {
 
             var result = await _mediator.Send(new UploadProfilePictureCommand(profilePicture));
 
             return FromResult(result, "Profile picture updated successfully.", 200);
+        }
+
+        [Authorize]
+        [HttpPut("change-password")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordCommand command)
+        {
+            var result = await _mediator.Send(command);
+
+            return FromResult(result, "Password changed successfully.", StatusCodes.Status200OK);
         }
     }
 }

@@ -1,3 +1,4 @@
+using BuildingBlocks.Shared.Middleware;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -128,7 +129,20 @@ namespace ProfileService
                 }
             }
 
+            app.UseGlobalExceptionMiddleware();
+
             app.UseStaticFiles();
+
+            // Serve uploaded profile pictures from their external storage folder
+            // (outside the project tree, so debug-time file watchers don't restart the app).
+            var uploadsRoot = FileStorageService.GetUploadsRoot(app.Configuration);
+            Directory.CreateDirectory(uploadsRoot);
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsRoot),
+                RequestPath = "/uploads/profile-pictures"
+            });
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
