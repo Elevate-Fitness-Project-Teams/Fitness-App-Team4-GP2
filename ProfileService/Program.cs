@@ -24,6 +24,7 @@ namespace ProfileService
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+            builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 
             builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
@@ -81,6 +82,7 @@ namespace ProfileService
                 x.AddConsumer<UserProfileCompletedConsumer>();
                 x.AddConsumer<UserStatisticsUpdatedConsumer>();
                 x.AddConsumer<UserFitnessUpdatedConsumer>();
+                x.AddConsumer<UserEmailChangedConsumer>();
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
@@ -95,6 +97,15 @@ namespace ProfileService
             });
 
             builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddHttpClient<IAuthClient, AuthClient>(client =>
+            {
+                client.BaseAddress = new Uri(builder.Configuration["Services:Auth"]!);
+            });
+
+            //.AddTransientHttpErrorPolicy(policy =>
+            //    policy.WaitAndRetryAsync(3, retry =>
+            //        TimeSpan.FromSeconds(Math.Pow(2, retry))));
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -117,6 +128,7 @@ namespace ProfileService
                 }
             }
 
+            app.UseStaticFiles();
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
