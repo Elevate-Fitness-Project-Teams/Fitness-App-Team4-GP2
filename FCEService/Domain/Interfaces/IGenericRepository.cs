@@ -4,9 +4,6 @@ namespace FCEService.Domain.Interfaces
 {
     public interface IGenericRepository<T> where T : class
     {
-        Task<T?> GetByIdAsync(object id, CancellationToken ct = default);
-        Task<IReadOnlyList<T>> GetAllAsync(CancellationToken ct = default);
-
         Task<T?> FirstOrDefaultAsync(
             Expression<Func<T, bool>> predicate,
             CancellationToken ct = default);
@@ -20,13 +17,17 @@ namespace FCEService.Domain.Interfaces
             Expression<Func<T, bool>> predicate,
             CancellationToken ct = default);
 
-        Task AddAsync(T entity, CancellationToken ct = default);
+        
+        Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken ct = default);
+        
+        IQueryable<T> Query();
 
-   
-        void SaveInclude(T entity, params string[] updatedProperties);
+        Task AddAsync(T entity, CancellationToken ct = default);
 
         void Update(T entity);
 
-
+        void SaveInclude(T entity, params string[] includedProperties);
     }
 }
+
+   
