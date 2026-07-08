@@ -4,6 +4,8 @@ using FCEService.Domain.Services;
 using FCEService.Infrastructure.Persistence;
 using FCEService.Infrastructure.Persistence.Repositories;
 using FluentValidation;
+using Mapster;
+using MapsterMapper;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -59,7 +61,13 @@ namespace FCEService
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
                 cfg.AddOpenBehavior(typeof(BuildingBlocks.Shared.Behaviors.ValidationBehavior<,>));
             });
-            
+
+            var config = TypeAdapterConfig.GlobalSettings;
+            config.Scan(Assembly.GetExecutingAssembly());
+            builder.Services.AddSingleton(config).AddScoped<IMapper, ServiceMapper>();
+
+
+
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             builder.Services.AddScoped<IFceUnitOfWork,FceUnitofWork>();
