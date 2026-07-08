@@ -5,8 +5,11 @@ using AuthService.Features.Login;
 using AuthService.Features.Logout;
 using AuthService.Features.RefreshToken;
 using AuthService.Features.ResetPassword;
+using AuthService.Features.UpdateEmail;
+using AuthService.Features.UpdateEmail.Dtos;
 using AuthService.Features.VerifyOtp;
 using BuildingBlocks.Shared.Controllers;
+using MassTransit.Mediator;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -87,6 +90,16 @@ namespace AuthService.Controllers
             var result = await _mediatR.Send(new LogoutCommand());
 
             return FromResult(result, "Logged out successfully.", 200);
+        }
+
+        //For Profile Service
+        [Authorize]
+        [HttpPut("update-email")]
+        public async Task<IActionResult> UpdateEmail([FromBody] UpdateEmailRequest request)
+        {
+            var result = await _mediatR.Send(new UpdateEmailCommand(request.NewEmail));
+
+            return FromResult(result, "Email updated successfully.", 200);
         }
     }
 }
