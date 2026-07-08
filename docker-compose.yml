@@ -47,8 +47,8 @@ services:
       context: .
       dockerfile: SubscriptionService/Dockerfile
 
-  # workoutservice:
-  #   image: ${DOCKER_REGISTRY-}workoutservice
-  #   build:
-  #     context: .
-  #     dockerfile: WorkoutService/Dockerfile
+  workoutservice:
+    image: ${DOCKER_REGISTRY-}workoutservice
+    build:
+      context: .
+      dockerfile: WorkoutService/Dockerfile
