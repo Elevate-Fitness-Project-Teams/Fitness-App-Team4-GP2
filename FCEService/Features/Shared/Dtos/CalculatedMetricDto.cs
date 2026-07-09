@@ -1,6 +1,6 @@
 ﻿using FCEService.Domain.Enums;
 
-namespace FCEService.Features.CalculateMetrics.Queries
+namespace FCEService.Features.Shared.Dtos
 {
     public sealed record CalculatedMetricDto(
        Guid UserId,

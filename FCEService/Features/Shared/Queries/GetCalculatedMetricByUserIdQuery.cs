@@ -1,9 +1,10 @@
 ﻿using BuildingBlocks.Shared.Results;
 using FCEService.Domain.Entities;
 using FCEService.Domain.Interfaces;
+using FCEService.Features.Shared.Dtos;
 using MediatR;
 
-namespace FCEService.Features.CalculateMetrics.Queries
+namespace FCEService.Features.Shared.Queries
 {
     public sealed record GetCalculatedMetricByUserIdQuery(Guid UserId)
           : IRequest<Result<CalculatedMetricDto?>>;

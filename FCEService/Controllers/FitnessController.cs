@@ -38,21 +38,21 @@ namespace FCEService.Controllers
             return FromResult(result, "Fitness metrics calculated successfully.", 200);
         }
 
+
         [HttpGet("metrics/{userId:guid}")]
-        public async Task<IActionResult> GetFitnessMetrics(Guid userId,CancellationToken ct)
+        public async Task<IActionResult> GetMetrics(Guid userId, CancellationToken ct)
         {
-            var result = await _sender.Send(new GetFitnessMetricsQuery(userId),ct);
-            return FromResult(result, "Fitness metrics retrieved successfully", 200);
+            var result = await _sender.Send(new GetFitnessMetricsQuery(userId), ct);
+            return FromResult(result, "Fitness metrics retrieved successfully.", 200);
         }
 
-        
         [HttpGet("stats/{userId:guid}")]
         public async Task<IActionResult> GetStats(
-            [FromRoute] Guid userId,
+            Guid userId,
             CancellationToken ct)
         {
             var result = await _sender.Send(new GetFitnessStatsQuery(userId), ct);
-            return FromResult(result, "Stats retrieved successfully.", 200);
+            return FromResult(result, "Fitness Stats retrieved successfully.", 200);
         }
     }
 
