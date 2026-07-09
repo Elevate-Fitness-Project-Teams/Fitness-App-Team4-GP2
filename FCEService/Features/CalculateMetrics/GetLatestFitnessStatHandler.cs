@@ -7,9 +7,9 @@ using MediatR;
 namespace FCEService.Features.CalculateMetrics
 {
     public sealed class GetLatestFitnessStatHandler(IFceUnitOfWork uow)
-          : IRequestHandler<GetLatestFitnessStatQuery, Result<UserFitnessStat>>
+          : IRequestHandler<GetLatestFitnessStatQuery, Result<UserFitnessStatDto>>
     {
-        public async Task<Result<UserFitnessStat>> Handle(
+        public async Task<Result<UserFitnessStatDto>> Handle(
             GetLatestFitnessStatQuery query,
             CancellationToken ct)
         {
@@ -19,8 +19,10 @@ namespace FCEService.Features.CalculateMetrics
                 ct);
 
             return stat is null
-                ? Result<UserFitnessStat>.Fail(FceErrors.StatsNotFound)
-                : Result<UserFitnessStat>.OK(stat);
+                ? Result<UserFitnessStatDto>.Fail(FceErrors.StatsNotFound)
+                : Result<UserFitnessStatDto>.OK(new UserFitnessStatDto(
+                    stat.UserId, stat.Weight, stat.Height, stat.Age,
+                    stat.Gender, stat.ActivityLevel, stat.Goal, stat.RecordedAt));
         }
     }
 }

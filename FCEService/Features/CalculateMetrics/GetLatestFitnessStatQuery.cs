@@ -5,5 +5,5 @@ using MediatR;
 namespace FCEService.Features.CalculateMetrics
 {
     public sealed record GetLatestFitnessStatQuery(Guid UserId)
-         : IRequest<Result<UserFitnessStat>>;
+         : IRequest<Result<UserFitnessStatDto>>;
 }
