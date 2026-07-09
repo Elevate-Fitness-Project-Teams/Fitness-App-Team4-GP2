@@ -45,6 +45,25 @@ namespace ProfileService.Infrastructure.Persistence.Consumers
                 DistanceUnit = "km"
             });
 
+            await _db.PrivacySettings.AddAsync(new PrivacySetting
+            {
+                UserId = message.UserId,
+                AllowDataSharing = false,
+                ProfileVisibility = Domain.Enums.ProfileVisibilityEnum.Private,
+                ShowProgressToFriends = false
+            });
+
+            await _db.NotificationSettings.AddAsync(new NotificationSetting
+            {
+                UserId = message.UserId,
+                AchievementAlerts = true,
+                PushNotifications = true,
+                EmailNotifications = true,
+                MealReminders = true, 
+                WeeklyReports = true,
+                WorkoutReminders = true,
+            });
+
             await _db.SaveChangesAsync();
         }
     }
