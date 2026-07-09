@@ -1,7 +1,7 @@
 ﻿using FCEService.Domain.Entities;
 using FCEService.Features.CalculateMetrics;
-using FCEService.Features.CalculateMetrics.Queries;
 using FCEService.Features.SaveFitnessStats;
+using FCEService.Features.Shared.Dtos;
 using Mapster;
 
 namespace FCEService.Common.Mappings

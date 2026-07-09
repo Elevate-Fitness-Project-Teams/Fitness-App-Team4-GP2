@@ -1,7 +1,7 @@
 ﻿using BuildingBlocks.Shared.Results;
-using FCEService.Features.CalculateMetrics.Commands;
-using FCEService.Features.CalculateMetrics.Queries;
+using FCEService.Features.Shared.Commands;
 using FCEService.Features.Shared.FCEService.Features.UserFitnessStats.Queries;
+using FCEService.Features.Shared.Queries;
 using Mapster;
 using MediatR;
 

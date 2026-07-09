@@ -1,13 +1,13 @@
-﻿ using BuildingBlocks.Shared.Results;
+﻿using BuildingBlocks.Shared.Results;
 using FCEService.Common;
 using FCEService.Domain.Entities;
 using FCEService.Domain.Enums;
 using FCEService.Domain.Interfaces;
 using FCEService.Domain.Services;
-using FCEService.Features.CalculateMetrics.Queries;
+using FCEService.Features.Shared.Dtos;
 using MediatR;
 
-namespace FCEService.Features.CalculateMetrics.Commands
+namespace FCEService.Features.Shared.Commands
     {
         public sealed record CreateCalculatedMetricCommand(
             Guid UserId,double Weight, double Height,int Age,
