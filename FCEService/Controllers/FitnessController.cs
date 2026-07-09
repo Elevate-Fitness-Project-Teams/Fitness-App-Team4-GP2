@@ -48,11 +48,11 @@ namespace FCEService.Controllers
         
         [HttpGet("stats/{userId:guid}")]
         public async Task<IActionResult> GetStats(
-            [FromRoute] Guid userId,
+            Guid userId,
             CancellationToken ct)
         {
             var result = await _sender.Send(new GetFitnessStatsQuery(userId), ct);
-            return FromResult(result, "Stats retrieved successfully.", 200);
+            return FromResult(result, "Fitness Stats retrieved successfully.", 200);
         }
     }
 
