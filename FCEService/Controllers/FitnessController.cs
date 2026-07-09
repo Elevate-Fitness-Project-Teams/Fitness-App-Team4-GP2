@@ -31,10 +31,10 @@ namespace FCEService.Controllers
        
         [HttpPost("calculate")]
         public async Task<IActionResult> Calculate(
-            [FromBody] UserIdRequest dto,
+            [FromBody] CalculateMetricsCommand command,
             CancellationToken ct)
         {
-            var result = await _sender.Send(new CalculateMetricsCommand(dto.UserId), ct);
+            var result = await _sender.Send(command, ct);
             return FromResult(result, "Fitness metrics calculated successfully.", 200);
         }
 
