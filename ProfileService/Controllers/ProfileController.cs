@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using ProfileService.Features.ChangePassword;
 using ProfileService.Features.UpdateProfile;
 using ProfileService.Features.UpdateProfile.Dtos;
+using ProfileService.Features.UpdateSettings;
+using ProfileService.Features.UpdateSettings.Dtos;
 using ProfileService.Features.UploadProfilePicture;
 using ProfileService.Features.ViewProfile;
 using ProfileService.Features.ViewSettings;
@@ -69,6 +71,15 @@ namespace ProfileService.Controllers
             var result = await _mediator.Send(new ViewSettingsQuery());
 
             return FromResult(result, "Settings retrieved successfully.", 200);
+        }
+
+        [Authorize]
+        [HttpPut("/api/v1/settings")]
+        public async Task<IActionResult> UpdateSettings(UpdateSettingsRequest request)
+        {
+            var result = await _mediator.Send(new UpdateSettingsCommand(request));
+
+            return FromResult(result, "Settings Updated successfully.", 200);
         }
     }
 }
