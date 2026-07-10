@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace SmartCoachService.Infrastructure.Persistence.Migrations
+namespace SmartCoachService.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,7 @@ namespace SmartCoachService.Infrastructure.Persistence.Migrations
                 columns: table => new
                 {
                     SessionId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false, defaultValue: "New Conversation")
                 },
@@ -29,8 +29,7 @@ namespace SmartCoachService.Infrastructure.Persistence.Migrations
                 name: "RecommendationCaches",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserContextJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     HomeFeedDataJson = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CachedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
