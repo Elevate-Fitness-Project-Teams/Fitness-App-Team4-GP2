@@ -1,5 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using FCEService.Domain.Entities;
+using FCEService.Infrastructure.Persistence.Seed;
+using Microsoft.EntityFrameworkCore;
 
 namespace FCEService.Infrastructure.Persistence
 {
@@ -17,8 +18,11 @@ namespace FCEService.Infrastructure.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(FCEDbContext).Assembly);
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<FitnessPlanConfig>().HasData(FitnessPlanConfigSeed.GetSeedData());
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(FCEDbContext).Assembly);
+
+           
         }
     }
 }
