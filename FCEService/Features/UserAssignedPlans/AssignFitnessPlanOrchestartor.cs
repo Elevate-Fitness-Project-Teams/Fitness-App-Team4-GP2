@@ -18,7 +18,7 @@ namespace FCEService.Features.UserAssignedPlans
             public async Task<Result<AssignFitnessPlanResponse>> Handle(
                 AssignFitnessPlanCommand command, CancellationToken ct)
             {
-            // Read (Queries)
+           
             var metricResult = await sender.Send(new GetCalculatedMetricByUserIdQuery(command.UserId), ct);
                 if (metricResult.IsFailure)
                     return Result<AssignFitnessPlanResponse>.Fail(metricResult.Errors);
@@ -48,9 +48,7 @@ namespace FCEService.Features.UserAssignedPlans
                 if (priorActive is not null && priorActive.PlanId == matchingPlan.PlanId)
                     return Result<AssignFitnessPlanResponse>.Fail(FceErrors.PlanAlreadyAssigned);
 
-                ////Write (Transaction )
-                //await uow.BeginTransactionAsync(ct);
-
+               
                 if (priorActive is not null)
                 {
                     var deactivateResult = await sender.Send(
@@ -58,10 +56,8 @@ namespace FCEService.Features.UserAssignedPlans
                             priorActive.Id, priorActive.UserId, priorActive.PlanId, priorActive.AssignedAt), ct);
 
                     if (deactivateResult.IsFailure)
-                    {
-                        //await uow.RollbackTransactionAsync(ct);
-                        return Result<AssignFitnessPlanResponse>.Fail(deactivateResult.Errors);
-                    }
+                      return Result<AssignFitnessPlanResponse>.Fail(deactivateResult.Errors);
+                    
 
                     var historyResult = await sender.Send(
                         new AppendUserPlanHistoryCommand(
@@ -69,22 +65,19 @@ namespace FCEService.Features.UserAssignedPlans
                             DateTime.UtcNow, "Reassigned due to updated goal/status match"), ct);
 
                     if (historyResult.IsFailure)
-                    {
-                        //await uow.RollbackTransactionAsync(ct);
+                   
                         return Result<AssignFitnessPlanResponse>.Fail(historyResult.Errors);
-                    }
+                    
                 }
 
                 var createResult = await sender.Send(
                     new CreateUserAssignedPlanCommand(command.UserId, matchingPlan.PlanId), ct);
 
                 if (createResult.IsFailure)
-                {
-                    //await uow.RollbackTransactionAsync(ct);
-                    return Result<AssignFitnessPlanResponse>.Fail(createResult.Errors);
-                }
+                return Result<AssignFitnessPlanResponse>.Fail(createResult.Errors);
+                
 
-                //await uow.CommitTransactionAsync(ct);
+                
 
                 var response = matchingPlan.Adapt<AssignFitnessPlanResponse>() with
                 {
