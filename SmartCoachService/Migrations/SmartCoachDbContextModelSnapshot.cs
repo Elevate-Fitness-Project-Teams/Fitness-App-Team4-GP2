@@ -8,7 +8,7 @@ using SmartCoachService.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace SmartCoachService.Infrastructure.Persistence.Migrations
+namespace SmartCoachService.Migrations
 {
     [DbContext(typeof(SmartCoachDbContext))]
     partial class SmartCoachDbContextModelSnapshot : ModelSnapshot
@@ -70,8 +70,8 @@ namespace SmartCoachService.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(150)")
                         .HasDefaultValue("New Conversation");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("SessionId");
 
@@ -82,11 +82,9 @@ namespace SmartCoachService.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("SmartCoachService.Domain.Entities.RecommendationCache", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CachedAt")
                         .HasColumnType("datetime2");
