@@ -1,6 +1,4 @@
-﻿namespace FCEService.Features.UserAssignedPlans.Queries
-{
-    using BuildingBlocks.Shared.Results;
+﻿    using BuildingBlocks.Shared.Results;
     using global::FCEService.Domain.Enums;
     using global::FCEService.Domain.Interfaces;
     using global::FCEService.Features.UserAssignedPlans.Dtos;
@@ -29,4 +27,4 @@
             }
         }
     }
-}
+
