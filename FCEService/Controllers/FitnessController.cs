@@ -4,6 +4,7 @@ using FCEService.Features.GetFitnessMetrics;
 using FCEService.Features.GetFitnessStats;
 using FCEService.Features.SaveFitnessStats;
 using FCEService.Features.Shared;
+using FCEService.Features.UserAssignedPlans;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -53,6 +54,14 @@ namespace FCEService.Controllers
         {
             var result = await _sender.Send(new GetFitnessStatsQuery(userId), ct);
             return FromResult(result, "Fitness Stats retrieved successfully.", 200);
+        }
+
+        [HttpPost("assign-plan")]
+        public async Task<IActionResult> AssignPlan(
+        [FromBody] AssignFitnessPlanCommand command, CancellationToken ct)
+        {
+            var result = await _sender.Send(command, ct);
+            return FromResult(result, "Fitness plan assigned successfully.", StatusCodes.Status200OK);
         }
     }
 
