@@ -31,7 +31,7 @@ namespace FCEService.Common
      
         public static Error StatsNotFound =>
             Error.NotFound("FCE_STATS_NOT_FOUND",
-                "No fitness stats found. Please submit your stats via /weight-goal-activity first.");
+                "No User fitness stats found. Please submit your stats via /weight-goal-activity first.");
 
         public static Error MetricsNotCalculated =>
             Error.Validation("FCE_METRICS_NOT_CALCULATED",

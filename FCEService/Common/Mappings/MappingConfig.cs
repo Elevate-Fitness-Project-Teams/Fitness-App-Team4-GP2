@@ -4,6 +4,8 @@ using FCEService.Features.GetFitnessMetrics;
 using FCEService.Features.GetFitnessStats;
 using FCEService.Features.SaveFitnessStats;
 using FCEService.Features.Shared.Dtos;
+using FCEService.Features.UserAssignedPlans;
+using FCEService.Features.UserAssignedPlans.Dtos;
 using Mapster;
 
 namespace FCEService.Common.Mappings
@@ -29,6 +31,11 @@ namespace FCEService.Common.Mappings
 
             config.NewConfig<CalculatedMetricDto, GetFitnessMetricsResponse>()
                  .Map(dest => dest.Status, src => src.Status.ToString());
+
+            config.NewConfig<FitnessPlanConfigDto, AssignFitnessPlanResponse>()
+      .Map(dest => dest.Goal, src => src.Goal.ToString())
+      .Map(dest => dest.Status, src => src.Status.ToString())
+      .Ignore(dest => dest.AssignedAt); // بتتحدد يدويًا بعد الـ Adapt من createResult.Value
 
         }
     }
