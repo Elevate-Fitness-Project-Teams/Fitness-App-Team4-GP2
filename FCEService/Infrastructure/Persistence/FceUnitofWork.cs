@@ -1,6 +1,7 @@
 ﻿using FCEService.Domain.Entities;
 using FCEService.Domain.Interfaces;
 using FCEService.Infrastructure.Persistence.Repositories;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -9,8 +10,9 @@ namespace FCEService.Infrastructure.Persistence
     public class FceUnitofWork(FCEDbContext db) : IFceUnitOfWork
     {
         private readonly Dictionary<Type, object> _repositories = new();
+        private IFitnessPlanConfigRepository? _fitnessPlanConfigRepository;
 
-        //private IDbContextTransaction? _transaction;
+        
 
         public IGenericRepository<T> GetRepository<T>() where T : class
         {
@@ -21,6 +23,10 @@ namespace FCEService.Infrastructure.Persistence
             _repositories[EntityType] = NewRepo;
             return NewRepo;
         }
+
+        public IFitnessPlanConfigRepository FitnessPlanConfigs
+           => _fitnessPlanConfigRepository ??= new FitnessPlanConfigRepository(db);
+
         public Task<int> SaveChangesAsync(CancellationToken ct = default)
             => db.SaveChangesAsync(ct);
     }

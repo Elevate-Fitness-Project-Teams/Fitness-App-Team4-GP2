@@ -37,6 +37,7 @@
 
   <ItemGroup>
     <Folder Include="Domain\Extensions\" />
+    <Folder Include="Features\UserAssignedPlans\Commands\" />
   </ItemGroup>
 
 </Project>
