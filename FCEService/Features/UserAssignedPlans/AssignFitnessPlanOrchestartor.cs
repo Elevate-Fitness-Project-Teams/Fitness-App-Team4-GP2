@@ -62,7 +62,7 @@ namespace FCEService.Features.UserAssignedPlans
                     var historyResult = await sender.Send(
                         new AppendUserPlanHistoryCommand(
                             priorActive.UserId, priorActive.PlanId, priorActive.AssignedAt,
-                            DateTime.UtcNow, "Reassigned due to updated goal/status match"), ct);
+                            DateTime.UtcNow), ct);
 
                     if (historyResult.IsFailure)
                    

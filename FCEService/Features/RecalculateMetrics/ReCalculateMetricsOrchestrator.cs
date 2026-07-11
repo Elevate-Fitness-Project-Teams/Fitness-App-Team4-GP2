@@ -33,13 +33,10 @@ namespace FCEService.Features.RecalculateMetrics
 
                 var stat = statResult.Value;
 
-                // newWeight (لو موجودة) بتتستخدم في المعادلة بس — مفيش Insert لصف
-                // UserFitnessStat جديد (الـ Backend Notes بتذكر 3 جداول بس: CalculatedMetrics,
-                // UserAssignedPlans, UserPlanHistory). تسجيل الوزن الدائم (WeightHistory)
-                // مسؤولية Progress Tracking Service (Sprint 10)، مش FCEService.
+            
                 var weightForCalculation = command.NewWeight ?? stat.Weight;
 
-               // await uow.BeginTransactionAsync(ct);
+            
 
                 var updateMetricResult = await sender.Send(
                     new UpdateCalculatedMetricCommand(
@@ -48,7 +45,7 @@ namespace FCEService.Features.RecalculateMetrics
 
                 if (updateMetricResult.IsFailure)
                 {
-                //    await uow.RollbackTransactionAsync(ct);
+             
                     return Result<RecalculateMetricsResponse>.Fail(updateMetricResult.Errors);
                 }
 
@@ -62,13 +59,13 @@ namespace FCEService.Features.RecalculateMetrics
 
                     if (planConfigResult.IsFailure)
                     {
-                       // await uow.RollbackTransactionAsync(ct);
+                     
                         return Result<RecalculateMetricsResponse>.Fail(planConfigResult.Errors);
                     }
 
                     if (planConfigResult.Value is not { } matchingPlan)
                     {
-                        //await uow.RollbackTransactionAsync(ct);
+                      
                         return Result<RecalculateMetricsResponse>.Fail(
                             FceErrors.NoMatchingPlan(stat.Goal.ToString(), newMetric.Status.ToString()));
                     }
@@ -76,7 +73,7 @@ namespace FCEService.Features.RecalculateMetrics
                     var priorActiveResult = await sender.Send(new GetActiveUserAssignedPlanQuery(command.UserId), ct);
                     if (priorActiveResult.IsFailure)
                     {
-                       // await uow.RollbackTransactionAsync(ct);
+                   
                         return Result<RecalculateMetricsResponse>.Fail(priorActiveResult.Errors);
                     }
 
@@ -88,22 +85,18 @@ namespace FCEService.Features.RecalculateMetrics
 
                         if (deactivateResult.IsFailure)
                         {
-                           // await uow.RollbackTransactionAsync(ct);
+                          
                             return Result<RecalculateMetricsResponse>.Fail(deactivateResult.Errors);
                         }
 
-                        var reasonCode = string.IsNullOrWhiteSpace(command.Reason)
-                            ? PlanChangeReason.WeightUpdate.ToReasonCode()
-                            : command.Reason;
-
+                      
                         var historyResult = await sender.Send(
                             new AppendUserPlanHistoryCommand(
                                 priorActive.UserId, priorActive.PlanId, priorActive.AssignedAt,
-                                DateTime.UtcNow, reasonCode), ct);
+                                DateTime.UtcNow,command.Reason), ct);
 
                         if (historyResult.IsFailure)
                         {
-                            //await uow.RollbackTransactionAsync(ct);
                             return Result<RecalculateMetricsResponse>.Fail(historyResult.Errors);
                         }
                     }
@@ -113,12 +106,10 @@ namespace FCEService.Features.RecalculateMetrics
 
                     if (createPlanResult.IsFailure)
                     {
-                       // await uow.RollbackTransactionAsync(ct);
+                     
                         return Result<RecalculateMetricsResponse>.Fail(createPlanResult.Errors);
                     }
                 }
-
-                //await uow.CommitTransactionAsync(ct);
 
                 var response = new RecalculateMetricsResponse(
                     command.UserId,
