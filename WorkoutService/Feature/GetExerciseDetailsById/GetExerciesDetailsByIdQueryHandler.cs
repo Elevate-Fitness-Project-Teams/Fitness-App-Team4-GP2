@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using WorkoutService.BuildingBlock.HandlersResponse;
 using WorkoutService.Domain.Entities;
 using WorkoutService.Feature.GetExerciseDetailsById.Dtos__ViewModels;
@@ -16,25 +17,27 @@ namespace WorkoutService.Feature.GetExerciseDetailsById
         }
         public async Task<HandlerResponse<ExerciseDetailsDto>> Handle(GetExerciesDetailsByIdQuery request, CancellationToken cancellationToken)
         {
-            var exercise = await exerciseRepository.GetByIdAsync(request.ExerciseId);
+            var exercise = await exerciseRepository.GetTable()
+                .Where(e=>e.ExerciseId== request.ExerciseId)
+                .Select(e=>new ExerciseDetailsDto
+                {
+                    ExerciseId = e.ExerciseId,
+                    Name = e.Name,
+                    TargetMuscles = e.TargetMuscles,
+                    Equipment = e.Equipment,
+                    Difficulty = e.Difficulty,
+                    Description = e.Description,
+                    VideoUrl = e.VideoUrl
+                })
+                .FirstOrDefaultAsync(cancellationToken);
             
             if (exercise == null)
             {
                 return HandlerResponseFactory.Failure<ExerciseDetailsDto>(HandlerErrorCodesEnum.NotFoundExerciesWithSpecificID);
             }
 
-            var exerciseDetailsDto = new ExerciseDetailsDto
-            {
-                ExerciseId = exercise.ExerciseId,
-                Name = exercise.Name,
-                TargetMuscles = exercise.TargetMuscles,
-                Equipment = exercise.Equipment,
-                Difficulty = exercise.Difficulty,
-                Description = exercise.Description,
-                VideoUrl = exercise.VideoUrl
-            };
 
-            return HandlerResponseFactory.Success(exerciseDetailsDto);
+            return HandlerResponseFactory.Success(exercise);
         }
     }
 }

@@ -24,7 +24,8 @@ namespace WorkoutService.Feature.GetWorkOutsByCategoryName
                 return HandlerResponseFactory.Failure<List<WorkoutByCategoryDto>>(HandlerErrorCodesEnum.InvalidCategoryName);
             }
 
-            var workouts = await workOutRepository.GetAllAsync(expression: w => w.Category.Equals(request.CategoryName), include: e => e.Include(e => e.WorkoutPlan))
+            var workouts = await workOutRepository.GetTable()
+                .Where(w => w.Category == request.CategoryName)
                 .Select(w => new WorkoutByCategoryDto
                 {
                     WorkoutId = w.WorkoutId,
@@ -42,7 +43,7 @@ namespace WorkoutService.Feature.GetWorkOutsByCategoryName
 
             if (!workouts.Any())
             {
-                HandlerResponseFactory.Failure<List<WorkoutByPlanDto>>(HandlerErrorCodesEnum.NotFoundAnyWorkOutsForThisCategoryName);
+              return  HandlerResponseFactory.Failure<List<WorkoutByCategoryDto>>(HandlerErrorCodesEnum.NotFoundAnyWorkOutsForThisCategoryName);
             }
 
             return HandlerResponseFactory.Success(workouts);

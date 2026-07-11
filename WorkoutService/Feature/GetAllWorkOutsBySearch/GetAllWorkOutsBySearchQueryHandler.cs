@@ -4,18 +4,17 @@ using WorkoutService.BuildingBlock.HandlersResponse;
 using WorkoutService.Domain.Entities;
 using WorkoutService.Domain.Enums;
 using WorkoutService.Feature.GetAllWorkOuts.Dtos;
-using WorkoutService.Feature.SharedFeaturs.Queries.GetAllWorkOutsQuery;
 using WorkoutService.Infrastructure.Persistence.Repositries;
 
 namespace WorkoutService.Feature.GetAllWorkOuts
 {
     public class GetAllWorkOutsBySearchQueryHandler : IRequestHandler<GetAllWorkOutsBySearchQuery, HandlerResponse<List<WorkOutDto>>>
     {
-        private readonly IMediator mediator;
+        private readonly IGenericRepository<Workout> workOutrepository;
 
-        public GetAllWorkOutsBySearchQueryHandler(IMediator mediator)
+        public GetAllWorkOutsBySearchQueryHandler( IGenericRepository<Workout> WorkOutrepository)
         {
-            this.mediator = mediator;
+            workOutrepository = WorkOutrepository;
         }
         public async Task<HandlerResponse<List<WorkOutDto>>> Handle(GetAllWorkOutsBySearchQuery request, CancellationToken cancellationToken)
         {
@@ -25,13 +24,31 @@ namespace WorkoutService.Feature.GetAllWorkOuts
             var pageSize = request.PageSize;
             if (pageSize < 1 || pageSize > 100) pageSize = 10;
 
-            var WorkoutsQuery= await mediator.Send(new GetAllWorkOutsQuery(cancellationToken));
-            if (!WorkoutsQuery.IsSuccess)
+
+            var workouts = workOutrepository.GetAllAsync().Select(
+                e =>new Workout
+            { 
+               WorkoutId= e.WorkoutId,
+               Name= e.Name,
+               Category= e.Category,
+               Difficulty= e.Difficulty,
+               DurationInMinutes= e.DurationInMinutes,
+               WorkoutPlan=new WorkoutPlan
+                {
+                   PlanId= e.WorkoutPlan.PlanId,
+                   Name= e.WorkoutPlan.Name,
+                   Difficulty= e.WorkoutPlan.Difficulty,
+                   Description= e.WorkoutPlan.Description,
+                   Goal= e.WorkoutPlan.Goal,
+                   Status= e.WorkoutPlan.Status
+                 }
+
+             });
+            if (workouts is null || !workouts.Any())
             {
-                return HandlerResponseFactory.Failure<List<WorkOutDto>>(WorkoutsQuery.ErrorCode);
+                return HandlerResponseFactory.Failure<List<WorkOutDto>>(HandlerErrorCodesEnum.NotFoundAnyWorkOuts);
             }
 
-            var workouts = WorkoutsQuery.Data;
 
             if (!string.IsNullOrEmpty(request.Search))
             {
