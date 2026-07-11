@@ -13,6 +13,7 @@ namespace FCEService.Features.RecalculateMetrics
         public sealed record RecalculateMetricsCommand(
             Guid UserId, string? Reason, double? NewWeight, string? TriggeredBy)
             : IRequest<Result<RecalculateMetricsResponse>>;
+        public sealed record RecalculateMetricsRequestBody(string? Reason, double? NewWeight, string? TriggeredBy);
 
         public sealed class RecalculateMetricsOrchestrator(ISender sender, IFceUnitOfWork uow)
             : IRequestHandler<RecalculateMetricsCommand, Result<RecalculateMetricsResponse>>
