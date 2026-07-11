@@ -20,7 +20,8 @@ namespace FCEService.Features.Shared.Queries
             var metric = await repository.FirstOrDefaultAsync(m => m.UserId == query.UserId, ct);
 
             var dto = metric is null ? null : new CalculatedMetricDto(
-                metric.UserId, metric.Bmr, metric.Tdee, metric.CalorieTarget,
+                metric.Id
+               ,metric.UserId, metric.Bmr, metric.Tdee, metric.CalorieTarget,
                 metric.Status, metric.CalculatedAt, metric.LastUpdatedAt);
 
             return Result<CalculatedMetricDto?>.OK(dto);

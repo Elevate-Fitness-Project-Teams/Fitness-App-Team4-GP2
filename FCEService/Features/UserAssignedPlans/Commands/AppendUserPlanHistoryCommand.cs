@@ -6,7 +6,7 @@ using MediatR;
 namespace FCEService.Features.UserAssignedPlans.Commands
 {
     public sealed record AppendUserPlanHistoryCommand(
-         Guid UserId, string PlanId, DateTime AssignedAt, DateTime? EndedAt, string ReasonForChange)
+         Guid UserId, string PlanId, DateTime AssignedAt, DateTime? EndedAt, string? ReasonForChange= null)
          : IRequest<Result>;
 
     public sealed class AppendUserPlanHistoryHandler(IFceUnitOfWork uow)

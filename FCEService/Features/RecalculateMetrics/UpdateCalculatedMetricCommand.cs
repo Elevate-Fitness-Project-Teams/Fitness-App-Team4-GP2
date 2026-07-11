@@ -7,20 +7,20 @@ using FCEService.Domain.Services;
 using FCEService.Features.Shared.Dtos;
 using MediatR;
 
-namespace FCEService.Features.Shared.Commands
-    {
-        public sealed record CreateCalculatedMetricCommand(
-            Guid UserId,double Weight, double Height,int Age,
-            Gender Gender,ActivityLevel ActivityLevel,FitnessGoal Goal)
-              : IRequest<Result<CalculatedMetricDto>>;
+namespace FCEService.Features.RecalculateMetrics
+{
+        public sealed record UpdateCalculatedMetricCommand(
+            int Id, Guid UserId, double Weight, double Height, int Age,
+            Gender Gender, ActivityLevel ActivityLevel, FitnessGoal Goal, DateTime CalculatedAt)
+            : IRequest<Result<CalculatedMetricDto>>;
 
-        public sealed class CreateCalculatedMetricCommandHandler(
-            IFceUnitOfWork uow,
-            IMetabolicCalculatorService calculator) 
-            : IRequestHandler<CreateCalculatedMetricCommand, Result<CalculatedMetricDto>>
+      
+        public sealed class UpdateCalculatedMetricHandler(
+            IFceUnitOfWork uow, IMetabolicCalculatorService calculator)
+            : IRequestHandler<UpdateCalculatedMetricCommand, Result<CalculatedMetricDto>>
         {
             public async Task<Result<CalculatedMetricDto>> Handle(
-                CreateCalculatedMetricCommand command, CancellationToken ct)
+                UpdateCalculatedMetricCommand command, CancellationToken ct)
             {
                 var bmr = calculator.CalculateBmr(command.Weight, command.Height, command.Age, command.Gender);
                 var tdee = calculator.CalculateTdee(bmr, command.ActivityLevel);
@@ -32,26 +32,29 @@ namespace FCEService.Features.Shared.Commands
                     return Result<CalculatedMetricDto>.Fail(FceErrors.InvalidCalculation);
 
                 var repository = uow.GetRepository<CalculatedMetric>(); 
+                var lastUpdatedAt = DateTime.UtcNow;
 
-                var metric = new CalculatedMetric
+                var stub = new CalculatedMetric
                 {
+                    Id = command.Id,
                     UserId = command.UserId,
                     Bmr = bmr,
                     Tdee = tdee,
                     CalorieTarget = calorieTarget,
                     Status = status,
-                    CalculatedAt = DateTime.UtcNow,
-                    LastUpdatedAt = null
+                    LastUpdatedAt = lastUpdatedAt
                 };
 
-                await repository.AddAsync(metric, ct);
-                await uow.SaveChangesAsync(ct); 
+                repository.SaveInclude(stub,
+                    nameof(CalculatedMetric.Bmr), nameof(CalculatedMetric.Tdee),
+                    nameof(CalculatedMetric.CalorieTarget), nameof(CalculatedMetric.Status),
+                    nameof(CalculatedMetric.LastUpdatedAt));
 
+                await uow.SaveChangesAsync(ct); 
                 return Result<CalculatedMetricDto>.OK(new CalculatedMetricDto(
-                    metric.Id,
-                    metric.UserId, metric.Bmr, metric.Tdee, metric.CalorieTarget,
-                    metric.Status, metric.CalculatedAt, metric.LastUpdatedAt));
+                    command.Id, command.UserId, bmr, tdee, calorieTarget, status,
+                    command.CalculatedAt, lastUpdatedAt));
             }
         }
-    }
+}
 

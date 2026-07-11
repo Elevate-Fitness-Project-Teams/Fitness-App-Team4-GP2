@@ -6,6 +6,7 @@ using FCEService.Features.GetFitnessMetrics;
 using FCEService.Features.GetFitnessPlanConfigs;
 using FCEService.Features.GetFitnessStats;
 using FCEService.Features.GetSpecificPlanConfiguration;
+using FCEService.Features.RecalculateMetrics;
 using FCEService.Features.SaveFitnessStats;
 using FCEService.Features.Shared;
 using FCEService.Features.UserAssignedPlans;
@@ -87,7 +88,14 @@ namespace FCEService.Controllers
             var result = await _sender.Send(new GetPlanConfigDetailQuery(planId), ct);
             return FromResult(result, "Plan configuration retrieved successfully.", StatusCodes.Status200OK);
         }
-
+        [HttpPut("recalculate/{userId:guid}")]
+        public async Task<IActionResult> Recalculate(
+        Guid userId, [FromBody] RecalculateMetricsRequestBody? body, CancellationToken ct)
+        {
+            var command = new RecalculateMetricsCommand(userId, body?.Reason, body?.NewWeight, body?.TriggeredBy);
+            var result = await _sender.Send(command, ct);
+            return FromResult(result, "Metrics recalculated successfully.", StatusCodes.Status200OK);
+        }
 
     }
 
