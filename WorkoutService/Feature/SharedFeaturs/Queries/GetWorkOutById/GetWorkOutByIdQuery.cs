@@ -4,6 +4,6 @@ using WorkoutService.Domain.Entities;
 
 namespace WorkoutService.Feature.SharedFeaturs.Queries.GetWorkOutById
 {
-    public record GetWorkOutByIdQuery(int Id) : IRequest<HandlerResponse<Workout>>;
+    public record GetWorkOutByIdQuery(int Id) : IRequest<HandlerResponse<WorkoutQueryDto>>;
 
 }

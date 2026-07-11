@@ -26,21 +26,21 @@ namespace WorkoutService.Feature.GetWorkOutDetails
             {
                 WorkoutId = WorkOut.WorkoutId,
                 PlanId=WorkOut.PlanId,
-                WorkoutName =WorkOut.Name,
-                WorkoutCategory=WorkOut.Category,
-                WorkoutDifficulty=WorkOut.Difficulty,
+                WorkoutName =WorkOut.WorkoutName,
+                WorkoutCategory=WorkOut.WorkoutCategory,
+                WorkoutDifficulty=WorkOut.WorkoutDifficulty,
                 DurationInMinutes=WorkOut.DurationInMinutes,
-                Exercises=WorkOut.WorkoutExercises
+                Exercises=WorkOut.Exercises
                 .OrderBy(e => e.OrderIndex)
                 .Select(e=>new WorkoutExerciseDto
                 {
                    ExerciseId=e.ExerciseId,
-                   ExerciseName=e.Exercise.Name,
-                   TargetMuscles=e.Exercise.TargetMuscles,
-                   ExerciseEquipment=e.Exercise.Equipment,
-                   ExerciseDifficulty=e.Exercise.Difficulty,
-                   ExerciseDescription=e.Exercise.Description,
-                   ExerciseVideoUrl=e.Exercise.VideoUrl,
+                   ExerciseName=e.ExerciseName,
+                   TargetMuscles=e.TargetMuscles,
+                   ExerciseEquipment=e.ExerciseEquipment,
+                   ExerciseDifficulty=e.ExerciseDifficulty,
+                   ExerciseDescription=e.ExerciseDescription,
+                   ExerciseVideoUrl=e.ExerciseVideoUrl,
                    SetsDefault=e.SetsDefault,
                    RepsDefault=e.RepsDefault,
                    RestTimeInSeconds=e.RestTimeInSeconds,

@@ -30,7 +30,7 @@ using WorkoutService.Feature.StartWorkOutSession.Dtos__ViewModels;
 
 namespace WorkoutService.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class WorkOutController : ApiControllerBase
     {
         private readonly IMediator mediator;
@@ -308,8 +308,7 @@ namespace WorkoutService.Controllers
         public async Task<IActionResult> StartWorkOutSession([FromQuery] int WorkoutId, [FromQuery] WorkOutDiffeculty Difficulty,
             [FromQuery] int PlannedDuration, CancellationToken cancellationToken)
         {
-            //var userId=HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userId = "User-Id-Test-123654987";
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var result = await mediator.Send(new StartWorkOutSessionCommand(WorkoutId,userId,Difficulty,PlannedDuration), cancellationToken);
             if (!result.IsSuccess)

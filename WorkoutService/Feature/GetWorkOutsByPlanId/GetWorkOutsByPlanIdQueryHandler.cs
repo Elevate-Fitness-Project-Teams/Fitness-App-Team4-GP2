@@ -22,7 +22,8 @@ namespace WorkoutService.Feature.GetWorkOutsByPlanId
                 return HandlerResponseFactory.Failure<List<WorkoutByPlanDto>>(HandlerErrorCodesEnum.PlanIdISNull);
             }
 
-            var workouts = await workOutRepository.GetAllAsync(expression: w => w.PlanId == request.PlanId, include: e => e.Include(e => e.WorkoutPlan))
+            var workouts = await workOutRepository.GetTable()
+                .Where(w => w.PlanId == request.PlanId)
                 .Select(w => new WorkoutByPlanDto
                 {
                     WorkoutId = w.WorkoutId,
@@ -40,7 +41,7 @@ namespace WorkoutService.Feature.GetWorkOutsByPlanId
 
             if (!workouts.Any())
             {
-                HandlerResponseFactory.Failure<List<WorkoutByPlanDto>>(HandlerErrorCodesEnum.NotFoundAnyWorkOutsForThisPlan);
+               return HandlerResponseFactory.Failure<List<WorkoutByPlanDto>>(HandlerErrorCodesEnum.NotFoundAnyWorkOutsForThisPlan);
             }
 
             return HandlerResponseFactory.Success(workouts);

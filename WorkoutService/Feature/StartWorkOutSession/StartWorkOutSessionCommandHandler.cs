@@ -63,20 +63,20 @@ namespace WorkoutService.Feature.StartWorkOutSession
             await workOutSessionRepository.AddAsync(Session);
             await workOutSessionRepository.SaveChangesAsync();
 
-            var exercisesInSession = workout.WorkoutExercises
+            var exercisesInSession = workout.Exercises
                 .Select(e => new WorkoutExerciseInSessionDto
                 {
                     ExerciseId=e.ExerciseId,
-                    Name=e.Exercise.Name,
-                    Description=e.Exercise.Description,
-                    Difficulty=e.Exercise.Difficulty,
-                    Equipment=e.Exercise.Equipment,
+                    Name=e.ExerciseName,
+                    Description=e.ExerciseDescription,
+                    Difficulty=e.ExerciseDifficulty,
+                    Equipment=e.ExerciseEquipment,
                     OrderIndex=e.OrderIndex,
                     RepsDefault=e.RepsDefault,
                     RestTimeInSeconds=e.RestTimeInSeconds,
                     SetsDefault=e.SetsDefault,
-                    TargetMuscles=e.Exercise.TargetMuscles,
-                    VideoUrl=e.Exercise.VideoUrl
+                    TargetMuscles=e.TargetMuscles,
+                    VideoUrl=e.ExerciseVideoUrl
 
                 }).ToList();
 
