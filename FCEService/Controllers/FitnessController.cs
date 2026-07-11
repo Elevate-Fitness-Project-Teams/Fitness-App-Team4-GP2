@@ -1,6 +1,9 @@
 ﻿using BuildingBlocks.Shared.Controllers;
+using FCEService.Common;
+using FCEService.Domain.Enums;
 using FCEService.Features.CalculateMetrics;
 using FCEService.Features.GetFitnessMetrics;
+using FCEService.Features.GetFitnessPlanConfigs;
 using FCEService.Features.GetFitnessStats;
 using FCEService.Features.SaveFitnessStats;
 using FCEService.Features.Shared;
@@ -10,6 +13,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 namespace FCEService.Controllers
 {
@@ -63,6 +67,20 @@ namespace FCEService.Controllers
             var result = await _sender.Send(command, ct);
             return FromResult(result, "Fitness plan assigned successfully.", StatusCodes.Status200OK);
         }
+
+        [HttpGet("plan-configs")]
+        public async Task<IActionResult> GetPlanConfigs(
+        [FromQuery] FitnessGoal? goal,
+        [FromQuery] PlanStatus? status,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken ct = default)
+        {
+            var result = await _sender.Send(new GetFitnessPlanConfigsQuery(goal, status, page, pageSize), ct);
+            return FromResult(result, "Fitness plan configurations retrieved successfully.", StatusCodes.Status200OK);
+        }
+
+
     }
 
 }
