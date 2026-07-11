@@ -1,8 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using FCEService.Common;
+using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace FCEService.Domain.Enums
 {
     [JsonConverter(typeof(JsonStringEnumMemberConverter))]
+    [TypeConverter(typeof(EnumMemberTypeConverter<PlanStatus>))]
     public enum PlanStatus
     {
         None = 0,

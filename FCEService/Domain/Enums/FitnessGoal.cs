@@ -1,9 +1,12 @@
-﻿using System.Runtime.Serialization;
+﻿using FCEService.Common;
+using System.ComponentModel;
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace FCEService.Domain.Enums
 {
     [JsonConverter(typeof(JsonStringEnumMemberConverter))]
+    [TypeConverter(typeof(EnumMemberTypeConverter<FitnessGoal>))]
     public enum FitnessGoal
     {
         None = 0,

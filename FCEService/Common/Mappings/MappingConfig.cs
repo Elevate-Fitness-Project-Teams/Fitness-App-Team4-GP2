@@ -1,6 +1,7 @@
 ﻿using FCEService.Domain.Entities;
 using FCEService.Features.CalculateMetrics;
 using FCEService.Features.GetFitnessMetrics;
+using FCEService.Features.GetFitnessPlanConfigs.FCEService.Features.GetFitnessPlanConfigs;
 using FCEService.Features.GetFitnessStats;
 using FCEService.Features.SaveFitnessStats;
 using FCEService.Features.Shared.Dtos;
@@ -33,9 +34,16 @@ namespace FCEService.Common.Mappings
                  .Map(dest => dest.Status, src => src.Status.ToString());
 
             config.NewConfig<FitnessPlanConfigDto, AssignFitnessPlanResponse>()
-      .Map(dest => dest.Goal, src => src.Goal.ToString())
-      .Map(dest => dest.Status, src => src.Status.ToString())
-      .Ignore(dest => dest.AssignedAt); // بتتحدد يدويًا بعد الـ Adapt من createResult.Value
+                 .Map(dest => dest.Goal, src => src.Goal.ToString())
+                 .Map(dest => dest.Status, src => src.Status.ToString())
+                 .Ignore(dest => dest.AssignedAt);
+
+            config.NewConfig<FitnessPlanConfig, FitnessPlanConfigResponse>()
+                 .Map(dest => dest.Goal, src => src.Goal.ToString())
+                 .Map(dest => dest.Status, src => src.Status.ToString());
+
+
+
 
         }
     }
