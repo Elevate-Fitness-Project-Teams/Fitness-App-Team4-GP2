@@ -41,6 +41,11 @@ namespace FCEService.Infrastructure.Persistence.Repositories
             return PaginatedResult<FitnessPlanConfig>.Create(
                 items, totalCount, pagination.Page, pagination.PageSize);
         }
+        public Task<FitnessPlanConfig?> GetByPlanIdAsync(string planId, CancellationToken ct = default)
+           => dbSet
+               .AsNoTracking()
+               .FirstOrDefaultAsync(p => p.PlanId == planId, ct);
+
     }
 }
 

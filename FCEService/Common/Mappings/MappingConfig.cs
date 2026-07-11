@@ -3,6 +3,7 @@ using FCEService.Features.CalculateMetrics;
 using FCEService.Features.GetFitnessMetrics;
 using FCEService.Features.GetFitnessPlanConfigs.FCEService.Features.GetFitnessPlanConfigs;
 using FCEService.Features.GetFitnessStats;
+using FCEService.Features.GetSpecificPlanConfiguration;
 using FCEService.Features.SaveFitnessStats;
 using FCEService.Features.Shared.Dtos;
 using FCEService.Features.UserAssignedPlans;
@@ -43,7 +44,9 @@ namespace FCEService.Common.Mappings
                  .Map(dest => dest.Status, src => src.Status.ToString());
 
 
-
+            config.NewConfig<FitnessPlanConfig, PlanConfigDetailResponse>()
+                .Map(dest => dest.Goal, src => src.Goal.ToString())
+                .Map(dest => dest.Status, src => src.Status.ToString());
 
         }
     }

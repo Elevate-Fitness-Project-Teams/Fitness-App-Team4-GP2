@@ -5,6 +5,7 @@ using FCEService.Features.CalculateMetrics;
 using FCEService.Features.GetFitnessMetrics;
 using FCEService.Features.GetFitnessPlanConfigs;
 using FCEService.Features.GetFitnessStats;
+using FCEService.Features.GetSpecificPlanConfiguration;
 using FCEService.Features.SaveFitnessStats;
 using FCEService.Features.Shared;
 using FCEService.Features.UserAssignedPlans;
@@ -78,6 +79,13 @@ namespace FCEService.Controllers
         {
             var result = await _sender.Send(new GetFitnessPlanConfigsQuery(goal, status, page, pageSize), ct);
             return FromResult(result, "Fitness plan configurations retrieved successfully.", StatusCodes.Status200OK);
+        }
+
+        [HttpGet("plans/{planId}")]
+        public async Task<IActionResult> GetPlanConfigDetail(string planId, CancellationToken ct)
+        {
+            var result = await _sender.Send(new GetPlanConfigDetailQuery(planId), ct);
+            return FromResult(result, "Plan configuration retrieved successfully.", StatusCodes.Status200OK);
         }
 
 

@@ -4,19 +4,12 @@ using FCEService.Domain.Enums;
 namespace FCEService.Infrastructure.Persistence.Seed
 {
     
-        /// <summary>
-        /// PlanId يتبع Convention: {goal}-{status} (kebab-case). ده اقتراح مبدئي
-        /// لحد ما يتأكد نفس القيم بالظبط مع فريق Workout Service — لو اتغيروا،
-        /// التعديل هنا بس Data مش Logic.
-        /// القيم (MinCalorie/MaxCalorie/EstimatedDuration/WorkoutsPerWeek/ProgramType)
-        /// دي Placeholder منطقي لغرض الاختبار — محتاجة تأكيد من فريق البيزنس/التغذية
-        /// قبل الإطلاق الفعلي.
-        /// </summary>
+   
         public static class FitnessPlanConfigSeed
         {
             public static IEnumerable<FitnessPlanConfig> GetSeedData() => new[]
             {
-            // ---- Lose Weight ----
+         
             new FitnessPlanConfig
             {
                 PlanId = "lose-weight-weak", PlanName = "Gentle Fat Loss",
@@ -42,7 +35,7 @@ namespace FCEService.Infrastructure.Persistence.Seed
                 WorkoutsPerWeek = 5, ProgramType = "HIIT + Strength"
             },
 
-            // ---- Get Fitter ----
+          
             new FitnessPlanConfig
             {
                 PlanId = "get-fitter-weak", PlanName = "Foundation Fitness",
@@ -68,7 +61,7 @@ namespace FCEService.Infrastructure.Persistence.Seed
                 WorkoutsPerWeek = 5, ProgramType = "Full-Body + HIIT"
             },
 
-            // ---- Gain Weight ----
+           
             new FitnessPlanConfig
             {
                 PlanId = "gain-weight-weak", PlanName = "Lean Bulk Starter",
@@ -94,7 +87,7 @@ namespace FCEService.Infrastructure.Persistence.Seed
                 WorkoutsPerWeek = 5, ProgramType = "Heavy Strength + Volume"
             },
 
-            // ---- Gain More Flexible ----
+           
             new FitnessPlanConfig
             {
                 PlanId = "gain-more-flexible-weak", PlanName = "Mobility Starter",
@@ -120,7 +113,7 @@ namespace FCEService.Infrastructure.Persistence.Seed
                 WorkoutsPerWeek = 5, ProgramType = "Dynamic Mobility + Strength"
             },
 
-            // ---- Learn the Basic ----
+          
             new FitnessPlanConfig
             {
                 PlanId = "learn-the-basic-weak", PlanName = "Beginner Basics",
