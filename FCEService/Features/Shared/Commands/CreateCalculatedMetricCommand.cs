@@ -48,6 +48,7 @@ namespace FCEService.Features.Shared.Commands
                 await uow.SaveChangesAsync(ct); 
 
                 return Result<CalculatedMetricDto>.OK(new CalculatedMetricDto(
+                    metric.Id,
                     metric.UserId, metric.Bmr, metric.Tdee, metric.CalorieTarget,
                     metric.Status, metric.CalculatedAt, metric.LastUpdatedAt));
             }

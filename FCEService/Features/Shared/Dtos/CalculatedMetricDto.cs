@@ -3,6 +3,7 @@
 namespace FCEService.Features.Shared.Dtos
 {
     public sealed record CalculatedMetricDto(
+        int Id,
        Guid UserId,
        double Bmr,
        double Tdee,
