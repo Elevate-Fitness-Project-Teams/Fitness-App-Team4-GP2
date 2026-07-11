@@ -10,7 +10,8 @@ namespace FCEService.Domain.Interfaces
             FitnessGoal goal,
             PlanStatus status,
             CancellationToken ct = default);
-      
+
+        Task<FitnessPlanConfig?> GetByPlanIdAsync(string planId, CancellationToken ct = default);
 
         Task<PaginatedResult<FitnessPlanConfig>> GetPagedAsync(
         FitnessGoal? goalFilter,
