@@ -15,7 +15,7 @@ namespace FCEService.Features.RecalculateMetrics
             : IRequest<Result<RecalculateMetricsResponse>>;
         public sealed record RecalculateMetricsRequestBody(string? Reason, double? NewWeight, string? TriggeredBy);
 
-        public sealed class RecalculateMetricsOrchestrator(ISender sender, IFceUnitOfWork uow)
+        public sealed class RecalculateMetricsOrchestrator(ISender sender)
             : IRequestHandler<RecalculateMetricsCommand, Result<RecalculateMetricsResponse>>
         {
             public async Task<Result<RecalculateMetricsResponse>> Handle(
