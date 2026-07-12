@@ -6,6 +6,7 @@ using FCEService.Infrastructure.Messaging.Consumers;
 using FCEService.Infrastructure.Persistence;
 using FCEService.Infrastructure.Persistence.Repositories;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Mapster;
 using MapsterMapper;
 using MassTransit;
@@ -13,6 +14,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 namespace FCEService
 {
     public class Program
@@ -80,6 +83,24 @@ namespace FCEService
             builder.Services.AddScoped<IFitnessPlanConfigRepository, FitnessPlanConfigRepository>();
             builder.Services.AddScoped<IMetabolicCalculatorService, MetabolicCalculatorService>();
 
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                  .AddJwtBearer(options =>
+                  {
+                      options.TokenValidationParameters = new TokenValidationParameters
+                      {
+                          ValidateIssuer = true,
+                          ValidateAudience = true,
+                          ValidateLifetime = true,
+                          ValidateIssuerSigningKey = true,
+
+                          ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                          ValidAudience = builder.Configuration["Jwt:Audience"],
+                          IssuerSigningKey = new SymmetricSecurityKey(
+                              Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+                      };
+                  });
+
+
             builder.Services.AddMassTransit(x =>
             {
                 x.AddConsumer<WeightUpdatedConsumer>(); 
@@ -116,6 +137,7 @@ namespace FCEService
             app.UseGlobalExceptionMiddleware();
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
