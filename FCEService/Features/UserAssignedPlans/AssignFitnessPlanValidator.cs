@@ -1,6 +1,7 @@
 ﻿namespace FCEService.Features.UserAssignedPlans
 {
     using FluentValidation;
+    using global::FCEService.Features.AssignPlan;
 
     namespace FCEService.Features.AssignPlan
     {

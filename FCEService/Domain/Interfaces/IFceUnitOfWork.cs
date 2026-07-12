@@ -9,13 +9,11 @@ namespace FCEService.Domain.Interfaces
 
         IGenericRepository<T> GetRepository<T>() where T : class;
         Task<int> SaveChangesAsync(CancellationToken ct = default);
+
        
-        //Task ExecuteInTransactionAsync(
-        //    Func<CancellationToken, Task> action,
-        //    CancellationToken ct = default);
 
-        //Task CreateSavepointAsync(string name, CancellationToken ct = default);
-
-        //Task RollbackToSavepointAsync(string name, CancellationToken ct = default);
+        Task BeginTransactionAsync(CancellationToken ct = default);
+        Task CommitTransactionAsync(CancellationToken ct = default);
+        Task RollbackTransactionAsync(CancellationToken ct = default);
     }
 }

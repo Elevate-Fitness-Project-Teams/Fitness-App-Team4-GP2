@@ -11,8 +11,9 @@ namespace FCEService.Infrastructure.Persistence
     {
         private readonly Dictionary<Type, object> _repositories = new();
         private IFitnessPlanConfigRepository? _fitnessPlanConfigRepository;
+        private IDbContextTransaction? _transaction;
 
-        
+
 
         public IGenericRepository<T> GetRepository<T>() where T : class
         {
@@ -29,7 +30,33 @@ namespace FCEService.Infrastructure.Persistence
 
         public Task<int> SaveChangesAsync(CancellationToken ct = default)
             => db.SaveChangesAsync(ct);
-    }
+
+        public async Task BeginTransactionAsync(CancellationToken ct = default)
+        {
+            if (_transaction is not null)
+                throw new InvalidOperationException("A transaction is already active on this scope.");
+
+            _transaction = await db.Database.BeginTransactionAsync(ct);
+        }
+
+        public async Task CommitTransactionAsync(CancellationToken ct = default)
+        {
+            if (_transaction is null)
+                throw new InvalidOperationException("No active transaction to commit.");
+
+            await _transaction.CommitAsync(ct);
+            await _transaction.DisposeAsync();
+            _transaction = null;
+        }
+
+        public async Task RollbackTransactionAsync(CancellationToken ct = default)
+        {
+            if (_transaction is null) return;
+            await _transaction.RollbackAsync(ct);
+            await _transaction.DisposeAsync();
+            _transaction = null;
+        }
+}
 }
       
         //public async Task ExecuteInTransactionAsync(
