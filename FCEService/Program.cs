@@ -2,6 +2,7 @@ using BuildingBlocks.Shared.Middleware;
 using BuildingBlocks.Shared.Responses;
 using FCEService.Domain.Interfaces;
 using FCEService.Domain.Services;
+using FCEService.Infrastructure.Messaging.Consumers;
 using FCEService.Infrastructure.Persistence;
 using FCEService.Infrastructure.Persistence.Repositories;
 using FluentValidation;
@@ -81,6 +82,9 @@ namespace FCEService
 
             builder.Services.AddMassTransit(x =>
             {
+                x.AddConsumer<WeightUpdatedConsumer>(); 
+
+               
                 x.UsingRabbitMq((context, cfg) =>
                 {
                     cfg.Host(builder.Configuration["RabbitMQ:Host"], h =>
