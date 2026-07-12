@@ -9,7 +9,8 @@ namespace NotificationService.Infrastructure.Persistence
         {
         }
 
-        public DbSet<InAppNotification> InAppNotifications { get; set; } = null!;
+       public DbSet<InAppNotification> InAppNotifications => Set<InAppNotification>();
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

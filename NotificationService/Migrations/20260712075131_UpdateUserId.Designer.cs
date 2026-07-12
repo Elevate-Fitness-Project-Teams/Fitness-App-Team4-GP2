@@ -9,11 +9,11 @@ using NotificationService.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace NotificationService.Infrastructure.Persistence.Migrations
+namespace NotificationService.Migrations
 {
     [DbContext(typeof(NotificationDbContext))]
-    [Migration("20260623132054_Initial")]
-    partial class Initial
+    [Migration("20260712075131_UpdateUserId")]
+    partial class UpdateUserId
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,13 +51,12 @@ namespace NotificationService.Infrastructure.Persistence.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
+                    b.Property<int>("Type")
                         .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<int>("UserId")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
