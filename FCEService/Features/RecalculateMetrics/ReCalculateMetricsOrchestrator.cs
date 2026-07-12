@@ -9,13 +9,14 @@ using FCEService.Features.UserAssignedPlans.Queries;
 using MediatR;
 
 namespace FCEService.Features.RecalculateMetrics
-{ 
-        public sealed record RecalculateMetricsCommand(
-            Guid UserId, string? Reason, double? NewWeight, string? TriggeredBy)
-            : IRequest<Result<RecalculateMetricsResponse>>;
-        public sealed record RecalculateMetricsRequestBody(string? Reason, double? NewWeight, string? TriggeredBy);
+{
+    public sealed record RecalculateMetricsCommand(
+        Guid UserId, string? Reason, double? NewWeight, string? TriggeredBy)
+        : IRequest<Result<RecalculateMetricsResponse>>;
+    public sealed record RecalculateMetricsRequestBody(string? Reason, double? NewWeight, string? TriggeredBy);
 
-        public sealed class RecalculateMetricsOrchestrator(ISender sender)
+ 
+        public sealed class RecalculateMetricsOrchestrator(ISender sender, IFceUnitOfWork uow)
             : IRequestHandler<RecalculateMetricsCommand, Result<RecalculateMetricsResponse>>
         {
             public async Task<Result<RecalculateMetricsResponse>> Handle(
@@ -33,11 +34,9 @@ namespace FCEService.Features.RecalculateMetrics
                     return Result<RecalculateMetricsResponse>.Fail(FceErrors.MetricsNotCalculated);
 
                 var stat = statResult.Value;
-
-            
                 var weightForCalculation = command.NewWeight ?? stat.Weight;
 
-            
+                await uow.BeginTransactionAsync(ct);
 
                 var updateMetricResult = await sender.Send(
                     new UpdateCalculatedMetricCommand(
@@ -46,7 +45,7 @@ namespace FCEService.Features.RecalculateMetrics
 
                 if (updateMetricResult.IsFailure)
                 {
-             
+                    await uow.RollbackTransactionAsync(ct);
                     return Result<RecalculateMetricsResponse>.Fail(updateMetricResult.Errors);
                 }
 
@@ -60,13 +59,13 @@ namespace FCEService.Features.RecalculateMetrics
 
                     if (planConfigResult.IsFailure)
                     {
-                     
+                        await uow.RollbackTransactionAsync(ct);
                         return Result<RecalculateMetricsResponse>.Fail(planConfigResult.Errors);
                     }
 
                     if (planConfigResult.Value is not { } matchingPlan)
                     {
-                      
+                        await uow.RollbackTransactionAsync(ct);
                         return Result<RecalculateMetricsResponse>.Fail(
                             FceErrors.NoMatchingPlan(stat.Goal.ToString(), newMetric.Status.ToString()));
                     }
@@ -74,7 +73,7 @@ namespace FCEService.Features.RecalculateMetrics
                     var priorActiveResult = await sender.Send(new GetActiveUserAssignedPlanQuery(command.UserId), ct);
                     if (priorActiveResult.IsFailure)
                     {
-                   
+                        await uow.RollbackTransactionAsync(ct);
                         return Result<RecalculateMetricsResponse>.Fail(priorActiveResult.Errors);
                     }
 
@@ -86,18 +85,18 @@ namespace FCEService.Features.RecalculateMetrics
 
                         if (deactivateResult.IsFailure)
                         {
-                          
+                            await uow.RollbackTransactionAsync(ct);
                             return Result<RecalculateMetricsResponse>.Fail(deactivateResult.Errors);
                         }
 
-                      
                         var historyResult = await sender.Send(
                             new AppendUserPlanHistoryCommand(
                                 priorActive.UserId, priorActive.PlanId, priorActive.AssignedAt,
-                                DateTime.UtcNow,command.Reason), ct);
+                                DateTime.UtcNow, command.Reason), ct);
 
                         if (historyResult.IsFailure)
                         {
+                            await uow.RollbackTransactionAsync(ct);
                             return Result<RecalculateMetricsResponse>.Fail(historyResult.Errors);
                         }
                     }
@@ -107,14 +106,18 @@ namespace FCEService.Features.RecalculateMetrics
 
                     if (createPlanResult.IsFailure)
                     {
-                     
+                        await uow.RollbackTransactionAsync(ct);
                         return Result<RecalculateMetricsResponse>.Fail(createPlanResult.Errors);
                     }
                 }
 
+                await uow.CommitTransactionAsync(ct);
+
                 var response = new RecalculateMetricsResponse(
                     command.UserId,
-                    new MetricsSnapshot(existingMetric.Bmr, existingMetric.Tdee, existingMetric.CalorieTarget, existingMetric.Status.ToString()),
+                    new MetricsSnapshot(
+                        existingMetric.Bmr, existingMetric.Tdee, existingMetric.CalorieTarget,
+                        existingMetric.Status.ToString()),
                     new MetricsSnapshot(newMetric.Bmr, newMetric.Tdee, newMetric.CalorieTarget, newMetric.Status.ToString()),
                     planReassignment);
 

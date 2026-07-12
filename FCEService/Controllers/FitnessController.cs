@@ -1,5 +1,6 @@
 ﻿using BuildingBlocks.Shared.Controllers;
 using FCEService.Domain.Enums;
+using FCEService.Features.AssignPlan;
 using FCEService.Features.CalculateMetrics;
 using FCEService.Features.GetFitnessMetrics;
 using FCEService.Features.GetFitnessPlanConfigs;
