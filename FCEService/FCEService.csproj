@@ -37,8 +37,4 @@
     <ProjectReference Include="..\BuildingBlocks.Contracts\BuildingBlocks.Contracts.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Domain\Extensions\" />
-  </ItemGroup>
-
 </Project>
