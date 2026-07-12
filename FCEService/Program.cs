@@ -1,18 +1,8 @@
 using BuildingBlocks.Shared.Middleware;
-using BuildingBlocks.Shared.Responses;
-using FCEService.Domain.Interfaces;
-using FCEService.Domain.Services;
-using FCEService.Infrastructure.Messaging.Consumers;
+using FCEService.Domain.Extensions;
+using FCEService.Extensions;
 using FCEService.Infrastructure.Persistence;
-using FCEService.Infrastructure.Persistence.Repositories;
-using FluentValidation;
-using Mapster;
-using MapsterMapper;
-using MassTransit;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection;
+
 namespace FCEService
 {
     public class Program
@@ -21,101 +11,33 @@ namespace FCEService
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
-           
-        
-           builder.Services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = context =>
-                {
-                    var errors = context.ModelState
-                        .Values
-                        .SelectMany(v => v.Errors)
-                        .Select(e => e.ErrorMessage)
-                        .ToList();
-
-                    var response = new ApiResponse<object>
-                    {
-                        IsSuccess = false,
-                        Message = "Validation failed.",
-                        Data = null,
-                        StatusCode = StatusCodes.Status400BadRequest,
-                        Timestamp = DateTime.UtcNow,
-                        Errors = new Dictionary<string, List<string>> { { "ValidationErrors", errors } }
-
-                    };
-
-                    return new BadRequestObjectResult(response);
-                };
-            });
+            builder.Services.AddApiResponseConventions();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContext<FCEDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-        
-            builder.Services.AddMediatR(cfg =>
-            {
-                cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-                cfg.AddOpenBehavior(typeof(BuildingBlocks.Shared.Behaviors.ValidationBehavior<,>));
-            });
-
-            var config = TypeAdapterConfig.GlobalSettings;
-            config.Scan(Assembly.GetExecutingAssembly());
-            builder.Services.AddSingleton(config).AddScoped<IMapper, ServiceMapper>();
-
-
-
-            builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
-            builder.Services.AddScoped<IFceUnitOfWork,FceUnitofWork>();
-
-
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
-            builder.Services.AddScoped<IFitnessPlanConfigRepository, FitnessPlanConfigRepository>();
-            builder.Services.AddScoped<IMetabolicCalculatorService, MetabolicCalculatorService>();
-
-            builder.Services.AddMassTransit(x =>
-            {
-                x.AddConsumer<WeightUpdatedConsumer>(); 
-
-               
-                x.UsingRabbitMq((context, cfg) =>
-                {
-                    cfg.Host(builder.Configuration["RabbitMQ:Host"], h =>
-                    {
-                        h.Username(builder.Configuration["RabbitMQ:Username"]);
-                        h.Password(builder.Configuration["RabbitMQ:Password"]);
-                    });
-
-                    cfg.ConfigureEndpoints(context);
-                });
-            });
+            builder.Services.AddPersistence(builder.Configuration);
+            builder.Services.AddApplicationServices();
+            builder.Services.AddJwtAuthentication(builder.Configuration);
+            builder.Services.AddMessaging(builder.Configuration);
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
 
-             
-                using (var scope = app.Services.CreateScope())
-                {
-                    var db = scope.ServiceProvider.GetRequiredService<FCEDbContext>();
-                    var _ = db.Model; 
-                }
+            
+                using var scope = app.Services.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<FCEDbContext>();
+                _ = db.Model;
             }
 
             app.UseGlobalExceptionMiddleware();
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
