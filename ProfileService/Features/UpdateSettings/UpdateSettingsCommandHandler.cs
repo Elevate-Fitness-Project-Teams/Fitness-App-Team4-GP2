@@ -32,10 +32,6 @@ namespace ProfileService.Features.UpdateSettings
 
             var req = request.Request;
 
-            // True PATCH: at least one section must be supplied.
-            if (req.Preferences is null && req.Notifications is null && req.Privacy is null)
-                return Error.Validation("VAL_REQUIRED_FIELD", "No settings fields were supplied.");
-
             // Only the sections actually being patched are loaded (tracked, for update) —
             // untouched tables are never queried.
             if (req.Preferences is not null)

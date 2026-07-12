@@ -1,4 +1,5 @@
 using BuildingBlocks.Shared.Middleware;
+using FluentValidation;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,13 @@ namespace ProfileService
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
             builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 
-            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+            builder.Services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+                cfg.AddOpenBehavior(typeof(global::BuildingBlocks.Shared.Behaviors.ValidationBehavior<,>));
+            });
+
+            builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
             builder.Services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -122,11 +129,9 @@ namespace ProfileService
                 app.UseSwaggerUI();
 
                 // Proactively validate EF Core model structure at startup
-                using (var scope = app.Services.CreateScope())
-                {
-                    var db = scope.ServiceProvider.GetRequiredService<ProfileDbContext>();
-                    var _ = db.Model; // Force compilation of model metadata
-                }
+                using var scope = app.Services.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<ProfileDbContext>();
+                var _ = db.Model; // Force compilation of model metadata
             }
 
             app.UseGlobalExceptionMiddleware();

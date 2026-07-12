@@ -9,9 +9,6 @@ namespace ProfileService.Features.UploadProfilePicture
 {
     public class UploadProfilePictureCommandHandler : IRequestHandler<UploadProfilePictureCommand, Result<UploadProfilePictureResponse>>
     {
-        private const long MaxFileSizeBytes = 5 * 1024 * 1024; // 5 MB
-        private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png" };
-
         private readonly ICurrentUser _currentUser;
         private readonly IGenericRepository<UserProfile> _profileRepo;
         private readonly IFileStorageService _storageService;
@@ -27,10 +24,6 @@ namespace ProfileService.Features.UploadProfilePicture
             
             if (!Guid.TryParse(_currentUser.UserId, out var userId))
                 return Error.Unauthorized("AUTH_TOKEN_INVALID", "Authentication token is missing or invalid.");
-
-            var validation = ValidatePicture(request.ProfilePicture);
-            if (validation is not null)
-                return validation;
 
             var profile = await _profileRepo
             .GetAllAsync(x => x.UserId == userId).FirstOrDefaultAsync(cancellationToken);
@@ -54,23 +47,6 @@ namespace ProfileService.Features.UploadProfilePicture
             {
                 return Error.Failure("SRV_FILE_UPLOAD_FAILED", "Could not upload file.");
             }
-        }
-
-
-        private static Error? ValidatePicture(IFormFile? file)
-        {
-            if (file is null || file.Length == 0)
-                return Error.Validation("VAL_INVALID_FILE_TYPE", "No file was uploaded.");
-
-            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-            if (!AllowedExtensions.Contains(extension))
-                return Error.Validation("VAL_INVALID_FILE_TYPE", "Only JPG and PNG files are allowed.");
-
-            if (file.Length > MaxFileSizeBytes)
-                return Error.Validation("VAL_FILE_TOO_LARGE", "The file must not exceed 5 MB.");
-
-            return null;
         }
     }
 }

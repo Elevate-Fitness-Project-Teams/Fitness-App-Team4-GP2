@@ -25,10 +25,6 @@ namespace AuthService.Features.Profile.ChangePassword
             if(!Guid.TryParse(_currentUser.UserId, out var userId))
                 return Error.Unauthorized("AUTH_TOKEN_INVALID", "Authentication token is missing or invalid.");
 
-            //redundant
-            //if (request.NewPassword != request.ConfirmPassword)
-            //    return Error.Validation("AUTH_PASSWORD_MISMATCH", "New password and confirmation do not match.");
-
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
             if (user is null)
@@ -39,19 +35,22 @@ namespace AuthService.Features.Profile.ChangePassword
             // (username == email in this system) so the change validates.
             user.UserName = user.Email;
 
-            var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
-
-            if (!result.Succeeded)
-                return Error.Unauthorized("AUTH_INVALID_CREDENTIALS.");
-
-
+            // Mark the user's active refresh tokens as revoked BEFORE changing the password.
+            // These entities are tracked on the same scoped DbContext that UserManager uses,
+            // so ChangePasswordAsync's internal SaveChanges commits the new password hash,
+            // the rotated security stamp, and the revocations together in one transaction.
+            // If the current password is wrong, ChangePasswordAsync returns without saving,
+            // and the tracked revocations are discarded — so nothing is revoked on failure.
             var activeTokens = await _tokenRepository.GetActiveTokensAsync(userId);
 
             if (activeTokens is not null)
                 foreach (var token in activeTokens)
                     token.RevokedAt = DateTime.UtcNow;
 
-            await _tokenRepository.SaveChangesAsync();
+            var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+
+            if (!result.Succeeded)
+                return Error.InvalidCredentials("AUTH_INVALID_CREDENTIALS", "Current password is incorrect.");
 
             return new ChangePasswordResponse(true);
         }
