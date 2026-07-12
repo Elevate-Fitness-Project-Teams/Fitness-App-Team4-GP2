@@ -28,9 +28,6 @@ namespace AuthService.Features.ResetPassword
 
         public async Task<Result<ResetPasswordResponse>> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
-            if (request.newPassword != request.confirmPassword)
-                return Error.Validation("AUTH_PASSWORD_MISMATCH", "New password and confirmation do not match.");
-
             var principal = _jwtService.ValidateResetToken(request.resetToken);
             if (principal is null)
                 return Error.Validation("AUTH_RESET_TOKEN_INVALID", "The reset token is invalid or has expired.");

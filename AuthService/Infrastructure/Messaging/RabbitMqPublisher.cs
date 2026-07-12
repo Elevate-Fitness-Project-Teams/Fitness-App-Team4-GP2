@@ -12,9 +12,7 @@ namespace AuthService.Infrastructure.Messaging
             _publishEndpoint = publishEndpoint;
         }
 
-        public async Task PublishAsync<T>(
-            T message,
-            CancellationToken cancellationToken = default)
+        public async Task PublishAsync<T>(T message, CancellationToken cancellationToken = default)
         {
             await _publishEndpoint.Publish(message, cancellationToken);
         }

@@ -7,6 +7,7 @@ using AuthService.Infrastructure.Persistence.Repositories;
 using AuthService.Infrastructure.Services;
 using AuthService.Infrastructure.Services.Interfaces;
 using AuthService.Shared.Configurations;
+using FluentValidation;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -57,7 +58,13 @@ namespace AuthService
                 });
             });
 
-            builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+            builder.Services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+                cfg.AddOpenBehavior(typeof(global::BuildingBlocks.Shared.Behaviors.ValidationBehavior<,>));
+            });
+
+            builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<ILoginAttemptRepository, LoginAttemptRepository>();
