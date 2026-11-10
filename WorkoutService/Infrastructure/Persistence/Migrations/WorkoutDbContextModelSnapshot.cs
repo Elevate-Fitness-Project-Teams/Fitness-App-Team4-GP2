@@ -62,6 +62,233 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                     b.HasKey("ExerciseId");
 
                     b.ToTable("Exercises");
+
+                    b.HasData(
+                        new
+                        {
+                            ExerciseId = 1,
+                            Description = "Lower your chest to the floor with elbows tucked at roughly 45 degrees, then press back up while keeping a straight line from head to heels.",
+                            Difficulty = "beginner",
+                            Equipment = "Bodyweight",
+                            Name = "Push-Up",
+                            TargetMuscles = "Chest, Triceps, Shoulders"
+                        },
+                        new
+                        {
+                            ExerciseId = 2,
+                            Description = "Lower the bar to mid-chest under control, then press it back to lockout keeping shoulder blades retracted against the bench.",
+                            Difficulty = "intermediate",
+                            Equipment = "Barbell, Bench",
+                            Name = "Bench Press",
+                            TargetMuscles = "Chest, Triceps"
+                        },
+                        new
+                        {
+                            ExerciseId = 3,
+                            Description = "On a 30-45 degree incline, press the dumbbells from chest level to overhead without letting them clash at the top.",
+                            Difficulty = "intermediate",
+                            Equipment = "Dumbbells, Incline Bench",
+                            Name = "Incline Dumbbell Press",
+                            TargetMuscles = "Upper Chest, Shoulders"
+                        },
+                        new
+                        {
+                            ExerciseId = 4,
+                            Description = "With a slight bend in the elbows, bring both handles together in front of the chest and squeeze before returning slowly.",
+                            Difficulty = "beginner",
+                            Equipment = "Cable Machine",
+                            Name = "Cable Chest Fly",
+                            TargetMuscles = "Chest"
+                        },
+                        new
+                        {
+                            ExerciseId = 5,
+                            Description = "Hang with an overhand grip and pull until your chin clears the bar, driving the elbows down and back.",
+                            Difficulty = "advanced",
+                            Equipment = "Pull-Up Bar",
+                            Name = "Pull-Up",
+                            TargetMuscles = "Lats, Biceps"
+                        },
+                        new
+                        {
+                            ExerciseId = 6,
+                            Description = "Hinge to about 45 degrees with a flat back and row the bar to your lower ribs, pausing briefly at the top.",
+                            Difficulty = "intermediate",
+                            Equipment = "Barbell",
+                            Name = "Bent-Over Row",
+                            TargetMuscles = "Lats, Rhomboids, Traps"
+                        },
+                        new
+                        {
+                            ExerciseId = 7,
+                            Description = "Pull the bar to your upper chest with the torso nearly upright, then control the bar back to full stretch.",
+                            Difficulty = "beginner",
+                            Equipment = "Cable Machine",
+                            Name = "Lat Pulldown",
+                            TargetMuscles = "Lats, Biceps"
+                        },
+                        new
+                        {
+                            ExerciseId = 8,
+                            Description = "Keeping the chest tall, draw the handle to your abdomen and squeeze the shoulder blades together.",
+                            Difficulty = "beginner",
+                            Equipment = "Cable Machine",
+                            Name = "Seated Cable Row",
+                            TargetMuscles = "Mid-Back, Lats"
+                        },
+                        new
+                        {
+                            ExerciseId = 9,
+                            Description = "Press the bar from the front rack to overhead, moving your head back out of the path and finishing with biceps by the ears.",
+                            Difficulty = "intermediate",
+                            Equipment = "Barbell",
+                            Name = "Overhead Press",
+                            TargetMuscles = "Shoulders, Triceps"
+                        },
+                        new
+                        {
+                            ExerciseId = 10,
+                            Description = "Raise the dumbbells out to shoulder height with soft elbows, leading with the elbows rather than the hands.",
+                            Difficulty = "beginner",
+                            Equipment = "Dumbbells",
+                            Name = "Lateral Raise",
+                            TargetMuscles = "Side Delts"
+                        },
+                        new
+                        {
+                            ExerciseId = 11,
+                            Description = "Pull the rope toward your forehead while externally rotating the shoulders, finishing with hands beside the ears.",
+                            Difficulty = "beginner",
+                            Equipment = "Cable Machine, Rope",
+                            Name = "Face Pull",
+                            TargetMuscles = "Rear Delts, Upper Back"
+                        },
+                        new
+                        {
+                            ExerciseId = 12,
+                            Description = "Curl the weight with the elbows pinned to your sides, avoiding any swing from the lower back.",
+                            Difficulty = "beginner",
+                            Equipment = "Dumbbells",
+                            Name = "Bicep Curl",
+                            TargetMuscles = "Biceps"
+                        },
+                        new
+                        {
+                            ExerciseId = 13,
+                            Description = "Lower until the upper arms are roughly parallel to the floor, then press back to lockout keeping the torso fairly upright.",
+                            Difficulty = "intermediate",
+                            Equipment = "Parallel Bars",
+                            Name = "Triceps Dip",
+                            TargetMuscles = "Triceps, Lower Chest"
+                        },
+                        new
+                        {
+                            ExerciseId = 14,
+                            Description = "Extend the elbows fully and separate the rope ends at the bottom, then return under control without flaring the elbows.",
+                            Difficulty = "beginner",
+                            Equipment = "Cable Machine, Rope",
+                            Name = "Triceps Rope Pushdown",
+                            TargetMuscles = "Triceps"
+                        },
+                        new
+                        {
+                            ExerciseId = 15,
+                            Description = "Descend until the hips drop below the knees while keeping the chest up and knees tracking over the toes, then drive up through mid-foot.",
+                            Difficulty = "intermediate",
+                            Equipment = "Barbell, Squat Rack",
+                            Name = "Back Squat",
+                            TargetMuscles = "Quads, Glutes"
+                        },
+                        new
+                        {
+                            ExerciseId = 16,
+                            Description = "Push the hips back with a flat back until you feel a hamstring stretch, then drive the hips forward to stand tall.",
+                            Difficulty = "advanced",
+                            Equipment = "Barbell",
+                            Name = "Romanian Deadlift",
+                            TargetMuscles = "Hamstrings, Glutes"
+                        },
+                        new
+                        {
+                            ExerciseId = 17,
+                            Description = "Step forward and lower the back knee toward the floor, then push through the front heel into the next stride.",
+                            Difficulty = "beginner",
+                            Equipment = "Dumbbells",
+                            Name = "Walking Lunge",
+                            TargetMuscles = "Quads, Glutes"
+                        },
+                        new
+                        {
+                            ExerciseId = 18,
+                            Description = "Lower the sled until the knees reach about 90 degrees, then press back without locking the knees hard at the top.",
+                            Difficulty = "beginner",
+                            Equipment = "Leg Press Machine",
+                            Name = "Leg Press",
+                            TargetMuscles = "Quads, Glutes"
+                        },
+                        new
+                        {
+                            ExerciseId = 19,
+                            Description = "Hold a straight line from head to heels on your forearms, bracing the abs and squeezing the glutes throughout.",
+                            Difficulty = "beginner",
+                            Equipment = "Bodyweight",
+                            Name = "Plank",
+                            TargetMuscles = "Core"
+                        },
+                        new
+                        {
+                            ExerciseId = 20,
+                            Description = "Hanging from the bar, raise the legs to hip height or above without swinging, then lower slowly.",
+                            Difficulty = "advanced",
+                            Equipment = "Pull-Up Bar",
+                            Name = "Hanging Leg Raise",
+                            TargetMuscles = "Lower Abs, Hip Flexors"
+                        },
+                        new
+                        {
+                            ExerciseId = 21,
+                            Description = "Sit leaning back at about 45 degrees and rotate the torso side to side, tapping the weight beside each hip.",
+                            Difficulty = "beginner",
+                            Equipment = "Medicine Ball",
+                            Name = "Russian Twist",
+                            TargetMuscles = "Obliques"
+                        },
+                        new
+                        {
+                            ExerciseId = 22,
+                            Description = "Lying on your back, extend the opposite arm and leg while pressing the lower back flat into the floor.",
+                            Difficulty = "beginner",
+                            Equipment = "Bodyweight",
+                            Name = "Dead Bug",
+                            TargetMuscles = "Core"
+                        },
+                        new
+                        {
+                            ExerciseId = 23,
+                            Description = "Drop to a push-up, jump the feet back in, then explode into a vertical jump and repeat without pausing.",
+                            Difficulty = "intermediate",
+                            Equipment = "Bodyweight",
+                            Name = "Burpee",
+                            TargetMuscles = "Full Body"
+                        },
+                        new
+                        {
+                            ExerciseId = 24,
+                            Description = "From a high plank, drive the knees toward the chest in an alternating rhythm while keeping the hips level.",
+                            Difficulty = "beginner",
+                            Equipment = "Bodyweight",
+                            Name = "Mountain Climber",
+                            TargetMuscles = "Core, Shoulders"
+                        },
+                        new
+                        {
+                            ExerciseId = 25,
+                            Description = "Hinge at the hips and snap them forward to float the bell to chest height; the arms only guide, they do not lift.",
+                            Difficulty = "intermediate",
+                            Equipment = "Kettlebell",
+                            Name = "Kettlebell Swing",
+                            TargetMuscles = "Glutes, Hamstrings, Core"
+                        });
                 });
 
             modelBuilder.Entity("WorkoutService.Domain.Entities.Workout", b =>
@@ -97,6 +324,116 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                     b.HasIndex("PlanId");
 
                     b.ToTable("Workouts");
+
+                    b.HasData(
+                        new
+                        {
+                            WorkoutId = 1,
+                            Category = 7,
+                            Difficulty = 1,
+                            DurationInMinutes = 20,
+                            Name = "Core Crusher",
+                            PlanId = "plan-core-conditioning"
+                        },
+                        new
+                        {
+                            WorkoutId = 2,
+                            Category = 1,
+                            Difficulty = 2,
+                            DurationInMinutes = 25,
+                            Name = "HIIT Fat Burn",
+                            PlanId = "plan-fat-burn"
+                        },
+                        new
+                        {
+                            WorkoutId = 3,
+                            Category = 3,
+                            Difficulty = 1,
+                            DurationInMinutes = 25,
+                            Name = "Beginner Back Basics",
+                            PlanId = "plan-foundation"
+                        },
+                        new
+                        {
+                            WorkoutId = 4,
+                            Category = 1,
+                            Difficulty = 1,
+                            DurationInMinutes = 30,
+                            Name = "Full Body Kickstart",
+                            PlanId = "plan-foundation"
+                        },
+                        new
+                        {
+                            WorkoutId = 5,
+                            Category = 4,
+                            Difficulty = 1,
+                            DurationInMinutes = 30,
+                            Name = "Shoulder Sculpt",
+                            PlanId = "plan-upper-strength"
+                        },
+                        new
+                        {
+                            WorkoutId = 6,
+                            Category = 5,
+                            Difficulty = 1,
+                            DurationInMinutes = 30,
+                            Name = "Arms Blast",
+                            PlanId = "plan-upper-strength"
+                        },
+                        new
+                        {
+                            WorkoutId = 7,
+                            Category = 6,
+                            Difficulty = 1,
+                            DurationInMinutes = 35,
+                            Name = "Lower Body Starter",
+                            PlanId = "plan-foundation"
+                        },
+                        new
+                        {
+                            WorkoutId = 8,
+                            Category = 2,
+                            Difficulty = 3,
+                            DurationInMinutes = 35,
+                            Name = "Chest & Triceps Burnout",
+                            PlanId = "plan-upper-strength"
+                        },
+                        new
+                        {
+                            WorkoutId = 9,
+                            Category = 2,
+                            Difficulty = 2,
+                            DurationInMinutes = 40,
+                            Name = "Chest Builder",
+                            PlanId = "plan-upper-strength"
+                        },
+                        new
+                        {
+                            WorkoutId = 10,
+                            Category = 3,
+                            Difficulty = 2,
+                            DurationInMinutes = 40,
+                            Name = "Back Attack",
+                            PlanId = "plan-upper-strength"
+                        },
+                        new
+                        {
+                            WorkoutId = 11,
+                            Category = 1,
+                            Difficulty = 2,
+                            DurationInMinutes = 45,
+                            Name = "Full Body Strength Circuit",
+                            PlanId = "plan-foundation"
+                        },
+                        new
+                        {
+                            WorkoutId = 12,
+                            Category = 6,
+                            Difficulty = 3,
+                            DurationInMinutes = 50,
+                            Name = "Leg Day Power",
+                            PlanId = "plan-lower-power"
+                        });
                 });
 
             modelBuilder.Entity("WorkoutService.Domain.Entities.WorkoutExercise", b =>
@@ -132,6 +469,468 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                     b.HasIndex("WorkoutId");
 
                     b.ToTable("WorkoutExercises");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ExerciseId = 19,
+                            OrderIndex = 1,
+                            RepsDefault = 45,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 3,
+                            WorkoutId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ExerciseId = 22,
+                            OrderIndex = 2,
+                            RepsDefault = 12,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 3,
+                            WorkoutId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ExerciseId = 21,
+                            OrderIndex = 3,
+                            RepsDefault = 20,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 3,
+                            WorkoutId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ExerciseId = 24,
+                            OrderIndex = 4,
+                            RepsDefault = 30,
+                            RestTimeInSeconds = 60,
+                            SetsDefault = 3,
+                            WorkoutId = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ExerciseId = 23,
+                            OrderIndex = 1,
+                            RepsDefault = 12,
+                            RestTimeInSeconds = 30,
+                            SetsDefault = 4,
+                            WorkoutId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ExerciseId = 25,
+                            OrderIndex = 2,
+                            RepsDefault = 20,
+                            RestTimeInSeconds = 30,
+                            SetsDefault = 4,
+                            WorkoutId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ExerciseId = 24,
+                            OrderIndex = 3,
+                            RepsDefault = 40,
+                            RestTimeInSeconds = 30,
+                            SetsDefault = 4,
+                            WorkoutId = 2
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ExerciseId = 1,
+                            OrderIndex = 4,
+                            RepsDefault = 15,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 4,
+                            WorkoutId = 2
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ExerciseId = 7,
+                            OrderIndex = 1,
+                            RepsDefault = 12,
+                            RestTimeInSeconds = 60,
+                            SetsDefault = 3,
+                            WorkoutId = 3
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ExerciseId = 8,
+                            OrderIndex = 2,
+                            RepsDefault = 12,
+                            RestTimeInSeconds = 60,
+                            SetsDefault = 3,
+                            WorkoutId = 3
+                        },
+                        new
+                        {
+                            Id = 11,
+                            ExerciseId = 11,
+                            OrderIndex = 3,
+                            RepsDefault = 15,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 3,
+                            WorkoutId = 3
+                        },
+                        new
+                        {
+                            Id = 12,
+                            ExerciseId = 18,
+                            OrderIndex = 1,
+                            RepsDefault = 12,
+                            RestTimeInSeconds = 75,
+                            SetsDefault = 3,
+                            WorkoutId = 4
+                        },
+                        new
+                        {
+                            Id = 13,
+                            ExerciseId = 1,
+                            OrderIndex = 2,
+                            RepsDefault = 10,
+                            RestTimeInSeconds = 60,
+                            SetsDefault = 3,
+                            WorkoutId = 4
+                        },
+                        new
+                        {
+                            Id = 14,
+                            ExerciseId = 7,
+                            OrderIndex = 3,
+                            RepsDefault = 12,
+                            RestTimeInSeconds = 60,
+                            SetsDefault = 3,
+                            WorkoutId = 4
+                        },
+                        new
+                        {
+                            Id = 15,
+                            ExerciseId = 19,
+                            OrderIndex = 4,
+                            RepsDefault = 30,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 3,
+                            WorkoutId = 4
+                        },
+                        new
+                        {
+                            Id = 16,
+                            ExerciseId = 9,
+                            OrderIndex = 1,
+                            RepsDefault = 8,
+                            RestTimeInSeconds = 90,
+                            SetsDefault = 4,
+                            WorkoutId = 5
+                        },
+                        new
+                        {
+                            Id = 17,
+                            ExerciseId = 10,
+                            OrderIndex = 2,
+                            RepsDefault = 15,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 3,
+                            WorkoutId = 5
+                        },
+                        new
+                        {
+                            Id = 18,
+                            ExerciseId = 11,
+                            OrderIndex = 3,
+                            RepsDefault = 15,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 3,
+                            WorkoutId = 5
+                        },
+                        new
+                        {
+                            Id = 19,
+                            ExerciseId = 12,
+                            OrderIndex = 1,
+                            RepsDefault = 12,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 4,
+                            WorkoutId = 6
+                        },
+                        new
+                        {
+                            Id = 20,
+                            ExerciseId = 14,
+                            OrderIndex = 2,
+                            RepsDefault = 12,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 4,
+                            WorkoutId = 6
+                        },
+                        new
+                        {
+                            Id = 21,
+                            ExerciseId = 13,
+                            OrderIndex = 3,
+                            RepsDefault = 10,
+                            RestTimeInSeconds = 60,
+                            SetsDefault = 3,
+                            WorkoutId = 6
+                        },
+                        new
+                        {
+                            Id = 22,
+                            ExerciseId = 18,
+                            OrderIndex = 1,
+                            RepsDefault = 12,
+                            RestTimeInSeconds = 75,
+                            SetsDefault = 3,
+                            WorkoutId = 7
+                        },
+                        new
+                        {
+                            Id = 23,
+                            ExerciseId = 17,
+                            OrderIndex = 2,
+                            RepsDefault = 20,
+                            RestTimeInSeconds = 60,
+                            SetsDefault = 3,
+                            WorkoutId = 7
+                        },
+                        new
+                        {
+                            Id = 24,
+                            ExerciseId = 19,
+                            OrderIndex = 3,
+                            RepsDefault = 30,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 3,
+                            WorkoutId = 7
+                        },
+                        new
+                        {
+                            Id = 25,
+                            ExerciseId = 3,
+                            OrderIndex = 1,
+                            RepsDefault = 10,
+                            RestTimeInSeconds = 75,
+                            SetsDefault = 4,
+                            WorkoutId = 8
+                        },
+                        new
+                        {
+                            Id = 26,
+                            ExerciseId = 4,
+                            OrderIndex = 2,
+                            RepsDefault = 15,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 3,
+                            WorkoutId = 8
+                        },
+                        new
+                        {
+                            Id = 27,
+                            ExerciseId = 13,
+                            OrderIndex = 3,
+                            RepsDefault = 12,
+                            RestTimeInSeconds = 60,
+                            SetsDefault = 3,
+                            WorkoutId = 8
+                        },
+                        new
+                        {
+                            Id = 28,
+                            ExerciseId = 14,
+                            OrderIndex = 4,
+                            RepsDefault = 15,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 3,
+                            WorkoutId = 8
+                        },
+                        new
+                        {
+                            Id = 29,
+                            ExerciseId = 2,
+                            OrderIndex = 1,
+                            RepsDefault = 8,
+                            RestTimeInSeconds = 120,
+                            SetsDefault = 4,
+                            WorkoutId = 9
+                        },
+                        new
+                        {
+                            Id = 30,
+                            ExerciseId = 3,
+                            OrderIndex = 2,
+                            RepsDefault = 10,
+                            RestTimeInSeconds = 90,
+                            SetsDefault = 3,
+                            WorkoutId = 9
+                        },
+                        new
+                        {
+                            Id = 31,
+                            ExerciseId = 4,
+                            OrderIndex = 3,
+                            RepsDefault = 15,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 3,
+                            WorkoutId = 9
+                        },
+                        new
+                        {
+                            Id = 32,
+                            ExerciseId = 1,
+                            OrderIndex = 4,
+                            RepsDefault = 15,
+                            RestTimeInSeconds = 60,
+                            SetsDefault = 3,
+                            WorkoutId = 9
+                        },
+                        new
+                        {
+                            Id = 33,
+                            ExerciseId = 5,
+                            OrderIndex = 1,
+                            RepsDefault = 6,
+                            RestTimeInSeconds = 120,
+                            SetsDefault = 4,
+                            WorkoutId = 10
+                        },
+                        new
+                        {
+                            Id = 34,
+                            ExerciseId = 6,
+                            OrderIndex = 2,
+                            RepsDefault = 10,
+                            RestTimeInSeconds = 90,
+                            SetsDefault = 4,
+                            WorkoutId = 10
+                        },
+                        new
+                        {
+                            Id = 35,
+                            ExerciseId = 8,
+                            OrderIndex = 3,
+                            RepsDefault = 12,
+                            RestTimeInSeconds = 60,
+                            SetsDefault = 3,
+                            WorkoutId = 10
+                        },
+                        new
+                        {
+                            Id = 36,
+                            ExerciseId = 11,
+                            OrderIndex = 4,
+                            RepsDefault = 15,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 3,
+                            WorkoutId = 10
+                        },
+                        new
+                        {
+                            Id = 37,
+                            ExerciseId = 15,
+                            OrderIndex = 1,
+                            RepsDefault = 8,
+                            RestTimeInSeconds = 120,
+                            SetsDefault = 4,
+                            WorkoutId = 11
+                        },
+                        new
+                        {
+                            Id = 38,
+                            ExerciseId = 2,
+                            OrderIndex = 2,
+                            RepsDefault = 10,
+                            RestTimeInSeconds = 90,
+                            SetsDefault = 3,
+                            WorkoutId = 11
+                        },
+                        new
+                        {
+                            Id = 39,
+                            ExerciseId = 6,
+                            OrderIndex = 3,
+                            RepsDefault = 10,
+                            RestTimeInSeconds = 90,
+                            SetsDefault = 3,
+                            WorkoutId = 11
+                        },
+                        new
+                        {
+                            Id = 40,
+                            ExerciseId = 9,
+                            OrderIndex = 4,
+                            RepsDefault = 10,
+                            RestTimeInSeconds = 90,
+                            SetsDefault = 3,
+                            WorkoutId = 11
+                        },
+                        new
+                        {
+                            Id = 41,
+                            ExerciseId = 19,
+                            OrderIndex = 5,
+                            RepsDefault = 45,
+                            RestTimeInSeconds = 45,
+                            SetsDefault = 3,
+                            WorkoutId = 11
+                        },
+                        new
+                        {
+                            Id = 42,
+                            ExerciseId = 15,
+                            OrderIndex = 1,
+                            RepsDefault = 5,
+                            RestTimeInSeconds = 180,
+                            SetsDefault = 5,
+                            WorkoutId = 12
+                        },
+                        new
+                        {
+                            Id = 43,
+                            ExerciseId = 16,
+                            OrderIndex = 2,
+                            RepsDefault = 8,
+                            RestTimeInSeconds = 120,
+                            SetsDefault = 4,
+                            WorkoutId = 12
+                        },
+                        new
+                        {
+                            Id = 44,
+                            ExerciseId = 17,
+                            OrderIndex = 3,
+                            RepsDefault = 20,
+                            RestTimeInSeconds = 90,
+                            SetsDefault = 3,
+                            WorkoutId = 12
+                        },
+                        new
+                        {
+                            Id = 45,
+                            ExerciseId = 18,
+                            OrderIndex = 4,
+                            RepsDefault = 12,
+                            RestTimeInSeconds = 90,
+                            SetsDefault = 3,
+                            WorkoutId = 12
+                        },
+                        new
+                        {
+                            Id = 46,
+                            ExerciseId = 20,
+                            OrderIndex = 5,
+                            RepsDefault = 12,
+                            RestTimeInSeconds = 60,
+                            SetsDefault = 3,
+                            WorkoutId = 12
+                        });
                 });
 
             modelBuilder.Entity("WorkoutService.Domain.Entities.WorkoutPlan", b =>
@@ -167,6 +966,53 @@ namespace WorkoutService.Infrastructure.Persistence.Migrations
                     b.HasKey("PlanId");
 
                     b.ToTable("WorkoutPlans");
+
+                    b.HasData(
+                        new
+                        {
+                            PlanId = "plan-foundation",
+                            Description = "A three-day full-body introduction that teaches the core movement patterns before adding load or volume.",
+                            Difficulty = 1,
+                            Goal = "GetFitter",
+                            Name = "Foundation Full Body",
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            PlanId = "plan-upper-strength",
+                            Description = "A push/pull split focused on building pressing and rowing strength across the chest, back, shoulders and arms.",
+                            Difficulty = 2,
+                            Goal = "GainWeight",
+                            Name = "Upper Body Strength",
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            PlanId = "plan-lower-power",
+                            Description = "Heavy compound lower-body work built around the squat and hip hinge for athletes with a solid technical base.",
+                            Difficulty = 3,
+                            Goal = "GainWeight",
+                            Name = "Lower Body Power",
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            PlanId = "plan-core-conditioning",
+                            Description = "Short, low-equipment sessions that build trunk stability and general work capacity.",
+                            Difficulty = 1,
+                            Goal = "GetFitter",
+                            Name = "Core & Conditioning",
+                            Status = "Active"
+                        },
+                        new
+                        {
+                            PlanId = "plan-fat-burn",
+                            Description = "High-density circuits that keep the heart rate elevated to maximise calorie burn in a short session.",
+                            Difficulty = 2,
+                            Goal = "LoseWeight",
+                            Name = "Fat Burn Circuit",
+                            Status = "Active"
+                        });
                 });
 
             modelBuilder.Entity("WorkoutService.Domain.Entities.WorkoutSession", b =>

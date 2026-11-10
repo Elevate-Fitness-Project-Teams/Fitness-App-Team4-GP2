@@ -74,6 +74,242 @@ namespace NutritionService.Migrations
                     b.HasKey("MealId");
 
                     b.ToTable("Meals");
+
+                    b.HasData(
+                        new
+                        {
+                            MealId = 1,
+                            AllergensJson = "[\"dairy\",\"nuts\",\"gluten\"]",
+                            Calories = 320.0,
+                            Carbs = 38.0,
+                            Fats = 8.0,
+                            IngredientsJson = "[\"200g Greek yogurt\",\"60g mixed berries\",\"30g granola\",\"1 tsp honey\"]",
+                            InstructionsJson = "[\"Spoon half the yogurt into a glass.\",\"Add half the berries and granola.\",\"Repeat the layers and finish with honey.\"]",
+                            Name = "Greek Yogurt Parfait",
+                            Protein = 24.0,
+                            TagsJson = "[\"high-protein\",\"quick\",\"vegetarian\"]",
+                            Type = 0,
+                            VariationsJson = "[{\"name\":\"Vegan\",\"swap\":\"Use coconut yogurt and maple syrup.\"}]"
+                        },
+                        new
+                        {
+                            MealId = 2,
+                            AllergensJson = "[\"eggs\",\"dairy\"]",
+                            Calories = 380.0,
+                            Carbs = 9.0,
+                            Fats = 26.0,
+                            IngredientsJson = "[\"3 eggs\",\"40g spinach\",\"50g mushrooms\",\"30g feta\",\"1 tsp olive oil\"]",
+                            InstructionsJson = "[\"Saute the mushrooms and spinach in the oil.\",\"Pour over the beaten eggs and cook until just set.\",\"Scatter the feta, fold and serve.\"]",
+                            Name = "Veggie Omelette",
+                            Protein = 28.0,
+                            TagsJson = "[\"low-carb\",\"high-protein\",\"vegetarian\",\"keto\"]",
+                            Type = 0,
+                            VariationsJson = "[{\"name\":\"Dairy-free\",\"swap\":\"Drop the feta and add half an avocado.\"}]"
+                        },
+                        new
+                        {
+                            MealId = 3,
+                            AllergensJson = "[\"gluten\",\"dairy\"]",
+                            Calories = 410.0,
+                            Carbs = 62.0,
+                            Fats = 11.0,
+                            IngredientsJson = "[\"60g rolled oats\",\"200ml milk\",\"1 tbsp chia seeds\",\"80g mixed berries\",\"1 tsp honey\"]",
+                            InstructionsJson = "[\"Stir the oats, milk and chia seeds together in a jar.\",\"Refrigerate overnight.\",\"Top with berries and honey before eating.\"]",
+                            Name = "Overnight Oats with Berries",
+                            Protein = 16.0,
+                            TagsJson = "[\"make-ahead\",\"high-fibre\",\"vegetarian\"]",
+                            Type = 0,
+                            VariationsJson = "[{\"name\":\"Vegan\",\"swap\":\"Use oat milk and maple syrup.\"}]"
+                        },
+                        new
+                        {
+                            MealId = 4,
+                            AllergensJson = "[\"eggs\",\"gluten\"]",
+                            Calories = 450.0,
+                            Carbs = 38.0,
+                            Fats = 24.0,
+                            IngredientsJson = "[\"2 slices wholegrain bread\",\"1 avocado\",\"2 eggs\",\"Chilli flakes\",\"Lemon juice\"]",
+                            InstructionsJson = "[\"Toast the bread.\",\"Mash the avocado with lemon juice and spread it on the toast.\",\"Poach the eggs for three minutes and set them on top.\",\"Finish with chilli flakes.\"]",
+                            Name = "Avocado Toast with Poached Eggs",
+                            Protein = 22.0,
+                            TagsJson = "[\"balanced\",\"vegetarian\"]",
+                            Type = 0
+                        },
+                        new
+                        {
+                            MealId = 5,
+                            AllergensJson = "[\"eggs\",\"dairy\",\"gluten\"]",
+                            Calories = 520.0,
+                            Carbs = 66.0,
+                            Fats = 14.0,
+                            IngredientsJson = "[\"1 banana\",\"2 eggs\",\"40g oat flour\",\"1 scoop whey protein\",\"1 tsp baking powder\"]",
+                            InstructionsJson = "[\"Blend every ingredient into a smooth batter.\",\"Cook small pancakes over a medium heat, about two minutes a side.\",\"Stack and serve with fruit.\"]",
+                            Name = "Protein Banana Pancakes",
+                            Protein = 32.0,
+                            TagsJson = "[\"high-protein\",\"post-workout\"]",
+                            Type = 0,
+                            VariationsJson = "[{\"name\":\"Vegan\",\"swap\":\"Use plant protein and two flax eggs.\"}]"
+                        },
+                        new
+                        {
+                            MealId = 6,
+                            AllergensJson = "[\"celery\"]",
+                            Calories = 380.0,
+                            Carbs = 55.0,
+                            Fats = 8.0,
+                            IngredientsJson = "[\"150g red lentils\",\"1 carrot\",\"1 onion\",\"2 celery sticks\",\"800ml vegetable stock\",\"1 tsp cumin\"]",
+                            InstructionsJson = "[\"Soften the diced vegetables in a large pan.\",\"Add the lentils, stock and cumin.\",\"Simmer for 25 minutes, then blend to your preferred texture.\"]",
+                            Name = "Lentil & Vegetable Soup",
+                            Protein = 20.0,
+                            TagsJson = "[\"vegan\",\"high-fibre\",\"meal-prep\"]",
+                            Type = 1,
+                            VariationsJson = "[{\"name\":\"Higher protein\",\"swap\":\"Stir in 100g shredded chicken.\"}]"
+                        },
+                        new
+                        {
+                            MealId = 7,
+                            AllergensJson = "[\"fish\",\"eggs\"]",
+                            Calories = 480.0,
+                            Carbs = 24.0,
+                            Fats = 26.0,
+                            IngredientsJson = "[\"120g tuna steak\",\"2 boiled eggs\",\"100g green beans\",\"150g new potatoes\",\"Olives\",\"Vinaigrette\"]",
+                            InstructionsJson = "[\"Boil the potatoes and blanch the beans.\",\"Sear the tuna for two minutes a side and slice it.\",\"Assemble everything and dress with the vinaigrette.\"]",
+                            Name = "Tuna Nicoise Salad",
+                            Protein = 38.0,
+                            TagsJson = "[\"high-protein\",\"mediterranean\"]",
+                            Type = 1
+                        },
+                        new
+                        {
+                            MealId = 8,
+                            AllergensJson = "[\"gluten\",\"sesame\"]",
+                            Calories = 520.0,
+                            Carbs = 55.0,
+                            Fats = 18.0,
+                            IngredientsJson = "[\"1 wholewheat tortilla\",\"120g sliced turkey breast\",\"3 tbsp hummus\",\"Mixed salad leaves\",\"1/2 red pepper\"]",
+                            InstructionsJson = "[\"Spread the hummus over the tortilla.\",\"Layer the turkey, leaves and sliced pepper down the middle.\",\"Roll tightly and slice in half.\"]",
+                            Name = "Turkey & Hummus Wrap",
+                            Protein = 34.0,
+                            TagsJson = "[\"quick\",\"portable\",\"high-protein\"]",
+                            Type = 1,
+                            VariationsJson = "[{\"name\":\"Vegetarian\",\"swap\":\"Replace the turkey with falafel.\"}]"
+                        },
+                        new
+                        {
+                            MealId = 9,
+                            AllergensJson = "[]",
+                            Calories = 560.0,
+                            Carbs = 52.0,
+                            Fats = 16.0,
+                            IngredientsJson = "[\"150g chicken breast\",\"80g quinoa\",\"1/2 avocado\",\"100g roasted vegetables\",\"Lemon dressing\"]",
+                            InstructionsJson = "[\"Cook the quinoa in salted water.\",\"Grill the seasoned chicken for six minutes a side and rest it.\",\"Build the bowl and finish with the dressing.\"]",
+                            Name = "Grilled Chicken Quinoa Bowl",
+                            Protein = 45.0,
+                            TagsJson = "[\"high-protein\",\"meal-prep\",\"gluten-free\"]",
+                            Type = 1,
+                            VariationsJson = "[{\"name\":\"Vegan\",\"swap\":\"Use 150g marinated tofu.\"}]"
+                        },
+                        new
+                        {
+                            MealId = 10,
+                            AllergensJson = "[]",
+                            Calories = 540.0,
+                            Carbs = 78.0,
+                            Fats = 16.0,
+                            IngredientsJson = "[\"400g chickpeas\",\"200ml coconut milk\",\"400g chopped tomatoes\",\"2 tbsp curry paste\",\"80g brown rice\"]",
+                            InstructionsJson = "[\"Fry the curry paste for a minute.\",\"Add the tomatoes, coconut milk and chickpeas, then simmer for 20 minutes.\",\"Serve over the cooked brown rice.\"]",
+                            Name = "Chickpea Curry with Brown Rice",
+                            Protein = 22.0,
+                            TagsJson = "[\"vegan\",\"high-fibre\",\"batch-cook\"]",
+                            Type = 2,
+                            VariationsJson = "[{\"name\":\"Higher protein\",\"swap\":\"Add 100g paneer or tofu.\"}]"
+                        },
+                        new
+                        {
+                            MealId = 11,
+                            AllergensJson = "[\"soy\",\"sesame\",\"gluten\"]",
+                            Calories = 580.0,
+                            Carbs = 48.0,
+                            Fats = 22.0,
+                            IngredientsJson = "[\"150g lean beef strips\",\"150g mixed stir-fry vegetables\",\"80g rice noodles\",\"2 tbsp soy sauce\",\"1 tsp sesame oil\",\"Garlic and ginger\"]",
+                            InstructionsJson = "[\"Sear the beef in a very hot wok and set it aside.\",\"Stir-fry the vegetables with the garlic and ginger.\",\"Return the beef, add the noodles and sauce, and toss to coat.\"]",
+                            Name = "Lean Beef Stir-Fry",
+                            Protein = 44.0,
+                            TagsJson = "[\"high-protein\",\"quick\"]",
+                            Type = 2
+                        },
+                        new
+                        {
+                            MealId = 12,
+                            AllergensJson = "[\"fish\"]",
+                            Calories = 610.0,
+                            Carbs = 18.0,
+                            Fats = 38.0,
+                            IngredientsJson = "[\"180g salmon fillet\",\"200g asparagus\",\"1 tbsp olive oil\",\"1 lemon\",\"Fresh dill\"]",
+                            InstructionsJson = "[\"Heat the oven to 200C.\",\"Lay the salmon and asparagus on a tray, then drizzle with oil and lemon.\",\"Bake for 15 minutes and finish with dill.\"]",
+                            Name = "Baked Salmon with Asparagus",
+                            Protein = 46.0,
+                            TagsJson = "[\"omega-3\",\"low-carb\",\"gluten-free\"]",
+                            Type = 2,
+                            VariationsJson = "[{\"name\":\"Higher carb\",\"swap\":\"Add 150g roasted new potatoes.\"}]"
+                        },
+                        new
+                        {
+                            MealId = 13,
+                            AllergensJson = "[]",
+                            Calories = 620.0,
+                            Carbs = 60.0,
+                            Fats = 14.0,
+                            IngredientsJson = "[\"180g chicken breast\",\"250g sweet potato\",\"150g broccoli\",\"1 tbsp olive oil\",\"Paprika\"]",
+                            InstructionsJson = "[\"Roast the cubed sweet potato with oil and paprika for 30 minutes.\",\"Pan-sear the chicken, then finish it in the oven.\",\"Steam the broccoli and plate everything together.\"]",
+                            Name = "Chicken Breast with Sweet Potato",
+                            Protein = 52.0,
+                            TagsJson = "[\"high-protein\",\"muscle-gain\",\"gluten-free\"]",
+                            Type = 2
+                        },
+                        new
+                        {
+                            MealId = 14,
+                            AllergensJson = "[\"dairy\"]",
+                            Calories = 190.0,
+                            Carbs = 18.0,
+                            Fats = 3.0,
+                            IngredientsJson = "[\"150g cottage cheese\",\"80g fresh pineapple\"]",
+                            InstructionsJson = "[\"Spoon the cottage cheese into a bowl.\",\"Top with the diced pineapple.\"]",
+                            Name = "Cottage Cheese with Pineapple",
+                            Protein = 22.0,
+                            TagsJson = "[\"high-protein\",\"low-fat\",\"quick\"]",
+                            Type = 3
+                        },
+                        new
+                        {
+                            MealId = 15,
+                            AllergensJson = "[\"dairy\"]",
+                            Calories = 210.0,
+                            Carbs = 12.0,
+                            Fats = 4.0,
+                            IngredientsJson = "[\"1 scoop whey protein\",\"300ml milk\",\"1/2 banana\"]",
+                            InstructionsJson = "[\"Blend everything until smooth.\",\"Drink within 30 minutes of training.\"]",
+                            Name = "Protein Shake",
+                            Protein = 30.0,
+                            TagsJson = "[\"post-workout\",\"high-protein\",\"quick\"]",
+                            Type = 3,
+                            VariationsJson = "[{\"name\":\"Vegan\",\"swap\":\"Use pea protein and oat milk.\"}]"
+                        },
+                        new
+                        {
+                            MealId = 16,
+                            AllergensJson = "[\"nuts\"]",
+                            Calories = 240.0,
+                            Carbs = 24.0,
+                            Fats = 14.0,
+                            IngredientsJson = "[\"30g almonds\",\"1 apple\"]",
+                            InstructionsJson = "[\"Slice the apple.\",\"Serve with the almonds.\"]",
+                            Name = "Almonds & Apple",
+                            Protein = 8.0,
+                            TagsJson = "[\"vegan\",\"portable\",\"high-fibre\"]",
+                            Type = 3
+                        });
                 });
 
             modelBuilder.Entity("NutritionService.Domain.Entities.MealPlan", b =>
@@ -103,6 +339,40 @@ namespace NutritionService.Migrations
                     b.HasKey("MealPlanId");
 
                     b.ToTable("MealPlans");
+
+                    b.HasData(
+                        new
+                        {
+                            MealPlanId = 1,
+                            Description = "A lower-calorie plan built around high-protein, high-fibre meals for a steady deficit.",
+                            Name = "Lean & Light",
+                            TargetCalorieRangeMax = 1800.0,
+                            TargetCalorieRangeMin = 1400.0
+                        },
+                        new
+                        {
+                            MealPlanId = 2,
+                            Description = "A moderate plan that covers maintenance calories for most moderately active adults.",
+                            Name = "Balanced Everyday",
+                            TargetCalorieRangeMax = 2200.0,
+                            TargetCalorieRangeMin = 1801.0
+                        },
+                        new
+                        {
+                            MealPlanId = 3,
+                            Description = "Higher carbohydrate intake to support four or more training sessions a week.",
+                            Name = "Active Performance",
+                            TargetCalorieRangeMax = 2600.0,
+                            TargetCalorieRangeMin = 2201.0
+                        },
+                        new
+                        {
+                            MealPlanId = 4,
+                            Description = "A calorie surplus with protein spread evenly across the day to support hypertrophy.",
+                            Name = "Muscle Gain",
+                            TargetCalorieRangeMax = 3200.0,
+                            TargetCalorieRangeMin = 2601.0
+                        });
                 });
 
             modelBuilder.Entity("NutritionService.Domain.Entities.MealPlanItem", b =>
@@ -136,6 +406,152 @@ namespace NutritionService.Migrations
                     b.HasIndex("MealPlanId");
 
                     b.ToTable("MealPlanItems");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DayOfWeek = "Monday",
+                            MealId = 1,
+                            MealPlanId = 1,
+                            MealTime = "Breakfast"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DayOfWeek = "Monday",
+                            MealId = 6,
+                            MealPlanId = 1,
+                            MealTime = "Lunch"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DayOfWeek = "Monday",
+                            MealId = 12,
+                            MealPlanId = 1,
+                            MealTime = "Dinner"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DayOfWeek = "Monday",
+                            MealId = 14,
+                            MealPlanId = 1,
+                            MealTime = "Snack"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            DayOfWeek = "Monday",
+                            MealId = 4,
+                            MealPlanId = 2,
+                            MealTime = "Breakfast"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            DayOfWeek = "Monday",
+                            MealId = 8,
+                            MealPlanId = 2,
+                            MealTime = "Lunch"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            DayOfWeek = "Monday",
+                            MealId = 13,
+                            MealPlanId = 2,
+                            MealTime = "Dinner"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            DayOfWeek = "Monday",
+                            MealId = 15,
+                            MealPlanId = 2,
+                            MealTime = "Snack"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            DayOfWeek = "Monday",
+                            MealId = 3,
+                            MealPlanId = 3,
+                            MealTime = "Breakfast"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            DayOfWeek = "Monday",
+                            MealId = 9,
+                            MealPlanId = 3,
+                            MealTime = "Lunch"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            DayOfWeek = "Monday",
+                            MealId = 11,
+                            MealPlanId = 3,
+                            MealTime = "Dinner"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            DayOfWeek = "Monday",
+                            MealId = 15,
+                            MealPlanId = 3,
+                            MealTime = "Snack"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            DayOfWeek = "Monday",
+                            MealId = 16,
+                            MealPlanId = 3,
+                            MealTime = "Evening Snack"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            DayOfWeek = "Monday",
+                            MealId = 5,
+                            MealPlanId = 4,
+                            MealTime = "Breakfast"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            DayOfWeek = "Monday",
+                            MealId = 9,
+                            MealPlanId = 4,
+                            MealTime = "Lunch"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            DayOfWeek = "Monday",
+                            MealId = 13,
+                            MealPlanId = 4,
+                            MealTime = "Dinner"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            DayOfWeek = "Monday",
+                            MealId = 15,
+                            MealPlanId = 4,
+                            MealTime = "Snack"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            DayOfWeek = "Monday",
+                            MealId = 16,
+                            MealPlanId = 4,
+                            MealTime = "Evening Snack"
+                        });
                 });
 
             modelBuilder.Entity("NutritionService.Domain.Entities.MealPlanItem", b =>
@@ -147,7 +563,7 @@ namespace NutritionService.Migrations
                         .IsRequired();
 
                     b.HasOne("NutritionService.Domain.Entities.MealPlan", "MealPlan")
-                        .WithMany()
+                        .WithMany("MealPlanItems")
                         .HasForeignKey("MealPlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -155,6 +571,11 @@ namespace NutritionService.Migrations
                     b.Navigation("Meal");
 
                     b.Navigation("MealPlan");
+                });
+
+            modelBuilder.Entity("NutritionService.Domain.Entities.MealPlan", b =>
+                {
+                    b.Navigation("MealPlanItems");
                 });
 #pragma warning restore 612, 618
         }

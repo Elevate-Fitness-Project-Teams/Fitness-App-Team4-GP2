@@ -13,6 +13,7 @@ namespace BuildingBlocks.Shared.Results
         InvalidCredentials = 5,
         Conflict = 6,
         Locked = 7,
-        TooManyRequestsException =8
+        TooManyRequestsException = 8,
+        ServiceUnavailable = 9
     }
 }

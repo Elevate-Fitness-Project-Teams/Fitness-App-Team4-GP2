@@ -1,12 +1,14 @@
 using BuildingBlocks.Shared.Behaviors;
 using BuildingBlocks.Shared.Middleware;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using BuildingBlocks.Shared.Persistence;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using NotificationService.Domain.Interfaces;
 using NotificationService.Infrastructure.Persistence;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 internal class Program
@@ -45,9 +47,39 @@ internal class Program
         builder.Services.AddAuthorization();
 
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Enter: Bearer {your JWT token}"
+            });
 
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
+        });
         var app = builder.Build();
+
+        // Create/upgrade this service's database and apply the HasData seed rows.
+        // Runs before the pipeline is built so the app never serves traffic against a
+        // missing schema; set Database:AutoMigrate=false to opt out.
+        app.MigrateDatabase<NotificationDbContext>();
 
         app.UseGlobalExceptionMiddleware();
 
@@ -57,7 +89,7 @@ internal class Program
             app.UseSwaggerUI();
         }
 
-        app.UseHttpsRedirection();
+        app.UseHttpsRedirectionOutsideContainer();
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();

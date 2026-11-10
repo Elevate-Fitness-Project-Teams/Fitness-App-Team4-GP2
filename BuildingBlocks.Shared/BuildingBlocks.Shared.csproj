@@ -16,6 +16,9 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="12.1.1" />
 	  <PackageReference Include="MediatR" Version="14.1.0" />
+	  <!-- Relational only: the shared startup migrator needs Database.Migrate(),
+	       each service still brings its own provider (SqlServer). -->
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

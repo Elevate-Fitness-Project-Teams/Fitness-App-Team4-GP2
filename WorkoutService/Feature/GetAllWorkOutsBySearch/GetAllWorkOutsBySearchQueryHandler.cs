@@ -29,6 +29,9 @@ namespace WorkoutService.Feature.GetAllWorkOuts
                 e =>new Workout
             { 
                WorkoutId= e.WorkoutId,
+               // Without this the projection drops PlanId, so the DTO built further
+               // down always reported null even though the column is populated.
+               PlanId= e.PlanId,
                Name= e.Name,
                Category= e.Category,
                Difficulty= e.Difficulty,

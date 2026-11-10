@@ -21,7 +21,7 @@ namespace NutritionService.Features.GetMealPlansByCalorie
         {
             var calorie = request.Calorie;
 
-            if (calorie >= 0)
+            if (calorie <= 0)
                 return Error.Validation("ValidationError", "VAL_REQUIRED_FIELD");
             
 

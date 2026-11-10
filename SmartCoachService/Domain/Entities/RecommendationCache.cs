@@ -7,6 +7,6 @@ namespace SmartCoachService.Domain.Entities
         public string UserContextJson { get; set; } = null!;
         public string? HomeFeedDataJson { get; set; }
         public DateTime CachedAt { get; set; }
-        public DateTime ExpiresAt { get; set; }
+        public DateTime ExpiresAt { get; set; } = DateTime.UtcNow.AddHours(1);
     }
 }

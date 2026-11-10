@@ -1,7 +1,10 @@
+using BuildingBlocks.Shared.Middleware;
+using BuildingBlocks.Shared.Persistence;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using SubscriptionService.Domain.Contracts;
 using SubscriptionService.Domain.Contracts.Repositories;
 using SubscriptionService.Infrastructure.Persistence;
@@ -51,10 +54,10 @@ namespace SubscriptionService
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host("localhost", "/", h =>
+                    cfg.Host(builder.Configuration["RabbitMQ:Host"] ?? "localhost", "/", h =>
                     {
-                        h.Username("guest");
-                        h.Password("guest");
+                        h.Username(builder.Configuration["RabbitMQ:Username"] ?? "guest");
+                        h.Password(builder.Configuration["RabbitMQ:Password"] ?? "guest");
                     });
 
                     cfg.ConfigureEndpoints(context);
@@ -64,9 +67,40 @@ namespace SubscriptionService
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter: Bearer {your JWT token}"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+            });
 
             var app = builder.Build();
+
+            // Create/upgrade this service's database and apply the HasData seed rows.
+            // Runs before the pipeline is built so the app never serves traffic against a
+            // missing schema; set Database:AutoMigrate=false to opt out.
+            app.MigrateDatabase<SubscriptionDbContext>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -82,7 +116,7 @@ namespace SubscriptionService
                 }
             }
 
-            app.UseHttpsRedirection();
+            app.UseHttpsRedirectionOutsideContainer();
 
             app.UseAuthorization();
 

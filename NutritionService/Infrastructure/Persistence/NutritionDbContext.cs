@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NutritionService.Domain.Entities;
+using NutritionService.Infrastructure.Persistence.Seed;
 
 namespace NutritionService.Infrastructure.Persistence
 {
@@ -52,6 +53,12 @@ namespace NutritionService.Infrastructure.Persistence
                     .HasForeignKey(e => e.MealId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
+
+            // Global catalog data. Seeded after the entity configuration above so the
+            // keys and FKs are already known to the model builder.
+            modelBuilder.Entity<Meal>().HasData(NutritionCatalogSeed.GetMeals());
+            modelBuilder.Entity<MealPlan>().HasData(NutritionCatalogSeed.GetMealPlans());
+            modelBuilder.Entity<MealPlanItem>().HasData(NutritionCatalogSeed.GetMealPlanItems());
         }
     }
 }

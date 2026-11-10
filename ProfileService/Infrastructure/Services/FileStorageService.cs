@@ -19,12 +19,18 @@ namespace ProfileService.Infrastructure.Services
         public static string GetUploadsRoot(IConfiguration configuration)
         {
             var configured = configuration["Storage:ProfilePicturesRoot"];
+            if (!string.IsNullOrWhiteSpace(configured))
+                return Path.GetFullPath(configured);
 
-            return string.IsNullOrWhiteSpace(configured)
-                ? Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    "ElevateFitness", "profile-pictures")
-                : configured;
+            // LocalApplicationData resolves to an empty string in environments without a
+            // user profile / HOME (e.g. a Linux container), which would make the combined
+            // path relative — and PhysicalFileProvider rejects relative roots. Fall back to
+            // the application base directory, which is always absolute.
+            var baseDir = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            if (string.IsNullOrWhiteSpace(baseDir))
+                baseDir = AppContext.BaseDirectory;
+
+            return Path.Combine(baseDir, "ElevateFitness", "profile-pictures");
         }
 
         public async Task<string> SaveProfilePictureAsync(IFormFile file)

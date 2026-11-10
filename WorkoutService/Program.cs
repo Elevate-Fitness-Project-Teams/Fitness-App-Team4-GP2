@@ -1,3 +1,4 @@
+using BuildingBlocks.Shared.Persistence;
 using BuildingBlocks.Shared.Middleware;
 using MassTransit;
 using MediatR;
@@ -94,7 +95,22 @@ namespace WorkoutService
                 });
             });
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AngularPolicy", policy =>
+                {
+                    policy
+                        .WithOrigins("http://localhost:4200")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
             var app = builder.Build();
+
+            // Create/upgrade this service's database and apply the HasData seed rows.
+            // Runs before the pipeline is built so the app never serves traffic against a
+            // missing schema; set Database:AutoMigrate=false to opt out.
+            app.MigrateDatabase<WorkoutDbContext>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -127,8 +143,13 @@ namespace WorkoutService
                 }
             }
 
+            
+
             app.UseGlobalExceptionMiddleware();
-            app.UseHttpsRedirection();
+            app.UseHttpsRedirectionOutsideContainer();
+
+            app.UseRouting();
+            app.UseCors("AngularPolicy");
 
             app.UseAuthentication();
             app.UseAuthorization();

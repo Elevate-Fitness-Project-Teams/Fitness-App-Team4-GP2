@@ -36,16 +36,18 @@ namespace SmartCoachService.Features.SendChatMessage
             var userProgressStats = await _progressClient.GetProgressStatsAsync(userId, cancellationToken);
             var userFceMetrics = await _fceClient.GetMetricsAsync(userId, cancellationToken);
 
+            // Either service may legitimately have nothing yet (new user, metrics not
+            // calculated); fall back to zeroes rather than dereferencing null.
             var userContext = new UserContextDto
             {
-                Bmr = userFceMetrics!.Bmr,
-                Tdee = userFceMetrics.Tdee,
-                CalorieTarget = userFceMetrics.CalorieTarget,
-                TotalWorkouts = userProgressStats!.TotalWorkouts,
-                TotalCaloriesBurned = userProgressStats.TotalCaloriesBurned,
-                TotalWeightLost = userProgressStats.TotalWeightLost,
-                CurrentStreak = userProgressStats.CurrentStreak,
-                LongestStreak = userProgressStats.LongestStreak
+                Bmr = userFceMetrics?.Bmr ?? 0,
+                Tdee = userFceMetrics?.Tdee ?? 0,
+                CalorieTarget = userFceMetrics?.CalorieTarget ?? 0,
+                TotalWorkouts = userProgressStats?.TotalWorkouts ?? 0,
+                TotalCaloriesBurned = userProgressStats?.TotalCaloriesBurned ?? 0,
+                TotalWeightLost = userProgressStats?.TotalWeightLost ?? 0,
+                CurrentStreak = userProgressStats?.CurrentStreak ?? 0,
+                LongestStreak = userProgressStats?.LongestStreak ?? 0
             };
             var userContextString = JsonSerializer.Serialize(userContext);
             if (cache is null)

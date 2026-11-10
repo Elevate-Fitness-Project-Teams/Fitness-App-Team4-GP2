@@ -5,7 +5,11 @@ using ProgressService.Domain.Entities;
 
 namespace ProgressService.Infrastructure.Persistence.MessageBroker
 {
-    public class UserCreatedConsumer
+    // Must implement IConsumer<T>: Program.cs registers consumers with
+    // AddConsumers(assembly), which discovers by interface. Without it this class was
+    // never wired to the bus, so UserReadModel stayed empty and every progress lookup
+    // returned RES_USER_NOT_FOUND.
+    public class UserCreatedConsumer : IConsumer<UserProfileCompletedEvent>
     {
         private readonly IUnitOfWork _unitOfWork;
 

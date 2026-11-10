@@ -1,54 +1,111 @@
 services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Developer
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD:-Elevate_Str0ng_Pass1}
+    volumes:
+      # Named volume, so data survives `docker compose down` (only `-v` wipes it).
+      - elevate-sqlserver-data:/var/opt/mssql
+    healthcheck:
+      # Services wait on this: SQL Server takes ~20s before it accepts logins, and a
+      # service that connects earlier would crash-loop through its migration retries.
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
   authservice:
     image: ${DOCKER_REGISTRY-}authservice
     build:
       context: .
       dockerfile: AuthService/Dockerfile
+    depends_on:
+      sqlserver:
+        condition: service_healthy
 
   fceservice:
     image: ${DOCKER_REGISTRY-}fceservice
     build:
       context: .
       dockerfile: FCEService/Dockerfile
+    depends_on:
+      sqlserver:
+        condition: service_healthy
 
   notificationservice:
     image: ${DOCKER_REGISTRY-}notificationservice
     build:
       context: .
       dockerfile: NotificationService/Dockerfile
+    depends_on:
+      sqlserver:
+        condition: service_healthy
 
   nutritionservice:
     image: ${DOCKER_REGISTRY-}nutritionservice
     build:
       context: .
       dockerfile: NutritionService/Dockerfile
+    depends_on:
+      sqlserver:
+        condition: service_healthy
 
   profileservice:
     image: ${DOCKER_REGISTRY-}profileservice
     build:
       context: .
       dockerfile: ProfileService/Dockerfile
+    depends_on:
+      sqlserver:
+        condition: service_healthy
 
   progressservice:
     image: ${DOCKER_REGISTRY-}progressservice
     build:
       context: .
       dockerfile: ProgressService/Dockerfile
+    depends_on:
+      sqlserver:
+        condition: service_healthy
 
   smartcoachservice:
     image: ${DOCKER_REGISTRY-}smartcoachservice
     build:
       context: .
       dockerfile: SmartCoachService/Dockerfile
+    depends_on:
+      sqlserver:
+        condition: service_healthy
 
   subscriptionservice:
     image: ${DOCKER_REGISTRY-}subscriptionservice
     build:
       context: .
       dockerfile: SubscriptionService/Dockerfile
+    depends_on:
+      sqlserver:
+        condition: service_healthy
 
-  # workoutservice:
-  #   image: ${DOCKER_REGISTRY-}workoutservice
-  #   build:
-  #     context: .
-  #     dockerfile: WorkoutService/Dockerfile
+  workoutservice:
+    image: ${DOCKER_REGISTRY-}workoutservice
+    build:
+      context: .
+      dockerfile: WorkoutService/Dockerfile
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+volumes:
+  elevate-sqlserver-data:

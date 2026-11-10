@@ -27,8 +27,7 @@ namespace NotificationService.Controllers
             var result = await sender.Send(new MarkNotificationAsReadCommand(id, GetCurrentUserId()), ct);
             return FromResult(result, "Notification marked as read.", StatusCodes.Status200OK);
         }
-
-        
+       
         private Guid GetCurrentUserId()
         {
             var claim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");

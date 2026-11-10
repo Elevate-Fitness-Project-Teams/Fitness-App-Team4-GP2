@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WorkoutService.Domain.Entities;
+using WorkoutService.Infrastructure.Persistence.Seed;
 
 namespace WorkoutService.Infrastructure.Persistence
 {
@@ -85,6 +86,13 @@ namespace WorkoutService.Infrastructure.Persistence
                     .HasForeignKey(e => e.WorkoutId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
+
+            // Global catalog data. Seeded after the entity configuration above so the
+            // keys and FKs are already known to the model builder.
+            modelBuilder.Entity<Exercise>().HasData(WorkoutCatalogSeed.GetExercises());
+            modelBuilder.Entity<WorkoutPlan>().HasData(WorkoutCatalogSeed.GetWorkoutPlans());
+            modelBuilder.Entity<Workout>().HasData(WorkoutCatalogSeed.GetWorkouts());
+            modelBuilder.Entity<WorkoutExercise>().HasData(WorkoutCatalogSeed.GetWorkoutExercises());
         }
     }
 }

@@ -1,4 +1,3 @@
-﻿using BuildingBlocks.Shared.Responses;
 using SmartCoachService.Infrastructure.Persistence.Integrations.Responses;
 
 namespace SmartCoachService.Infrastructure.Persistence.Integrations
@@ -6,21 +5,18 @@ namespace SmartCoachService.Infrastructure.Persistence.Integrations
     public class ProgressClient
     {
         private readonly HttpClient _httpClient;
+        private readonly ILogger<ProgressClient> _logger;
 
-        public ProgressClient(HttpClient httpClient)
+        public ProgressClient(HttpClient httpClient, ILogger<ProgressClient> logger)
         {
             _httpClient = httpClient;
+            _logger = logger;
         }
 
-        public async Task<ProgressStatsResponse?> GetProgressStatsAsync(Guid userId, CancellationToken cancellationToken)
-        {
-            var response = await _httpClient.GetAsync($"/api/v1/Progress/stats/{userId}", cancellationToken);
-            if (!response.IsSuccessStatusCode)
-                return null;
-            var apiResult = await response.Content.ReadFromJsonAsync<ApiResponse<ProgressStatsResponse>>(cancellationToken);
-            return apiResult?.Data;
-        }
-
-        
+        // Null until the user has logged activity; throws
+        // DownstreamUnavailableException if the service is down.
+        public Task<ProgressStatsResponse?> GetProgressStatsAsync(Guid userId, CancellationToken cancellationToken) =>
+            DownstreamHttp.GetOrNullAsync<ProgressStatsResponse>(
+                _httpClient, $"/api/v1/Progress/stats/{userId}", _logger, cancellationToken);
     }
 }

@@ -43,6 +43,9 @@ namespace BuildingBlocks.Shared.Results
         public static Error TooManyRequestsException(string code = "General.TooManyRequests", string description = "Otp resend too soon")
             => new(code, description, ErrorType.TooManyRequestsException);
 
+        public static Error ServiceUnavailable(string code = "General.ServiceUnavailable", string description = "A downstream service is unavailable.")
+            => new(code, description, ErrorType.ServiceUnavailable);
+
         /// <summary>Maps this error's <see cref="ErrorType"/> to the HTTP status code used in the response envelope.</summary>
         public int ToStatusCode() => Type switch
         {
@@ -55,6 +58,7 @@ namespace BuildingBlocks.Shared.Results
             ErrorType.Locked => 423,
             ErrorType.TooManyRequestsException => 429,
             ErrorType.Failure => 500,
+            ErrorType.ServiceUnavailable => 503,
             _ => 500
         };
     }

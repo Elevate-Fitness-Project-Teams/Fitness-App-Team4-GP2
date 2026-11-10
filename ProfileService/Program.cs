@@ -1,3 +1,4 @@
+using BuildingBlocks.Shared.Persistence;
 using BuildingBlocks.Shared.Middleware;
 using FluentValidation;
 using MassTransit;
@@ -83,14 +84,11 @@ namespace ProfileService
                         Array.Empty<string>()
                     }
                 });
-                        });
+                });
 
             builder.Services.AddMassTransit(x =>
             {
-                x.AddConsumer<UserProfileCompletedConsumer>();
-                x.AddConsumer<UserStatisticsUpdatedConsumer>();
-                x.AddConsumer<UserFitnessUpdatedConsumer>();
-                x.AddConsumer<UserEmailChangedConsumer>();
+                x.AddConsumers(typeof(Program).Assembly);
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
@@ -118,9 +116,14 @@ namespace ProfileService
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            //builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            // Create/upgrade this service's database and apply the HasData seed rows.
+            // Runs before the pipeline is built so the app never serves traffic against a
+            // missing schema; set Database:AutoMigrate=false to opt out.
+            app.MigrateDatabase<ProfileDbContext>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -136,7 +139,7 @@ namespace ProfileService
 
             app.UseGlobalExceptionMiddleware();
 
-            app.UseStaticFiles();
+            //app.UseStaticFiles();
 
             // Serve uploaded profile pictures from their external storage folder
             // (outside the project tree, so debug-time file watchers don't restart the app).
@@ -148,7 +151,7 @@ namespace ProfileService
                 RequestPath = "/uploads/profile-pictures"
             });
 
-            app.UseHttpsRedirection();
+            app.UseHttpsRedirectionOutsideContainer();
 
             app.UseAuthentication();
             app.UseAuthorization();
