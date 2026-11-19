@@ -1,12 +1,10 @@
-﻿using BuildingBlocks.Shared.Results;
+using BuildingBlocks.Shared.Results;
 using BuildingBlocks.Shared.Results.Pagination;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NutritionService.Domain.Contracts;
 using NutritionService.Domain.Entities;
 using NutritionService.Infrastructure.Persistence.Integrations;
-using System.Linq.Expressions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace NutritionService.Features.GetMealRecommendations
 {
@@ -15,25 +13,29 @@ namespace NutritionService.Features.GetMealRecommendations
         private readonly IGenericRepository<Meal> _genericRepository;
         private readonly FceClient _fceClient;
 
-        public GetMealRecommendationsHandler(IGenericRepository<Meal> genericRepository , FceClient fceClient)
+        public GetMealRecommendationsHandler(IGenericRepository<Meal> genericRepository, FceClient fceClient)
         {
             _genericRepository = genericRepository;
             _fceClient = fceClient;
         }
+
         public async Task<Result<GetMealRecommendationsResponse>> Handle(GetMealRecommendationsQuery request, CancellationToken cancellationToken)
         {
             var userId = request.UserId;
-            var FceMetrics = await _fceClient.GetMetricsAsync(userId , cancellationToken);
-            if(FceMetrics is null)
-                return Error.Validation("ValidationError" , "FCE_METRICS_NOT_CALCULATED");
+            var fceResult = await _fceClient.GetMetricsAsync(userId, cancellationToken);
+            if (fceResult.IsFailure)
+            {
+                return Result<GetMealRecommendationsResponse>.Fail(fceResult.Errors);
+            }
 
+            var fceMetrics = fceResult.Value;
 
             var query = _genericRepository.GetAll(m => m.Type == request.MealType 
-                                            && m.Calories <= FceMetrics.CalorieTarget 
+                                            && m.Calories <= fceMetrics.CalorieTarget 
                                             && (!request.MaxCalories.HasValue || m.Calories <= request.MaxCalories)
                                             && (!request.MinProtein.HasValue || m.Protein >= request.MinProtein));
 
-            var totalCount = await query.CountAsync();
+            var totalCount = await query.CountAsync(cancellationToken);
             var pagination = request.Pagination;
             var items = await query
                 .OrderBy(m => m.MealId)
@@ -50,17 +52,13 @@ namespace NutritionService.Features.GetMealRecommendations
                     Fats = m.Fats,
                     TagsJson = m.TagsJson
                 })
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
-            return new GetMealRecommendationsResponse
+            return Result<GetMealRecommendationsResponse>.OK(new GetMealRecommendationsResponse
             {
-                UserDailyGoalCalories = FceMetrics.CalorieTarget,
+                UserDailyGoalCalories = fceMetrics.CalorieTarget,
                 RecommendedMeals = PaginatedResult<MealRecommendationDto>.Create(items, totalCount, pagination.Page, pagination.PageSize)
-            };
-
-
-
-
+            });
         }
     }
 }

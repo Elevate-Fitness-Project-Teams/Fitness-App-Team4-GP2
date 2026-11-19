@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Contracts.Progress;
+using BuildingBlocks.Contracts.Progress;
 using MassTransit;
 using MassTransit.Transports;
 using MediatR;
@@ -40,60 +40,91 @@ namespace WorkoutService.Feature.StartWorkOutSession
             {
                 return HandlerResponseFactory.Failure<StartWorkOutSessionResultDto>(workoutRequest.ErrorCode);            
             }
-            var SessionIsExists = await workOutSessionRepository
-                .GetAllAsync(x => x.UserId.Equals(request.UserId) && x.Status == Domain.Enums.WorkOutSessionStatus.active).FirstOrDefaultAsync(cancellationToken);
 
-            if (SessionIsExists is not null)
-            {
-                return HandlerResponseFactory.Success(new StartWorkOutSessionResultDto { SessionId = SessionIsExists.SessionId });
-
-            }
             var workout = workoutRequest.Data;
-            var Session = new WorkoutSession
+
+            // 1. Idempotency: check if an active session already exists for this exact workout
+            var existingSessionSameWorkout = await workOutSessionRepository
+                .GetAllAsync(x => x.UserId == request.UserId && x.WorkoutId == request.WorkoutId && x.Status == WorkOutSessionStatus.active)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (existingSessionSameWorkout is not null)
+            {
+                var exercises = workout.Exercises
+                    .OrderBy(e => e.OrderIndex)
+                    .Select(e => new WorkoutExerciseInSessionDto
+                    {
+                        ExerciseId = e.ExerciseId,
+                        Name = e.ExerciseName,
+                        Description = e.ExerciseDescription,
+                        Difficulty = e.ExerciseDifficulty,
+                        Equipment = e.ExerciseEquipment,
+                        OrderIndex = e.OrderIndex,
+                        RepsDefault = e.RepsDefault,
+                        RestTimeInSeconds = e.RestTimeInSeconds,
+                        SetsDefault = e.SetsDefault,
+                        TargetMuscles = e.TargetMuscles,
+                        VideoUrl = e.ExerciseVideoUrl
+                    }).ToList();
+
+                return HandlerResponseFactory.Success(new StartWorkOutSessionResultDto
+                {
+                    SessionId = existingSessionSameWorkout.SessionId,
+                    Status = existingSessionSameWorkout.Status,
+                    ExercisesInSession = exercises
+                });
+            }
+
+            // 2. If an active session exists for a DIFFERENT workout, mark it abandoned
+            var otherActiveSessions = await workOutSessionRepository
+                .GetAllAsync(x => x.UserId == request.UserId && x.WorkoutId != request.WorkoutId && x.Status == WorkOutSessionStatus.active)
+                .ToListAsync(cancellationToken);
+
+            foreach (var oldSession in otherActiveSessions)
+            {
+                oldSession.Status = WorkOutSessionStatus.abandoned;
+            }
+
+            // 3. Create new session
+            var session = new WorkoutSession
             {
                 UserId = request.UserId,
-
                 WorkoutId = request.WorkoutId,
-
                 StartedAt = DateTime.UtcNow,
-
                 Status = WorkOutSessionStatus.active
             };
 
-            await workOutSessionRepository.AddAsync(Session);
+            await workOutSessionRepository.AddAsync(session);
             await workOutSessionRepository.SaveChangesAsync();
 
             var exercisesInSession = workout.Exercises
+                .OrderBy(e => e.OrderIndex)
                 .Select(e => new WorkoutExerciseInSessionDto
                 {
-                    ExerciseId=e.ExerciseId,
-                    Name=e.ExerciseName,
-                    Description=e.ExerciseDescription,
-                    Difficulty=e.ExerciseDifficulty,
-                    Equipment=e.ExerciseEquipment,
-                    OrderIndex=e.OrderIndex,
-                    RepsDefault=e.RepsDefault,
-                    RestTimeInSeconds=e.RestTimeInSeconds,
-                    SetsDefault=e.SetsDefault,
-                    TargetMuscles=e.TargetMuscles,
-                    VideoUrl=e.ExerciseVideoUrl
-
+                    ExerciseId = e.ExerciseId,
+                    Name = e.ExerciseName,
+                    Description = e.ExerciseDescription,
+                    Difficulty = e.ExerciseDifficulty,
+                    Equipment = e.ExerciseEquipment,
+                    OrderIndex = e.OrderIndex,
+                    RepsDefault = e.RepsDefault,
+                    RestTimeInSeconds = e.RestTimeInSeconds,
+                    SetsDefault = e.SetsDefault,
+                    TargetMuscles = e.TargetMuscles,
+                    VideoUrl = e.ExerciseVideoUrl
                 }).ToList();
 
-            await publishEndpoint.Publish( new SessionStartedEvent
-                    {
-                        SessionId = Session.SessionId,
-                        UserId = request.UserId.ToString(),
-                    });
-
-
+            await publishEndpoint.Publish(new SessionStartedEvent
+            {
+                SessionId = session.SessionId,
+                UserId = request.UserId,
+            }, cancellationToken);
 
             return HandlerResponseFactory.Success(new StartWorkOutSessionResultDto
             {
-                SessionId = Session.SessionId,
-                Status = Session.Status,
+                SessionId = session.SessionId,
+                Status = session.Status,
                 ExercisesInSession = exercisesInSession
-
             });
         }
     }

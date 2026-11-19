@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Shared.Controllers;
+using BuildingBlocks.Shared.Controllers;
 using FCEService.Domain.Enums;
 using FCEService.Features.AssignPlan;
 using FCEService.Features.CalculateMetrics;
@@ -19,7 +19,7 @@ namespace FCEService.Controllers
     [Route("api/v1/fitness")]
     public sealed class FitnessController(ISender sender) : ApiControllerBase
     {
-        [HttpPost("stats")]
+        [HttpPost("weight-goal-activity")]
         public async Task<IActionResult> SubmitFitnessStats(
             [FromBody] SubmitFitnessStatsCommand command, CancellationToken ct)
         {

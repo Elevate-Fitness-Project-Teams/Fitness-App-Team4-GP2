@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Contracts.Progress;
+using BuildingBlocks.Contracts.Progress;
 using BuildingBlocks.Shared.Results;
 using FluentValidation;
 using MassTransit;
@@ -41,13 +41,13 @@ namespace ProgressService.Features.WorkoutCompletion
             var session =  await _unitOfWork.GetRepository<SessionReadModel, int>().GetOneAsync(x=>x.SessionId == request.SessionId && x.UserId == userId.ToString());
 
             if(session is null || session.IsActive == false)
-                return Error.NotFound("RES_SESSION_NOT_FOUND.", "The provided session is invalid.");
+                return Error.NotFound("RES_SESSION_NOT_FOUND", "The provided session is invalid.");
 
-
-            
             await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
+                session.IsActive = false;
+
                 var log = new WorkoutLog
                 {
                     WorkoutId = request.WorkoutId,
@@ -96,10 +96,9 @@ namespace ProgressService.Features.WorkoutCompletion
                 }
 
                 await _publishEndpoint.Publish(
-                   new SessionStartedEvent
+                   new SessionCompletedEvent
                    {
-                       SessionId = request.SessionId,
-                       UserId = userId.ToString()
+                       SessionId = request.SessionId
                    });
 
                 // Refresh ProfileService's cached statistics snapshot.

@@ -17,6 +17,10 @@
     <None Include=".dockerignore" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="ApiGateway\ApiGateway.csproj">
+      <Project>{8A15E4EB-BCBF-4362-B97B-30EA3FA6A60C}</Project>
+      <Name>ApiGateway</Name>
+    </ProjectReference>
     <ProjectReference Include="AuthService\AuthService.csproj">
       <Project>{C931BF15-1809-4766-B208-44104A6F797C}</Project>
       <Name>AuthService</Name>

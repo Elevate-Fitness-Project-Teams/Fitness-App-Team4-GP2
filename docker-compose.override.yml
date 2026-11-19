@@ -1,16 +1,31 @@
 services:
+  apigateway:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__Redis=redis:6379
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
   authservice:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # Points at the sqlserver container; the service migrates/seeds this DB on startup.
       - "ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=ElevateAuthDb;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Elevate_Str0ng_Pass1};TrustServerCertificate=True;MultipleActiveResultSets=true"
-      # RabbitMQ runs on the Windows host, not in this compose file.
-      - RabbitMQ__Host=host.docker.internal
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     ports:
-      - "5000:8080"
-      - "5001:8081"
+      - "5002:8080"
+      - "5003:8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -22,12 +37,13 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # Points at the sqlserver container; the service migrates/seeds this DB on startup.
       - "ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=ElevateFceDb;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Elevate_Str0ng_Pass1};TrustServerCertificate=True;MultipleActiveResultSets=true"
-      - RabbitMQ__Host=host.docker.internal
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     ports:
-      - "5002:8080"
-      - "5003:8081"
+      - "5004:8080"
+      - "5005:8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro 
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -39,11 +55,13 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # Points at the sqlserver container; the service migrates/seeds this DB on startup.
       - "ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=ElevateNotificationDb;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Elevate_Str0ng_Pass1};TrustServerCertificate=True;MultipleActiveResultSets=true"
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     ports:
-      - "5004:8080"
-      - "5005:8081"
+      - "5006:8080"
+      - "5007:8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -55,16 +73,14 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # Points at the sqlserver container; the service migrates/seeds this DB on startup.
       - "ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=ElevateNutritionDb;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Elevate_Str0ng_Pass1};TrustServerCertificate=True;MultipleActiveResultSets=true"
-      - RabbitMQ__Host=host.docker.internal
-      # Nutrition calls FCE for fitness metrics; without this it falls back to the
-      # appsettings.Development value https://localhost:7244, which is nothing inside
-      # the container. Container-to-container call goes over the compose network.
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
       - Services__Fce=http://fceservice:8080
     ports:
-      - "5006:8080"
-      - "5007:8081"
+      - "5008:8080"
+      - "5009:8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -76,14 +92,14 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # Points at the sqlserver container; the service migrates/seeds this DB on startup.
       - "ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=ElevateProfileDb;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Elevate_Str0ng_Pass1};TrustServerCertificate=True;MultipleActiveResultSets=true"
-      - RabbitMQ__Host=host.docker.internal
-      # Container-to-container call goes through the compose network, not localhost.
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
       - Services__Auth=http://authservice:8080
     ports:
-      - "5008:8080"
-      - "5009:8081"
+      - "5010:8080"
+      - "5011:8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -95,12 +111,13 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # Points at the sqlserver container; the service migrates/seeds this DB on startup.
       - "ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=ElevateProgressDb;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Elevate_Str0ng_Pass1};TrustServerCertificate=True;MultipleActiveResultSets=true"
-      - RabbitMQ__Host=host.docker.internal
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     ports:
-      - "5010:8080"
-      - "5011:8081"
+      - "5012:8080"
+      - "5013:8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -112,18 +129,16 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # Points at the sqlserver container; the service migrates/seeds this DB on startup.
       - "ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=ElevateSmartCoachDb;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Elevate_Str0ng_Pass1};TrustServerCertificate=True;MultipleActiveResultSets=true"
       - Services__Profile=http://profileservice:8080
       - Services__Nutrition=http://nutritionservice:8080
       - Services__Workout=http://workoutservice:8080
       - Services__Fce=http://fceservice:8080
       - Services__Progress=http://progressservice:8080
-      # Redis runs as a sibling container on the compose network, not localhost.
       - ConnectionStrings__Redis=redis:6379
     ports:
-      - "5012:8080"
-      - "5013:8081"
+      - "5014:8080"
+      - "5015:8081"
     depends_on:
       - redis
     volumes:
@@ -136,17 +151,23 @@ services:
     ports:
       - "6379:6379"
 
+  rabbitmq:
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   subscriptionservice:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # Points at the sqlserver container; the service migrates/seeds this DB on startup.
       - "ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=ElevateSubscriptionDb;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Elevate_Str0ng_Pass1};TrustServerCertificate=True;MultipleActiveResultSets=true"
-      - RabbitMQ__Host=host.docker.internal
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     ports:
-      - "5014:8080"
-      - "5015:8081"
+      - "5016:8080"
+      - "5017:8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -158,12 +179,13 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      # Points at the sqlserver container; the service migrates/seeds this DB on startup.
       - "ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=ElevateWorkoutDb;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Elevate_Str0ng_Pass1};TrustServerCertificate=True;MultipleActiveResultSets=true"
-      - RabbitMQ__Host=host.docker.internal
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     ports:
-      - "5016:8080"
-      - "5017:8081"
+      - "5018:8080"
+      - "5019:8081"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -172,6 +194,4 @@ services:
 
   sqlserver:
     ports:
-      # Exposed on the host so SSMS / Azure Data Studio / `dotnet ef` can reach it
-      # at localhost,1433 (sa / Elevate_Str0ng_Pass1 unless MSSQL_SA_PASSWORD is set).
       - "1433:1433"

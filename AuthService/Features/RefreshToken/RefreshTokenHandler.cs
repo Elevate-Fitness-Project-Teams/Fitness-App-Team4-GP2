@@ -29,7 +29,7 @@ namespace AuthService.Features.RefreshToken
             var refreshToken = await _refreshTokens.GetByTokenAsync(request.refreshToken);
 
             if (refreshToken == null || refreshToken.RevokedAt != null)
-                return Error.InvalidCredentials(" AUTH_TOKEN_INVALID");
+                return Error.InvalidCredentials("AUTH_TOKEN_INVALID");
 
             if (refreshToken.ExpiresAt <= DateTime.UtcNow)
                 return Error.InvalidCredentials("AUTH_TOKEN_EXPIRED");

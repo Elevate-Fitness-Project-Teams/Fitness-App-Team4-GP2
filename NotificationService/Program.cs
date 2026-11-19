@@ -2,6 +2,7 @@ using BuildingBlocks.Shared.Behaviors;
 using BuildingBlocks.Shared.Middleware;
 using BuildingBlocks.Shared.Persistence;
 using FluentValidation;
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,23 @@ internal class Program
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
         object value = builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
         builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+        builder.Services.AddMassTransit(x =>
+        {
+            x.AddConsumers(typeof(Program).Assembly);
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                var rabbitHost = builder.Configuration["RabbitMQ:Host"] ?? "localhost";
+                cfg.Host(rabbitHost, h =>
+                {
+                    h.Username(builder.Configuration["RabbitMQ:Username"] ?? "guest");
+                    h.Password(builder.Configuration["RabbitMQ:Password"] ?? "guest");
+                });
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                    .AddJwtBearer(options =>

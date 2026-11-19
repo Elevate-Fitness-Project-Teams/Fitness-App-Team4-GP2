@@ -1,11 +1,10 @@
-﻿using BuildingBlocks.Shared.Controllers;
+using BuildingBlocks.Shared.Controllers;
 using BuildingBlocks.Shared.Responses;
 using BuildingBlocks.Shared.Results.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Numerics;
 using System.Security.Claims;
 using WorkoutService.BuildingBlock.HandlersResponse;
 using WorkoutService.Domain.Enums;
@@ -30,7 +29,8 @@ using WorkoutService.Feature.StartWorkOutSession.Dtos__ViewModels;
 
 namespace WorkoutService.Controllers
 {
-    //[Authorize]
+    [Authorize]
+    [Route("api/v1")]
     public class WorkOutController : ApiControllerBase
     {
         private readonly IMediator mediator;
@@ -40,32 +40,34 @@ namespace WorkoutService.Controllers
             this.mediator = mediator;
         }
 
-        [HttpGet("GetWorkOuts")]
-        [ProducesResponseType(typeof(WorkOutViewModel), 200)]
-
-        public async Task<IActionResult> GetWorkOuts([FromQuery] int page,
-            [FromQuery] int pageSize,
-            [FromQuery] string? search,
-            [FromQuery] WorkOutCategory? category,
-            [FromQuery] WorkOutDiffeculty? difficulty,
-            [FromQuery] int? duration,
-            CancellationToken cancellationToken)
+        // Operation 1: Browse workouts — GET /api/v1/workouts
+        [HttpGet("workouts")]
+        [ProducesResponseType(typeof(ApiResponse<List<WorkOutViewModel>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetWorkOuts(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null,
+            [FromQuery] WorkOutCategory? category = null,
+            [FromQuery] WorkOutDiffeculty? difficulty = null,
+            [FromQuery] int? duration = null,
+            CancellationToken cancellationToken = default)
         {
             var query = new GetAllWorkOutsBySearchQuery(page, pageSize, search, category, difficulty, duration);
             var result = await mediator.Send(query, cancellationToken);
             if (!result.IsSuccess)
             {
-                var _errorCode = result.ErrorCode;
-                if (_errorCode == HandlerErrorCodesEnum.NotFoundAnyWorkOuts)
-                    return NotFound(ResponseFactory.Failure("No WorkOuts Is Found ", 404));
-                if (_errorCode == HandlerErrorCodesEnum.InvalidDiffecultyLevel)
-                    return NotFound(ResponseFactory.Failure("Invalid Diffecult Level , ", 404));
-                if (_errorCode == HandlerErrorCodesEnum.InvalidCategoryName)
-                    return NotFound(ResponseFactory.Failure("Invalid Category Name , ", 404));
+                var errorCode = result.ErrorCode;
+                if (errorCode == HandlerErrorCodesEnum.NotFoundAnyWorkOuts)
+                    return Ok(ResponseFactory.Success(new List<WorkOutViewModel>(), "No workouts found", StatusCodes.Status200OK));
+                if (errorCode == HandlerErrorCodesEnum.InvalidDiffecultyLevel)
+                    return BadRequest(ResponseFactory.Failure("Invalid difficulty level", StatusCodes.Status400BadRequest, "VAL_INVALID_DIFFICULTY"));
+                if (errorCode == HandlerErrorCodesEnum.InvalidCategoryName)
+                    return BadRequest(ResponseFactory.Failure("Invalid category name", StatusCodes.Status400BadRequest, "VAL_INVALID_CATEGORY"));
 
-                return BadRequest();
+                return BadRequest(ResponseFactory.Failure("Failed to retrieve workouts", StatusCodes.Status400BadRequest));
             }
-            var WorkoutsViewModel = result.Data.Select(w => new WorkOutViewModel
+
+            var workoutsViewModel = result.Data.Select(w => new WorkOutViewModel
             {
                 WorkoutId = w.WorkoutId,
                 Name = w.Name,
@@ -73,27 +75,28 @@ namespace WorkoutService.Controllers
                 Category = w.Category.ToString(),
                 DurationInMinutes = w.DurationInMinutes,
                 Difficulty = w.Difficulty.ToString()
-
             }).ToList();
 
-            return Ok(ResponseFactory.Success(WorkoutsViewModel, "WorkOuts Fetched Successfully", 200));
+            return Ok(ResponseFactory.Success(workoutsViewModel, "Workouts fetched successfully", StatusCodes.Status200OK));
         }
 
-        [HttpGet("GetWorkOutDetails")]
-        [ProducesResponseType(typeof(WorkoutDetailsViewModel), 200)]
-
-        public async Task<IActionResult> GetWorkOuts([FromQuery] int WorkOutId, CancellationToken cancellationToken)
+        // Operation 2: Workout details — GET /api/v1/workouts/{id}
+        [HttpGet("workouts/{id:int}")]
+        [ProducesResponseType(typeof(ApiResponse<WorkoutDetailsViewModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetWorkoutById(
+            [FromRoute] int id = 0,
+            [FromQuery] int? WorkOutId = null,
+            CancellationToken cancellationToken = default)
         {
-            var result = await mediator.Send(new GetWorkOutDetailsQuery(WorkOutId), cancellationToken);
+            var targetId = id != 0 ? id : (WorkOutId ?? 0);
+            var result = await mediator.Send(new GetWorkOutDetailsQuery(targetId), cancellationToken);
             if (!result.IsSuccess)
             {
-                var _errorCode = result.ErrorCode;
-                if (_errorCode == HandlerErrorCodesEnum.NotFoundAnyWorkOuts)
-                    return NotFound(ResponseFactory.Failure("No WorkOuts Is Found,Invalid Id ", 404));
-
-                return BadRequest();
+                return NotFound(ResponseFactory.Failure("Workout not found with the specified ID", StatusCodes.Status404NotFound, "RES_WORKOUT_NOT_FOUND"));
             }
-            var WorkoutViewModel = new WorkoutDetailsViewModel
+
+            var workoutViewModel = new WorkoutDetailsViewModel
             {
                 WorkoutId = result.Data.WorkoutId,
                 PlanId = result.Data.PlanId,
@@ -117,91 +120,150 @@ namespace WorkoutService.Controllers
                 }).ToList()
             };
 
+            return Ok(ResponseFactory.Success(workoutViewModel, "Workout details fetched successfully", StatusCodes.Status200OK));
+        }
+
+        // Operation 3: Workouts by plan — GET /api/v1/workouts/by-plan/{planId}
+        [HttpGet("workouts/by-plan/{planId}")]
+        [ProducesResponseType(typeof(ApiResponse<List<WorkoutByPlanViewModel>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetWorkoutsByPlanId(
+            [FromRoute] string? planId = null,
+            [FromQuery] string? PlanId = null,
+            CancellationToken cancellationToken = default)
+        {
+            var targetPlanId = !string.IsNullOrEmpty(planId) ? planId : (PlanId ?? string.Empty);
+            var result = await mediator.Send(new GetWorkOutsByPlanIdQuery(targetPlanId), cancellationToken);
+            if (!result.IsSuccess)
+            {
+                var errorCode = result.ErrorCode;
+                if (errorCode == HandlerErrorCodesEnum.NotFoundAnyWorkOutsForThisPlan)
+                    return Ok(ResponseFactory.Success(new List<WorkoutByPlanViewModel>(), "No workouts found for this plan", StatusCodes.Status200OK));
+                if (errorCode == HandlerErrorCodesEnum.PlanIdISNull)
+                    return BadRequest(ResponseFactory.Failure("The plan ID is null or empty", StatusCodes.Status400BadRequest, "VAL_INVALID_PLAN_ID"));
+
+                return BadRequest(ResponseFactory.Failure("Failed to retrieve workouts for plan", StatusCodes.Status400BadRequest));
+            }
+
+            var workoutsViewModel = result.Data.Select(w => new WorkoutByPlanViewModel
+            {
+                PlanId = w.PlanId,
+                WorkoutId = w.WorkoutId,
+                WorkoutName = w.WorkoutName,
+                WorkoutCategory = w.WorkoutCategory.ToString(),
+                WorkoutDifficulty = w.WorkoutDifficulty.ToString(),
+                DurationInMinutes = w.DurationInMinutes,
+                PlanName = w.PlanName,
+                PlanDescription = w.PlanDescription,
+                PlanGoal = w.PlanGoal,
+                PlanStatus = w.PlanStatus
+            }).ToList();
+
+            return Ok(ResponseFactory.Success(workoutsViewModel, "Workouts fetched successfully", StatusCodes.Status200OK));
+        }
+
+        // Operation 4: Workouts by category — GET /api/v1/workouts/category/{categoryName}
+        [HttpGet("workouts/category/{categoryName}")]
+        [ProducesResponseType(typeof(ApiResponse<List<GetWorkOutsByCategoryNameViewModel>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetWorkoutsByCategoryName(
+            [FromRoute] WorkOutCategory? categoryName = null,
+            [FromQuery] WorkOutCategory? CategoryName = null,
+            CancellationToken cancellationToken = default)
+        {
+            var targetCategory = categoryName ?? CategoryName ?? WorkOutCategory.fullBody;
+            var result = await mediator.Send(new GetWorkOutsByCategoryNameQuery(targetCategory), cancellationToken);
+            if (!result.IsSuccess)
+            {
+                var errorCode = result.ErrorCode;
+                if (errorCode == HandlerErrorCodesEnum.NotFoundAnyWorkOutsForThisCategoryName)
+                    return Ok(ResponseFactory.Success(new List<GetWorkOutsByCategoryNameViewModel>(), "No workouts found for this category", StatusCodes.Status200OK));
+
+                return BadRequest(ResponseFactory.Failure("Invalid category name", StatusCodes.Status400BadRequest, "VAL_INVALID_CATEGORY"));
+            }
+
+            var workoutsViewModel = result.Data.Select(w => new GetWorkOutsByCategoryNameViewModel
+            {
+                PlanId = w.PlanId,
+                WorkoutId = w.WorkoutId,
+                WorkoutName = w.WorkoutName,
+                WorkoutCategory = w.WorkoutCategory.ToString(),
+                WorkoutDifficulty = w.WorkoutDifficulty.ToString(),
+                DurationInMinutes = w.DurationInMinutes,
+                PlanName = w.PlanName,
+                PlanDescription = w.PlanDescription,
+                PlanGoal = w.PlanGoal,
+                PlanStatus = w.PlanStatus
+            }).ToList();
+
+            return Ok(ResponseFactory.Success(workoutsViewModel, "Workouts fetched successfully", StatusCodes.Status200OK));
+        }
+
+        // Operation 5: Start workout — POST /api/v1/workouts/{id}/start
+        [HttpPost("workouts/{id:int}/start")]
+        [ProducesResponseType(typeof(ApiResponse<StartWorkOutSessionResultViewModel>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> StartWorkOutSession(
+            [FromRoute] int id = 0,
+            [FromQuery] int? WorkoutId = null,
+            [FromQuery] WorkOutDiffeculty Difficulty = WorkOutDiffeculty.beginner,
+            [FromQuery] int PlannedDuration = 30,
+            CancellationToken cancellationToken = default)
+        {
+            var targetWorkoutId = id != 0 ? id : (WorkoutId ?? 0);
+            var userId = GetCurrentUserId().ToString();
+
+            var result = await mediator.Send(new StartWorkOutSessionCommand(targetWorkoutId, userId, Difficulty, PlannedDuration), cancellationToken);
+            if (!result.IsSuccess)
+            {
+                var errorCode = result.ErrorCode;
+                if (errorCode == HandlerErrorCodesEnum.WorkOutIdIsInvalid)
+                    return NotFound(ResponseFactory.Failure("No workout found with the specified ID", StatusCodes.Status404NotFound, "RES_WORKOUT_NOT_FOUND"));
+
+                return BadRequest(ResponseFactory.Failure("Failed to start workout session", StatusCodes.Status400BadRequest));
+            }
+
+            var startWorkOutSessionResultViewModel = new StartWorkOutSessionResultViewModel
+            {
+                SessionId = result.Data.SessionId,
+                Status = result.Data.Status.ToString(),
+                ExercisesInSession = result.Data.ExercisesInSession?.Select(e => new WorkoutExerciseInSessionViewModel
+                {
+                    Id = e.Id,
+                    ExerciseId = e.ExerciseId,
+                    Name = e.Name,
+                    TargetMuscles = e.TargetMuscles,
+                    Equipment = e.Equipment,
+                    Difficulty = e.Difficulty,
+                    Description = e.Description,
+                    VideoUrl = e.VideoUrl,
+                    SetsDefault = e.SetsDefault,
+                    RepsDefault = e.RepsDefault,
+                    RestTimeInSeconds = e.RestTimeInSeconds,
+                    OrderIndex = e.OrderIndex
+                }).ToList() ?? new List<WorkoutExerciseInSessionViewModel>()
+            };
+
             return Ok(ResponseFactory.Success(
-                WorkoutViewModel,
-                "WorkOut Fetched Successfully",
-                200));
+                startWorkOutSessionResultViewModel,
+                "Workout session started successfully",
+                StatusCodes.Status200OK));
         }
 
-
-        [HttpGet("GetWorkOutsByPlanId")]
-        [ProducesResponseType(typeof(WorkoutByPlanViewModel), 200)]
-        public async Task<IActionResult> GetWorkOutsByPlanId([FromQuery] string PlanId, CancellationToken cancellationToken)
+        // Operation 6: Browse exercises — GET /api/v1/exercises
+        [HttpGet("exercises")]
+        [ProducesResponseType(typeof(ApiResponse<List<ExercisesViewModel>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetExercises(
+            [FromQuery] int Page = 1,
+            [FromQuery] int PageSize = 10,
+            CancellationToken cancellationToken = default)
         {
-            var result = await mediator.Send(new GetWorkOutsByPlanIdQuery(PlanId), cancellationToken);
-            if (!result.IsSuccess)
-            {
-                var _errorCode = result.ErrorCode;
-                if (_errorCode == HandlerErrorCodesEnum.NotFoundAnyWorkOutsForThisPlan)
-                    return NotFound(ResponseFactory.Failure("No WorkOuts Is Found For This Plan", 404));
-                if (_errorCode == HandlerErrorCodesEnum.PlanIdISNull)
-                    return NotFound(ResponseFactory.Failure("The Plain Id is Null Or Empty", 404));
-
-                return BadRequest();
-            }
-            var WorkoutsViewModel = result.Data.Select(w => new WorkoutByPlanViewModel
-            {
-                PlanId = w.PlanId,
-                WorkoutId = w.WorkoutId,
-                WorkoutName = w.WorkoutName,
-                WorkoutCategory = w.WorkoutCategory.ToString(),
-                WorkoutDifficulty = w.WorkoutDifficulty.ToString(),
-                DurationInMinutes = w.DurationInMinutes,
-                PlanName = w.PlanName,
-                PlanDescription = w.PlanDescription,
-                PlanGoal = w.PlanGoal,
-                PlanStatus = w.PlanStatus
-
-            }).ToList();
-
-            return Ok(ResponseFactory.Success(WorkoutsViewModel, "WorkOuts Fetched Successfully", 200));
-        }
-        [HttpGet("GetWorkOutsByCategoryName")]
-        [ProducesResponseType(typeof(GetWorkOutsByCategoryNameViewModel), 200)]
-        public async Task<IActionResult> GetWorkOutsByCategoryName([FromQuery] WorkOutCategory CategoryName, CancellationToken cancellationToken)
-        {
-            var result = await mediator.Send(new GetWorkOutsByCategoryNameQuery(CategoryName), cancellationToken);
-            if (!result.IsSuccess)
-            {
-                var _errorCode = result.ErrorCode;
-                if (_errorCode == HandlerErrorCodesEnum.NotFoundAnyWorkOutsForThisCategoryName)
-                    return NotFound(ResponseFactory.Failure("No WorkOuts Is Found For This Category", 404));
-                if (_errorCode == HandlerErrorCodesEnum.InvalidCategoryName)
-                    return NotFound(ResponseFactory.Failure("Invalid Category Name, No WorkOuts Is Found For This Category ", 404));
-
-                return BadRequest();
-            }
-            var WorkoutsViewModel = result.Data.Select(w => new GetWorkOutsByCategoryNameViewModel
-            {
-                PlanId = w.PlanId,
-                WorkoutId = w.WorkoutId,
-                WorkoutName = w.WorkoutName,
-                WorkoutCategory = w.WorkoutCategory.ToString(),
-                WorkoutDifficulty = w.WorkoutDifficulty.ToString(),
-                DurationInMinutes = w.DurationInMinutes,
-                PlanName = w.PlanName,
-                PlanDescription = w.PlanDescription,
-                PlanGoal = w.PlanGoal,
-                PlanStatus = w.PlanStatus
-
-            }).ToList();
-
-            return Ok(ResponseFactory.Success(WorkoutsViewModel, "WorkOuts Fetched Successfully", 200));
-        }
-
-        [HttpGet("GetAllExercies")]
-        public async Task<IActionResult> GetAllExercies([FromQuery] int Page, [FromQuery] int PageSize, CancellationToken cancellationToken)
-        {
-
             var paginationRequest = new PaginationRequest(Page, PageSize);
             var result = await mediator.Send(new GetAllExricesQuery(paginationRequest), cancellationToken);
             if (!result.IsSuccess)
             {
-                var _errorCode = result.ErrorCode;
-                if (_errorCode == HandlerErrorCodesEnum.NotFoundAnyExercise)
-                    return NotFound(ResponseFactory.Failure("No Exercises Found", 404));
+                var errorCode = result.ErrorCode;
+                if (errorCode == HandlerErrorCodesEnum.NotFoundAnyExercise)
+                    return Ok(ResponseFactory.Success(new List<ExercisesViewModel>(), "No exercises found", StatusCodes.Status200OK));
 
-                return BadRequest();
+                return BadRequest(ResponseFactory.Failure("Failed to retrieve exercises", StatusCodes.Status400BadRequest));
             }
 
             var exercisesViewModel = result.Data.Items.Select(e => new ExercisesViewModel
@@ -214,24 +276,27 @@ namespace WorkoutService.Controllers
 
             return Ok(ResponseFactory.Success(
                 exercisesViewModel,
-                "Exercises Fetched Successfully",
-                200));
+                "Exercises fetched successfully",
+                StatusCodes.Status200OK));
         }
-    
-        [HttpGet("GetExercieDetails")]
-        public async Task<IActionResult> GetExercieDetails([FromQuery] int ExerciseId, CancellationToken cancellationToken)
-        {
 
-            var result = await mediator.Send(new GetExerciesDetailsByIdQuery(ExerciseId), cancellationToken);
+        // Operation 7: Exercise details — GET /api/v1/exercises/{id}
+        [HttpGet("exercises/{id:int}")]
+        [ProducesResponseType(typeof(ApiResponse<ExerciseDetailsViewModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetExerciseById(
+            [FromRoute] int id = 0,
+            [FromQuery] int? ExerciseId = null,
+            CancellationToken cancellationToken = default)
+        {
+            var targetId = id != 0 ? id : (ExerciseId ?? 0);
+            var result = await mediator.Send(new GetExerciesDetailsByIdQuery(targetId), cancellationToken);
             if (!result.IsSuccess)
             {
-                var _errorCode = result.ErrorCode;
-                if (_errorCode == HandlerErrorCodesEnum.NotFoundExerciesWithSpecificID)
-                    return NotFound(ResponseFactory.Failure("No Exercise Found with the Specific ID", 404));
-                return BadRequest();
+                return NotFound(ResponseFactory.Failure("No exercise found with the specified ID", StatusCodes.Status404NotFound, "RES_EXERCISE_NOT_FOUND"));
             }
 
-            var exercisesViewModel = new ExerciseDetailsViewModel
+            var exerciseDetailsViewModel = new ExerciseDetailsViewModel
             {
                 ExerciseId = result.Data.ExerciseId,
                 Name = result.Data.Name,
@@ -240,52 +305,57 @@ namespace WorkoutService.Controllers
             };
 
             return Ok(ResponseFactory.Success(
-                exercisesViewModel,
-                "Exercises Fetched Successfully",
-                200));
+                exerciseDetailsViewModel,
+                "Exercise details fetched successfully",
+                StatusCodes.Status200OK));
         }
 
-
-
-        [HttpGet("GetAllWorkOutPlans")]
-        public async Task<IActionResult> GetAllWorkOutPlans([FromQuery] int Page, [FromQuery] int PageSize, CancellationToken cancellationToken)
+        // Operation 8: Browse workout plans — GET /api/v1/workout-plans
+        [HttpGet("workout-plans")]
+        [ProducesResponseType(typeof(ApiResponse<List<WorkOutPlansViewModel>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetWorkoutPlans(
+            [FromQuery] int Page = 1,
+            [FromQuery] int PageSize = 10,
+            CancellationToken cancellationToken = default)
         {
-
             var paginationRequest = new PaginationRequest(Page, PageSize);
             var result = await mediator.Send(new GetWorkOutsPlansQuery(paginationRequest), cancellationToken);
             if (!result.IsSuccess)
             {
-                var _errorCode = result.ErrorCode;
-                if (_errorCode == HandlerErrorCodesEnum.NotFoundAnyExercise)
-                    return NotFound(ResponseFactory.Failure("No WorkOut Plans Found", 404));
-                return BadRequest();
+                var errorCode = result.ErrorCode;
+                if (errorCode == HandlerErrorCodesEnum.NotFoundAnyExercise)
+                    return Ok(ResponseFactory.Success(new List<WorkOutPlansViewModel>(), "No workout plans found", StatusCodes.Status200OK));
+
+                return BadRequest(ResponseFactory.Failure("Failed to retrieve workout plans", StatusCodes.Status400BadRequest));
             }
 
             var workOutPlansViewModel = result.Data.Items.Select(e => new WorkOutPlansViewModel
             {
-               PlanId= e.PlanId,
-                Name= e.Name,
-                Goal= e.Goal,
+                PlanId = e.PlanId,
+                Name = e.Name,
+                Goal = e.Goal,
             }).ToList();
 
             return Ok(ResponseFactory.Success(
                 workOutPlansViewModel,
-                "WorkOut Plans Fetched Successfully",
-                200));
+                "Workout plans fetched successfully",
+                StatusCodes.Status200OK));
         }
 
-
-        [HttpGet("GetWorkOutPlanDetails")]
-        public async Task<IActionResult> GetWorkOutPlanDetails([FromQuery] string PlanId, CancellationToken cancellationToken)
+        // Operation 9: Workout plan details — GET /api/v1/workout-plans/{planId}
+        [HttpGet("workout-plans/{planId}")]
+        [ProducesResponseType(typeof(ApiResponse<WorkOutPlanViewModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetWorkoutPlanById(
+            [FromRoute] string? planId = null,
+            [FromQuery] string? PlanId = null,
+            CancellationToken cancellationToken = default)
         {
-
-            var result = await mediator.Send(new GetWorkOutPlanDetailsQuery(PlanId), cancellationToken);
+            var targetPlanId = !string.IsNullOrEmpty(planId) ? planId : (PlanId ?? string.Empty);
+            var result = await mediator.Send(new GetWorkOutPlanDetailsQuery(targetPlanId), cancellationToken);
             if (!result.IsSuccess)
             {
-                var _errorCode = result.ErrorCode;
-                if (_errorCode == HandlerErrorCodesEnum.NotFoundPlanWithSpecificID)
-                    return NotFound(ResponseFactory.Failure("No WorkOut Plan Found with the Specific ID", 404));
-                return BadRequest();
+                return NotFound(ResponseFactory.Failure("No workout plan found with the specified ID", StatusCodes.Status404NotFound, "RES_PLAN_NOT_FOUND"));
             }
 
             var workOutPlanDetailsViewModel = new WorkOutPlanViewModel
@@ -300,51 +370,8 @@ namespace WorkoutService.Controllers
 
             return Ok(ResponseFactory.Success(
                 workOutPlanDetailsViewModel,
-                "WorkOut Plan Details Fetched Successfully",
-                200));
+                "Workout plan details fetched successfully",
+                StatusCodes.Status200OK));
         }
-
-        [HttpPost("StartWorkOutSession")]
-        public async Task<IActionResult> StartWorkOutSession([FromQuery] int WorkoutId, [FromQuery] WorkOutDiffeculty Difficulty,
-            [FromQuery] int PlannedDuration, CancellationToken cancellationToken)
-        {
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            var result = await mediator.Send(new StartWorkOutSessionCommand(WorkoutId,userId,Difficulty,PlannedDuration), cancellationToken);
-            if (!result.IsSuccess)
-            {
-                var _errorCode = result.ErrorCode;
-                if (_errorCode == HandlerErrorCodesEnum.WorkOutIdIsInvalid)
-                    return NotFound(ResponseFactory.Failure("No WorkOut Found with the Specific ID", 404));
-                return BadRequest();
-            }
-
-            var startWorkOutSessionResultViewModel = new StartWorkOutSessionResultViewModel
-            {
-                SessionId = result.Data.SessionId,
-                Status = result.Data.Status.ToString(),
-                ExercisesInSession = result.Data.ExercisesInSession.Select(e => new WorkoutExerciseInSessionViewModel
-                {
-                    Id = e.Id,
-                    ExerciseId = e.ExerciseId,
-                    Name = e.Name,
-                    TargetMuscles = e.TargetMuscles,
-                    Equipment = e.Equipment,
-                    Difficulty = e.Difficulty,
-                    Description = e.Description,
-                    VideoUrl = e.VideoUrl,
-                    SetsDefault = e.SetsDefault,
-                    RepsDefault = e.RepsDefault,
-                    RestTimeInSeconds = e.RestTimeInSeconds,
-                    OrderIndex = e.OrderIndex
-                }).ToList()
-            };
-
-            return Ok(ResponseFactory.Success(
-                startWorkOutSessionResultViewModel,
-                "WorkOut Session Started Successfully",
-                200));
-        }
-
     }
 }

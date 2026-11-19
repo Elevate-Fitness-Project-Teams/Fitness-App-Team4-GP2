@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Shared.Controllers;
+using BuildingBlocks.Shared.Controllers;
+using BuildingBlocks.Shared.Results;
 using BuildingBlocks.Shared.Results.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -7,11 +8,10 @@ using NutritionService.Features.BrowseMealPlans;
 using NutritionService.Features.GetMealDetails;
 using NutritionService.Features.GetMealPlansByCalorie;
 using NutritionService.Features.GetMealRecommendations;
-using System.Security.Claims;
 
 namespace NutritionService.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class NutritionController : ApiControllerBase
     {
         private readonly IMediator _mediator;
@@ -20,18 +20,10 @@ namespace NutritionService.Controllers
             _mediator = mediator;
         }
 
-        protected Guid GetCurrentUserId()
-        {
-            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            return Guid.Parse(userIdClaim!);
-        }
-
         [HttpGet("recommendations")]
         public async Task<IActionResult> GetMealRecommendations([FromQuery] GetMealRecommendationsRequest request)
         {
             var userId = GetCurrentUserId();
-            //var userId = new Guid("00000000-0000-0000-0000-000000000001");
 
             var query = new GetMealRecommendationsQuery
             (
@@ -47,13 +39,18 @@ namespace NutritionService.Controllers
             );
             var result = await _mediator.Send(query);
             return FromResult(result, "Meal Recommendations Retrieved Successfully", StatusCodes.Status200OK);
-
-
         }
 
         [HttpGet("recommendations/{userId}")]
         public async Task<IActionResult> GetMealRecommendationsByUserId([FromRoute] Guid userId, [FromQuery] GetMealRecommendationsRequest request)
         {
+            if (!IsOwnerOrAdmin(userId))
+            {
+                return FromResult(
+                    Result<GetMealRecommendationsResponse>.Fail(Error.Forbidden("AUTH_FORBIDDEN", "You do not have permission to view meal recommendations for another user.")),
+                    "",
+                    StatusCodes.Status403Forbidden);
+            }
 
             var query = new GetMealRecommendationsQuery
             (

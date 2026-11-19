@@ -1,4 +1,4 @@
-﻿using BuildingBlocks.Shared.Results;
+using BuildingBlocks.Shared.Results;
 using Microsoft.EntityFrameworkCore;
 using NotificationService.Domain.Entities;
 using NotificationService.Domain.Interfaces;
@@ -19,8 +19,9 @@ namespace NotificationService.Features.GetNotifications
         {
             var notifications = await uow.GetRepository<InAppNotification>()
                 .Query()
-                .Where(n => n.UserId == query.UserId && !n.IsRead)
-                .OrderByDescending(n => n.SentAt)
+                .Where(n => n.UserId == query.UserId)
+                .OrderBy(n => n.IsRead)
+                .ThenByDescending(n => n.SentAt)
                 .Select(n => new NotificationResponse(n.Id, n.Title, n.Message, n.IsRead))
                 .ToListAsync(ct);
 

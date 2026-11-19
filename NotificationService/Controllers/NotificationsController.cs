@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using BuildingBlocks.Shared.Controllers;
 using BuildingBlocks.Shared.Exceptions;
 using BuildingBlocks.Shared.Results;
@@ -27,16 +27,5 @@ namespace NotificationService.Controllers
             var result = await sender.Send(new MarkNotificationAsReadCommand(id, GetCurrentUserId()), ct);
             return FromResult(result, "Notification marked as read.", StatusCodes.Status200OK);
         }
-       
-        private Guid GetCurrentUserId()
-        {
-            var claim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub");
-
-            if (claim is null || !Guid.TryParse(claim.Value, out var userId))
-                throw new AppException(Error.Unauthorized("AUTH_INVALID_TOKEN", "Unable to resolve the authenticated user."));
-
-            return userId;
-        }
-
     }
 }

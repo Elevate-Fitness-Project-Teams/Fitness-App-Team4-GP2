@@ -22,6 +22,37 @@ services:
       retries: 12
       start_period: 30s
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    restart: unless-stopped
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - elevate-rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  apigateway:
+    image: ${DOCKER_REGISTRY-}apigateway
+    build:
+      context: .
+      dockerfile: ApiGateway/Dockerfile
+    depends_on:
+      - authservice
+      - fceservice
+      - notificationservice
+      - nutritionservice
+      - profileservice
+      - progressservice
+      - smartcoachservice
+      - subscriptionservice
+      - workoutservice
+
   authservice:
     image: ${DOCKER_REGISTRY-}authservice
     build:
@@ -29,6 +60,8 @@ services:
       dockerfile: AuthService/Dockerfile
     depends_on:
       sqlserver:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
 
   fceservice:
@@ -39,6 +72,8 @@ services:
     depends_on:
       sqlserver:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
   notificationservice:
     image: ${DOCKER_REGISTRY-}notificationservice
@@ -47,6 +82,8 @@ services:
       dockerfile: NotificationService/Dockerfile
     depends_on:
       sqlserver:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
 
   nutritionservice:
@@ -57,6 +94,8 @@ services:
     depends_on:
       sqlserver:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
   profileservice:
     image: ${DOCKER_REGISTRY-}profileservice
@@ -66,6 +105,8 @@ services:
     depends_on:
       sqlserver:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
   progressservice:
     image: ${DOCKER_REGISTRY-}progressservice
@@ -74,6 +115,8 @@ services:
       dockerfile: ProgressService/Dockerfile
     depends_on:
       sqlserver:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
 
   smartcoachservice:
@@ -93,6 +136,8 @@ services:
     depends_on:
       sqlserver:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
   workoutservice:
     image: ${DOCKER_REGISTRY-}workoutservice
@@ -102,6 +147,8 @@ services:
     depends_on:
       sqlserver:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
   redis:
     image: redis:7-alpine
@@ -109,3 +156,4 @@ services:
 
 volumes:
   elevate-sqlserver-data:
+  elevate-rabbitmq-data:
